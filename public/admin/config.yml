@@ -1,0 +1,81 @@
+local_backend: true
+backend:
+  name: git-gateway
+  branch: main
+publish_mode: simple
+media_folder: "public/assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "pengaturan"
+    label: "⚙️ Pengaturan Website"
+    files:
+      - label: "Tema Global"
+        name: "global"
+        file: "data/global.json"
+        fields:
+          - {label: "Warna Background Utama", name: "bg_color", widget: "color", default: "#0B0F19"}
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - {label: "Awalan Brand", name: "brand_prefix", widget: "string"}
+              - {label: "Akhiran Brand", name: "brand_suffix", widget: "string"}
+              - {label: "Tagline", name: "tagline", widget: "string"}
+              - label: "Navigasi"
+                name: "nav"
+                widget: "list"
+                fields:
+                  - {label: "Label", name: "label", widget: "string"}
+                  - {label: "Tautan", name: "link", widget: "string"}
+              - label: "Sosial Media"
+                name: "socials"
+                widget: "list"
+                fields:
+                  - {label: "Label", name: "label", widget: "string"}
+                  - {label: "Tautan", name: "link", widget: "string"}
+              - {label: "Copyright", name: "copyright", widget: "string"}
+              - {label: "Teks Built With", name: "built_with", widget: "string"}
+
+  - name: "blog"
+    label: "✍️ Artikel Blog"
+    label_singular: "Artikel"
+    folder: "data/blog"
+    create: true
+    slug: "{{slug}}"
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - {label: "Judul", name: "title", widget: "string"}
+      - {label: "Tanggal Rilis", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "Tags", name: "tags", widget: "list", field: {label: "Tag", name: "tag", widget: "string"}}
+      - {label: "Draf?", name: "draft", widget: "boolean", default: false}
+      - {label: "Ringkasan (Summary)", name: "summary", widget: "text"}
+      - {label: "Terakhir Diubah (Lastmod)", name: "lastmod", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false}
+      - {label: "Gambar Unggulan (Images)", name: "images", widget: "list", field: {label: "Gambar", name: "image", widget: "image"}, required: false}
+      - {label: "Penulis (Authors ID)", name: "authors", widget: "list", field: {label: "Penulis", name: "author", widget: "relation", collection: "authors", search_fields: ["name"], value_field: "name", display_fields: ["name"]}}
+      - {label: "Tata Letak (Layout)", name: "layout", widget: "string", required: false}
+      - {label: "Bibliografi (Bibliography)", name: "bibliography", widget: "string", required: false}
+      - {label: "URL Kanonis (Canonical URL)", name: "canonicalUrl", widget: "string", required: false}
+      - {label: "Konten Artikel (MDX)", name: "body", widget: "markdown"}
+
+  - name: "authors"
+    label: "👥 Penulis (Authors)"
+    label_singular: "Penulis"
+    folder: "data/authors"
+    create: true
+    slug: "{{slug}}"
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - {label: "Nama Lengkap", name: "name", widget: "string"}
+      - {label: "Foto Profil (Avatar)", name: "avatar", widget: "image", required: false}
+      - {label: "Pekerjaan (Occupation)", name: "occupation", widget: "string", required: false}
+      - {label: "Perusahaan (Company)", name: "company", widget: "string", required: false}
+      - {label: "Email", name: "email", widget: "string", required: false}
+      - {label: "Twitter", name: "twitter", widget: "string", required: false}
+      - {label: "Bluesky", name: "bluesky", widget: "string", required: false}
+      - {label: "LinkedIn", name: "linkedin", widget: "string", required: false}
+      - {label: "GitHub", name: "github", widget: "string", required: false}
+      - {label: "Tata Letak (Layout)", name: "layout", widget: "string", required: false}
+      - {label: "Biografi/Deskripsi (MDX)", name: "body", widget: "markdown"}
