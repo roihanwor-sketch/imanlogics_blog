@@ -1,9 +1,9 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'Next.js Starter Blog',
-  author: 'Tails Azimuth',
-  headerTitle: 'TailwindBlog',
-  description: 'A blog created with Next.js and Tailwind.css',
+  title: 'Iman Logics Blog',
+  author: 'Iman Logics',
+  headerTitle: 'Iman Logics',
+  description: 'AI • Systems • Digital Products',
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://blog.imanlogics.web.id',

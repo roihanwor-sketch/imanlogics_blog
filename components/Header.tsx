@@ -227,7 +227,7 @@ const Header = () => {
       {/* Mobile Nav - Side Drawer (Off-canvas Menu) */}
       <div
         className={`fixed top-0 right-0 z-50 flex h-full w-[260px] flex-col border-l border-gray-200/50 bg-white/95 p-6 shadow-2xl backdrop-blur-xl transition-transform duration-300 ease-in-out sm:w-[300px] md:hidden dark:border-white/10 dark:bg-[#0B0F19]/95 ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          isMenuOpen ? 'translate-x-0' : 'invisible translate-x-full'
         }`}
       >
         <div className="mb-8 flex justify-end pt-4">
