@@ -21,7 +21,9 @@ export class TechArticleBuilder {
       'tech-ai',
       2,
       3,
-      slugBase
+      slugBase,
+      story.titles,
+      story.extractedImageUrls || []
     )
     const images = imageResult.images
     const coverImage =
@@ -45,12 +47,12 @@ export class TechArticleBuilder {
       const labels = {
         id: {
           secondary: 'Media Sekunder Terverifikasi',
-          primary: 'Bukti Primer (Spesifikasi/Paper)',
+          primary: 'Bukti Primer (Spesifikasi/Dokumentasi)',
           crosscheck: 'Verifikasi Silang Independen',
         },
         en: {
           secondary: 'Verified Secondary Media',
-          primary: 'Primary Evidence (Spec/Paper)',
+          primary: 'Primary Evidence (Spec/Documentation)',
           crosscheck: 'Independent Cross-Verification',
         },
         ar: {
@@ -61,21 +63,25 @@ export class TechArticleBuilder {
       }
 
       const secText = {
-        id: chain.layer2Journalism || 'Media Sekunder Terverifikasi (AnandTech, Jagat Review)',
-        en: 'Verified Secondary Media Analysis (AnandTech, Jagat Review Hardware Lab)',
-        ar: 'التحليلات الإعلامية الموثقة (مختبرات أناندتيك وجاجات ريفيو)',
+        id: chain.layer2Journalism || 'Media Sekunder Terverifikasi',
+        en: chain.layer2Journalism || 'Verified Secondary Media Analysis',
+        ar: 'التحليلات الإعلامية والتقارير التقنية الموثقة',
       }
 
       const priText = {
-        id: chain.layer1Primary || 'Whitepaper Resmi & Prosiding Simposium Teknologi',
-        en: 'Official Technology Symposium Proceedings & IEEE N2 Specification Whitepaper',
-        ar: 'وثائق المؤتمر التقني الرسمي ومعايير معهد مهندسي الكهرباء والإلكترونيات (IEEE)',
+        id: chain.layer1Primary || 'Dokumentasi Teknis & Spesifikasi Resmi',
+        en: chain.layer1Primary || 'Official Technical Documentation & Specification',
+        ar: 'الوثائق الفنية والمواصفات الرسمية المعتمدة',
       }
 
       const crossText = {
-        id: 'Data performa dan efisiensi diverifikasi silang antara whitepaper pabrikan dan paper riset independen.',
-        en: 'Performance and efficiency metrics independently cross-verified across manufacturer documentation and academic publications.',
-        ar: 'تم التحقق المستقل من مقاييس الأداء والكفاءة بمقارنة وثائق التصنيع مع الأبحاث الأكاديمية.',
+        id:
+          chain.crossVerificationNotes ||
+          'Data performa dan efisiensi diverifikasi silang antara publikasi primer dan analisis independen.',
+        en:
+          chain.crossVerificationNotes ||
+          'Performance and efficiency metrics independently cross-verified across primary documentation and secondary reporting.',
+        ar: 'تم التحقق المستقل من مقاييس الأداء والكفاءة بمقارنة الوثائق الرسمية مع التقارير المتخصصة.',
       }
 
       return `${headers[lang]}
@@ -85,6 +91,28 @@ export class TechArticleBuilder {
 - **${labels[lang].crosscheck}:** *${crossText[lang]}*
 
 ---`
+    }
+
+    // Adaptive Section II Title based on classification
+    const section2Titles = {
+      id:
+        story.classification === 'Explainer'
+          ? '### II. Arsitektur Software & Integrasi Sistem'
+          : story.classification === 'Security Investigation'
+            ? '### II. Analisis Kerentanan & Vektor Serangan'
+            : '### II. Dekonstruksi Hardware & Rekayasa Sistem',
+      en:
+        story.classification === 'Explainer'
+          ? '### II. Software Architecture & System Integration'
+          : story.classification === 'Security Investigation'
+            ? '### II. Vulnerability Architecture & Attack Vectors'
+            : '### II. Hardware Deconstruction & Systems Engineering',
+      ar:
+        story.classification === 'Explainer'
+          ? '### ثانياً: المعمارية البرمجية وتكامل النظام'
+          : story.classification === 'Security Investigation'
+            ? '### ثانياً: تفكيك الثغرة الأمنية ومسارات الاستغلال'
+            : '### ثانياً: التفكيك العتادي وهندسة المنظومة',
     }
 
     // 1. Indonesian Version
@@ -111,30 +139,34 @@ ${story.readerHook.id}
 
 ${story.whyShouldICare.id}
 
-![${images[0]?.altText.id || story.title}](${images[0]?.localPath || images[0]?.url || coverImage})
+![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Sumber visual: ${images[0]?.source} / Foto oleh ${images[0]?.author} (${images[0]?.license})*
 
 ---
 
 ### I. Metrik Kunci & Verifikasi Benchmark
 
-Sebelum menelaah detail arsitektur, berikut data empiris terukur yang telah diverifikasi silang dari lembar spesifikasi resmi:
+Sebelum menelaah detail teknis, berikut data empiris terukur yang telah diverifikasi silang dari lembar spesifikasi resmi:
 
-${story.metrics.map((m, idx) => `#### ${idx + 1}. ${m.label.id}: **${m.value}**\n- *Komparasi Baseline:* ${m.baselineComparison.id}\n- *Rujukan Primer:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`).join('\n\n')}
+${story.metrics
+  .map(
+    (m, idx) => `#### ${idx + 1}. ${m.label.id}: **${m.value}**
+- *Komparasi Baseline:* ${m.baselineComparison.id}
+- *Rujukan Primer:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`
+  )
+  .join('\n\n')}
 
 ${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### II. Dekonstruksi Hardware & Rekayasa Silikon
+${section2Titles.id}
 
-Untuk memahami bagaimana performa ini tercapai secara fisik pada wafer semikonduktor:
+Untuk memahami bagaimana performa ini tercapai secara teknis:
 
-- **Spesifikasi Fisik Silikon:** ${story.hardwareDeconstruction.siliconSpecs.id}
-- **Perubahan Mikroarsitektur:** ${story.hardwareDeconstruction.microarchitectureChanges.id}
-- **Profil Daya & Termal:** ${story.hardwareDeconstruction.thermalAndPowerProfile.id}
-
-${story.hardwareDeconstruction.fp4PrecisionDetails ? `#### Analisis Khusus: Format Kuantisasi FP4\n- **Throughput Teoritis:** ${story.hardwareDeconstruction.fp4PrecisionDetails.theoreticalThroughput}\n- **Trade-off Kuantisasi:** ${story.hardwareDeconstruction.fp4PrecisionDetails.quantizationTradeoffs.id}\n- **Dampak Akurasi Nyata:** ${story.hardwareDeconstruction.fp4PrecisionDetails.realWorldModelAccuracy.id}\n` : ''}
+- **Spesifikasi Rekayasa Sistem:** ${story.hardwareDeconstruction.siliconSpecs.id}
+- **Perubahan Mikroarsitektur / Alur Eksekusi:** ${story.hardwareDeconstruction.microarchitectureChanges.id}
+- **Profil Daya, Beban & Termal:** ${story.hardwareDeconstruction.thermalAndPowerProfile.id}
 
 ---
 
@@ -152,11 +184,11 @@ ${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url
 
 ### IV. Analisis Dampak Ekonomi & Biaya Operasional (TCO)
 
-Inovasi hardware selalu bermuara pada perhitungan ekonomi komputasi:
+Inovasi komputasi selalu bermuara pada perhitungan ekonomi dan alur kerja:
 
 - **Dampak Biaya Enterprise (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.id}
-- **Tren Harga Konsumen:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.id}
-- **Implikasi bagi Pengembang Software:** ${story.economicAndEcosystemImpact.developerImplications.id}
+- **Tren Ketersediaan & Distribusi:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.id}
+- **Implikasi bagi Pengembang & Pengguna:** ${story.economicAndEcosystemImpact.developerImplications.id}
 
 ---
 
@@ -164,7 +196,7 @@ ${renderCitationChain('id')}
 
 ### VI. Kesimpulan Editorial ImanLogics
 
-Perkembangan ini membuktikan bahwa batas komputasi modern tidak lagi semata ditentukan oleh jumlah transistor, melainkan oleh efisiensi transfer data dan kecerdasan arsitektur mikro.
+Perkembangan ini membuktikan bahwa lompatan komputasi modern ditentukan oleh kejelasan arsitektur, efisiensi eksekusi data, dan keandalan sistem tanpa kompromi.
 
 ---
 
@@ -191,7 +223,7 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## Beyond the Spec Sheet: Why This Architectural Shift Matters
+## Beyond Specification Sheets: Architectural Demarcation & Strategic Impact
 
 ${story.readerHook.en}
 
@@ -202,47 +234,51 @@ ${story.whyShouldICare.en}
 
 ---
 
-### I. Key Empirical Metrics & Baseline Verification
+### I. Verifiable Empirical Benchmarks & Performance Metrics
 
-Before examining the microarchitecture, here are the verified quantitative metrics derived from primary documentation:
+Before examining system internals, the following measured empirical points have been verified across official documentation:
 
-${story.metrics.map((m, idx) => `#### ${idx + 1}. ${m.label.en}: **${m.value}**\n- *Baseline Comparison:* ${m.baselineComparison.en}\n- *Primary Source:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`).join('\n\n')}
+${story.metrics
+  .map(
+    (m, idx) => `#### ${idx + 1}. ${m.label.en}: **${m.value}**
+- *Baseline Comparison:* ${m.baselineComparison.en}
+- *Primary Citation:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`
+  )
+  .join('\n\n')}
 
 ${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Source: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### II. Hardware Deconstruction & Silicon Engineering
+${section2Titles.en}
 
-Understanding how this performance is physically achieved on semiconductor wafers:
+Analyzing how this performance density is achieved at the engineering boundary:
 
-- **Physical Silicon Specifications:** ${story.hardwareDeconstruction.siliconSpecs.en}
-- **Microarchitectural Innovations:** ${story.hardwareDeconstruction.microarchitectureChanges.en}
-- **Thermal & Power Profile:** ${story.hardwareDeconstruction.thermalAndPowerProfile.en}
-
-${story.hardwareDeconstruction.fp4PrecisionDetails ? `#### Deep Dive: FP4 Quantization Mechanics\n- **Theoretical Compute Throughput:** ${story.hardwareDeconstruction.fp4PrecisionDetails.theoreticalThroughput}\n- **Quantization Trade-offs:** ${story.hardwareDeconstruction.fp4PrecisionDetails.quantizationTradeoffs.en}\n- **Empirical Accuracy Impact:** ${story.hardwareDeconstruction.fp4PrecisionDetails.realWorldModelAccuracy.en}\n` : ''}
+- **System Engineering Specifications:** ${story.hardwareDeconstruction.siliconSpecs.en}
+- **Microarchitectural & Execution Pipeline Modifications:** ${story.hardwareDeconstruction.microarchitectureChanges.en}
+- **Thermal Dissipation & Power Scaling Dynamics:** ${story.hardwareDeconstruction.thermalAndPowerProfile.en}
 
 ---
 
-### III. Technical Disambiguation: Clearing Industry Misconceptions
+### III. Industry Disambiguation: Demarcating Marketing from Reality
 
-To prevent widespread confusion across tech community discussions:
+To prevent prevalent industry misconceptions:
 
-- **What This Technology Truly Is:** ${story.disambiguation.whatItIs.en}
-- **What It Is NOT:** ${story.disambiguation.whatItIsNot.en}
-- **Deployment Scope (Consumer vs Enterprise):** ${story.disambiguation.consumerVsEnterpriseScope.en}
+- **What This Innovation Concretely Delivers:** ${story.disambiguation.whatItIs.en}
+- **What Is Explicitly NOT Part of This Release:** ${story.disambiguation.whatItIsNot.en}
+- **Target Deployment Scope (Consumer vs Enterprise):** ${story.disambiguation.consumerVsEnterpriseScope.en}
 
 ${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
-### IV. Economic Breakdown & Datacenter Total Cost of Ownership (TCO)
+### IV. Economic Breakdown & Total Cost of Ownership (TCO)
 
-Hardware breakthroughs ultimately translate to compute economics:
+Engineering innovations invariably reshape infrastructure economics and developer productivity:
 
-- **Enterprise TCO Impact:** ${story.economicAndEcosystemImpact.enterpriseTCO.en}
-- **Consumer Pricing Trajectory:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.en}
-- **Software Developer Implications:** ${story.economicAndEcosystemImpact.developerImplications.en}
+- **Enterprise Infrastructure Impact (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.en}
+- **Deployment & Market Trajectory:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.en}
+- **Software Engineering Implications:** ${story.economicAndEcosystemImpact.developerImplications.en}
 
 ---
 
@@ -250,11 +286,11 @@ ${renderCitationChain('en')}
 
 ### VI. ImanLogics Editorial Synthesis
 
-This architecture illustrates that modern computing limits are no longer dictated solely by raw transistor density, but by memory interconnect velocity and mathematical precision scaling.
+This technological milestone underscores that enduring computational scaling relies not on uncalibrated claims, but on structural architectural rigor and execution efficiency.
 
 ---
 
-### Primary References & Technical Sources
+### Primary References & Authoritative Sources
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'en')} (Tier ${src.tier})*`).join('\n')}
 `
@@ -277,7 +313,7 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## ما وراء المواصفات التقنية: لماذا يمثل هذا التحول نقطة فارقة؟
+## ما وراء الأرقام والمعايير: تفكيك البنية التقنية والأبعاد الاستراتيجية
 
 ${story.readerHook.ar}
 
@@ -288,61 +324,65 @@ ${story.whyShouldICare.ar}
 
 ---
 
-### أولاً: المؤشرات التجريبية والمقارنة المعيارية الموثقة
+### أولاً: المؤشرات المقاسة ومصفوفة الأداء المعياري
 
-قبل الغوص في تفاصيل المعمارية الدقيقة، إليكم الأرقام الفعلية الموثقة من الوثائق الرسمية:
+قبل الخوض في التفاصيل التقنية، نورد فيما يلي البيانات التجريبية المؤكدة والمطابقة للوثائق الرسمية:
 
-${story.metrics.map((m, idx) => `#### ${idx + 1}. ${m.label.ar}: **${m.value}**\n- *المقارنة المعيارية:* ${m.baselineComparison.ar}\n- *المصدر الرسمي المعتمد:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`).join('\n\n')}
+${story.metrics
+  .map(
+    (m, idx) => `#### ${idx + 1}. ${m.label.ar}: **${m.value}**
+- *المقارنة المعيارية:* ${m.baselineComparison.ar}
+- *المرجع التأسيسي:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`
+  )
+  .join('\n\n')}
 
 ${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### ثانياً: تشريح العتاد والهندسة الدقيقة للسيليكون
+${section2Titles.ar}
 
-لفهم كيفية تحقيق هذه القفزة في الأداء على مستوى شرائح السيليكون:
+لفهم كيفية تحقيق هذه الكفاءة على مستوى هندسة المنظومة:
 
-- **المواصفات الفيزيائية للسيليكون:** ${story.hardwareDeconstruction.siliconSpecs.ar}
-- **التغييرات الجوهرية في المعمارية:** ${story.hardwareDeconstruction.microarchitectureChanges.ar}
-- **الكفاءة الحرارية واستهلاك الطاقة:** ${story.hardwareDeconstruction.thermalAndPowerProfile.ar}
-
-${story.hardwareDeconstruction.fp4PrecisionDetails ? `#### تحليل معماري: دقة الحوسبة FP4\n- **القدرة الحوسبية النظرية:** ${story.hardwareDeconstruction.fp4PrecisionDetails.theoreticalThroughput}\n- **موازنات التكميم الرياضي:** ${story.hardwareDeconstruction.fp4PrecisionDetails.quantizationTradeoffs.ar}\n- **تأثير الدقة الواقعي:** ${story.hardwareDeconstruction.fp4PrecisionDetails.realWorldModelAccuracy.ar}\n` : ''}
+- **المواصفات الهندسية للمنظومة:** ${story.hardwareDeconstruction.siliconSpecs.ar}
+- **تعديلات المعمارية الدقيقة ومسارات التنفيذ:** ${story.hardwareDeconstruction.microarchitectureChanges.ar}
+- **غلاف الطاقة والأداء الحراري:** ${story.hardwareDeconstruction.thermalAndPowerProfile.ar}
 
 ---
 
-### ثالثاً: ضبط المفاهيم وتصحيح المغالطات الشائعة
+### ثالثاً: التمييز المفاهيمي: تفنيد المغالطات الشائعة
 
-لمنع أي لبس شائع في التغطيات العامة:
+حرصاً على ضبط المفاهيم وتفادي التفسيرات غير الدقيقة:
 
-- **حقيقة هذه التقنية بدقة:** ${story.disambiguation.whatItIs.ar}
-- **ما لا تمثله هذه التقنية:** ${story.disambiguation.whatItIsNot.ar}
-- **نطاق الاستخدام (مستهلك أم مؤسسي):** ${story.disambiguation.consumerVsEnterpriseScope.ar}
+- **ما يقدمه هذا الابتكار فعلياً:** ${story.disambiguation.whatItIs.ar}
+- **ما لا يدخل ضمن نطاق هذا التطور:** ${story.disambiguation.whatItIsNot.ar}
+- **نطاق الاستخدام (المستهلك الفردي مقابل المؤسسات):** ${story.disambiguation.consumerVsEnterpriseScope.ar}
 
 ${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
-### رابعاً: التحليل الاقتصادي وتكلفة التشغيل الإجمالية (TCO)
+### رابعاً: التحليل الاقتصادي وتكلفة الملكية الإجمالية (TCO)
 
-تنتهي الابتكارات العتادية دوماً إلى معادلات الجدوى الاقتصادية:
+ينعكس التطور الهندسي دوماً على اقتصاديات البنية التحتية والإنتاجية:
 
-- **أثر التكلفة على المؤسسات (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.ar}
-- **مسار الأسعار للمستهلك النهائي:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.ar}
-- **الآثار المباشرة على مطوري البرمجيات:** ${story.economicAndEcosystemImpact.developerImplications.ar}
+- **التأثير على التكاليف المؤسسية (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.ar}
+- **مسار التوافر والانتشار في الأسواق:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.ar}
+- **الأبعاد البرمجية وفرص التطوير:** ${story.economicAndEcosystemImpact.developerImplications.ar}
 
 ---
 
 ${renderCitationChain('ar')}
 
-### سادساً: الرؤية التحريرية لمنصة إيمان لوجيكس
+### سادساً: الخلاصة التحليلية لـ ImanLogics
 
-تثبت هذه التطورات أن حدود الحوسبة المعاصرة لم تعد مرهونة بكثافة الترانزستورات فحسب، بل بسرعة تدفق البيانات وبراعة المعمارية الدقيقة.
+يؤكد هذا التطور أن التقدم الحاسوبي المستدام لا يتحقق بالوعود التسويقية، بل بالانضباط المعماري وكفاءة المعالجة الفائقة دون مساومة.
 
 ---
 
-### المصادر الرسمية والمراجع التقنية المعتمدة
+### المراجع الرسمية والمصادر المعتمدة
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'ar')} (المستوى ${src.tier})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'ar')} (Tier ${src.tier})*`).join('\n')}
 `
 
     const idArticle: MdxArticle = {

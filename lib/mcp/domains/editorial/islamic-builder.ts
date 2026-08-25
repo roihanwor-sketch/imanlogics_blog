@@ -20,7 +20,9 @@ export class IslamicArticleBuilder {
       'islamic-logic',
       2,
       3,
-      slugBase
+      slugBase,
+      story.titles,
+      story.extractedImageUrls || []
     )
     const images = imageResult.images
     const coverImage =

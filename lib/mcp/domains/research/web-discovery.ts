@@ -16,6 +16,7 @@ export interface DiscoveredWebLead {
   snippet: string
   rawHtmlBody?: string
   extractedText?: string
+  extractedImageUrls: string[]
   extractedClaims: string[]
   detectedPrimarySources: {
     name: string
@@ -79,108 +80,59 @@ export class WebDiscoveryService {
         query:
           'site:tomshardware.com OR site:anandtech.com OR site:jagatreview.com OR site:aitnews.com (semiconductor OR "2nm" OR "GAAFET" OR TSMC OR Intel OR AMD OR "Apple Silicon" OR Qualcomm OR ARM)',
       },
-      // 3. Mobile, Smartphones & OS (Android / iOS)
+      // 3. Mobile, Smartphones & On-Device Processing
       {
         domain: 'mobile-smartphone' as TechDiscoveryDomain,
         query:
-          'site:gsmarena.com OR site:kompas.com OR site:detik.com OR site:unlimit-tech.com (smartphone OR Android OR iOS OR "Snapdragon" OR "Galaxy" OR "iPhone" OR chipset)',
+          'site:gsmarena.com OR site:9to5mac.com OR site:androidcentral.com OR site:dhiye.com (smartphone OR Snapdragon OR Dimensity OR "iOS 19" OR "Android 16" OR "on-device AI")',
       },
-      // 4. Cybersecurity, Privacy & Operating Systems
+      // 4. PC, Operating Systems & Client Compute
       {
-        domain: 'cybersecurity-privacy' as TechDiscoveryDomain,
+        domain: 'pc-operating-systems' as TechDiscoveryDomain,
         query:
-          'site:arstechnica.com OR site:bleepingcomputer.com OR site:wired.com OR site:selular.id (cybersecurity OR vulnerability OR zero-day OR Linux OR Windows OR encryption)',
+          'site:bleepingcomputer.com OR site:windowscentral.com OR site:phoronix.com OR site:kompas.com ("Windows 11" OR "Linux kernel" OR macOS OR "open source" OR "PowerToys")',
       },
-      // 5. Datacenter, High-Speed Memory & Cloud Infrastructure
+      // 5. Datacenter, Server Hardware & Cloud Architecture
       {
         domain: 'datacenter-cloud' as TechDiscoveryDomain,
         query:
-          'site:servethehome.com OR site:datacenterdynamics.com OR site:techinasia.com (datacenter OR HBM3e OR HBM4 OR "liquid cooling" OR server OR "cloud computing")',
+          'site:servethehome.com OR site:theregister.com OR site:zdnet.com (datacenter OR "AI server" OR liquid cooling OR interconnect OR rack scale)',
       },
-      // 6. Robotics, Autonomous Systems & Hardware
+      // 6. Cybersecurity, Cryptography & Hardware Security
+      {
+        domain: 'cybersecurity-privacy' as TechDiscoveryDomain,
+        query:
+          'site:bleepingcomputer.com OR site:thehackernews.com OR site:securityweek.com (vulnerability OR exploit OR "zero-day" OR firmware OR encryption OR malware)',
+      },
+      // 7. Robotics, Autonomous Systems & Embodied AI
       {
         domain: 'robotics-automation' as TechDiscoveryDomain,
         query:
-          'site:spectrum.ieee.org OR site:theverge.com OR site:techno-id.com (robotics OR humanoid OR "autonomous driving" OR "Wi-Fi 7" OR battery OR OLED)',
+          'site:spectrum.ieee.org OR site:techcrunch.com OR site:wired.com (humanoid robot OR autonomous OR actuator OR "embodied AI")',
       },
     ]
 
     const selectedQueries = domainsToProbe
-      ? techQueries.filter((q) => domainsToProbe.includes(q.domain))
+      ? techQueries.filter((t) => domainsToProbe.includes(t.domain))
       : techQueries
 
     for (const item of selectedQueries) {
       try {
-        const encoded = encodeURIComponent(item.query)
-        const rssUrl = `https://news.google.com/rss/search?q=${encoded}&hl=en-US&gl=US&ceid=US:en`
-        const res = await fetch(rssUrl, {
+        const url = `https://news.google.com/rss/search?q=${encodeURIComponent(item.query)}&hl=en-US&gl=US&ceid=US:en`
+        const res = await fetch(url, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ImanLogicsNewsroom/2.0',
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ImanLogicsDiscovery/2.0',
           },
           signal: AbortSignal.timeout(6000),
         })
 
         if (!res.ok) continue
         const xml = await res.text()
-        const rawItems = xml.match(/<item>[\s\S]*?<\/item>/g) || []
-
-        for (const raw of rawItems.slice(0, 8)) {
-          const titleMatch = raw.match(/<title>([\s\S]*?)<\/title>/)
-          const linkMatch = raw.match(/<link>([\s\S]*?)<\/link>/)
-          const pubDateMatch = raw.match(/<pubDate>([\s\S]*?)<\/pubDate>/)
-          const descMatch = raw.match(/<description>([\s\S]*?)<\/description>/)
-          const sourceMatch = raw.match(/<source[^>]*>([\s\S]*?)<\/source>/)
-
-          if (!titleMatch || !linkMatch) continue
-
-          const fullTitle = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim()
-          const sourceName = sourceMatch
-            ? sourceMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim()
-            : fullTitle.split(' - ').pop() || 'Verified Media'
-          const cleanTitle = fullTitle.replace(/ - [^-]+$/, '').trim()
-          const link = linkMatch[1].trim()
-          const pubDateStr = pubDateMatch ? pubDateMatch[1].trim() : new Date().toUTCString()
-          const pubTime = new Date(pubDateStr).getTime()
-          const hoursAgo = Math.max(0, Math.round((Date.now() - pubTime) / (1000 * 60 * 60))) || 2
-          const snippet = descMatch
-            ? descMatch[1]
-                .replace(/<[^>]+>/g, '')
-                .replace(/&quot;/g, '"')
-                .replace(/&amp;/g, '&')
-                .trim()
-            : ''
-
-          const leadId = `tech-${cleanTitle
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .slice(0, 45)}`
-
-          leads.push({
-            id: leadId,
-            title: cleanTitle,
-            url: link,
-            publishedAt: new Date(pubTime || Date.now()).toISOString(),
-            publishedHoursAgo: hoursAgo,
-            sourceOutlet: sourceName,
-            sourceDomain: this.extractDomain(link),
-            sourceTier: 2,
-            language: 'en',
-            category: 'tech-ai',
-            subCategory: item.domain,
-            snippet,
-            extractedClaims: [
-              `Laporan aktual dari ${sourceName} terkait ${item.domain}`,
-              snippet.slice(0, 180),
-            ],
-            detectedPrimarySources: this.detectPrimarySources(cleanTitle + ' ' + snippet),
-            citationChainTrail: {
-              discoveryUrl: link,
-              secondaryOutlet: sourceName,
-            },
-          })
-        }
+        const parsed = this.parseRssResponse(xml, 'tech-ai', item.domain)
+        leads.push(...parsed)
       } catch (err) {
-        Logger.warn('WebDiscovery', `Query failed for domain ${item.domain}: ${err}`)
+        Logger.warn('WebDiscovery', `Feed probe query for ${item.domain} timed out or skipped.`)
       }
     }
 
@@ -189,7 +141,7 @@ export class WebDiscoveryService {
   }
 
   /**
-   * Scans live web and scholarly streams across the 11 Islamic Logic pillars
+   * Scans live web feeds for Islamic academic inquiries, comparative religion, and philosophy
    */
   static async discoverLiveIslamicLeads(
     pillarsToProbe?: IslamicLogicPillar[]
@@ -201,135 +153,59 @@ export class WebDiscoveryService {
     const leads: DiscoveredWebLead[] = []
 
     const islamicQueries = [
-      // 1. Logic & Rationality of Islam (Arguments for God, Prophethood, Rational Faith)
-      {
-        pillar: 'LOGIC_AND_RATIONALITY' as IslamicLogicPillar,
-        query:
-          '("rational arguments for Islam" OR "logic of Islamic monotheism" OR "proof of prophethood Muhammad" OR "philosophical arguments for God Islam" OR "Islamic epistemology rationality")',
-      },
-      // 2. Quran & Modern Discovery (Cosmology, Earth Orbit, Nature, Embryology)
-      {
-        pillar: 'QURAN_AND_MODERN_DISCOVERY' as IslamicLogicPillar,
-        query:
-          '("Quran and science" OR "Quran cosmology" OR "Quran astrophysics" OR "Quran embryology" OR "scientific facts Quran academic")',
-      },
-      // 3. Jesus / Isa & Mary / Maryam in Quran vs Bible
-      {
-        pillar: 'JESUS_AND_MARY' as IslamicLogicPillar,
-        query:
-          '("Jesus in Islam vs Christianity" OR "prophet Isa Quran" OR "Virgin Mary Maryam Quran" OR "Jesus prayer prostration Bible Quran" OR "Jesus Messiah monotheism")',
-      },
-      // 4. Earlier Prophets & Biblical Prophecies
-      {
-        pillar: 'ISLAM_AND_EARLIER_PROPHETS' as IslamicLogicPillar,
-        query:
-          '("Prophet Muhammad in the Bible" OR "Abraham monotheism Islam Christianity" OR "Moses David Solomon Quran Bible" OR "Dead Sea Scrolls monotheism study")',
-      },
-      // 5. Rationality of Sharia (Usury/Riba, Pork, Alcohol, Fasting, Social Laws)
-      {
-        pillar: 'RATIONALITY_OF_SHARIA' as IslamicLogicPillar,
-        query:
-          '("Islamic banking vs riba debt crisis" OR "medical reasons pork prohibition science" OR "alcohol neurotoxicity health Islamic law" OR "fasting intermittent science Islamic benefit")',
-      },
-      // 6. Comparative Religion (Trinity, Salvation, Scripture Preservation)
-      {
-        pillar: 'COMPARATIVE_RELIGION' as IslamicLogicPillar,
-        query:
-          '("Trinity vs pure monotheism" OR "preservation of the Quran text" OR "concept of salvation Islam Christianity" OR "textual criticism Bible Quran academic")',
-      },
-      // 7. Atheism, Doubt & Modern Skepticism
-      {
-        pillar: 'ATHEISM_DOUBT_FAITH' as IslamicLogicPillar,
-        query:
-          '("Islamic response to atheism" OR "fine tuning universe God Islam" OR "origin of consciousness soul Islam" OR "problem of evil suffering Islamic theology")',
-      },
-      // 8. Current & Viral Questions
+      // 1. Current Public Questions & Misconceptions
       {
         pillar: 'CURRENT_AND_VIRAL_QUESTIONS' as IslamicLogicPillar,
         query:
-          '("why believe in God science" OR "misconceptions about Islam" OR "women rights Islamic law historical context" OR "can science disprove God Islamic perspective")',
+          'site:yaqeeninstitute.org OR site:islamqa.info OR site:seekersguidance.org OR site:alukah.net (misconception OR "is Islam rational" OR doubt OR questioning OR "moral reasoning")',
+      },
+      // 2. Logic, Rationality & Epistemology
+      {
+        pillar: 'LOGIC_AND_RATIONALITY' as IslamicLogicPillar,
+        query:
+          'site:yaqeeninstitute.org OR site:islamonline.net OR site:al-arabiya.net ("rational theology" OR Kalam OR epistemology OR causality OR Ghazali OR "logic in Islam")',
+      },
+      // 3. Sharia Rationality & Socio-Economic Justice
+      {
+        pillar: 'RATIONALITY_OF_SHARIA' as IslamicLogicPillar,
+        query:
+          'site:islamonline.net OR site:republika.co.id OR site:alukah.net ("Islamic economics" OR Riba OR debt OR "maqasid al-shariah" OR "social justice")',
+      },
+      // 4. Comparative Religion & Prophethood
+      {
+        pillar: 'COMPARATIVE_RELIGION' as IslamicLogicPillar,
+        query:
+          'site:yaqeeninstitute.org OR site:seekersguidance.org ("Jesus in Islam" OR monotheism OR trinity OR "prophetic lineage" OR Abraham)',
+      },
+      // 5. Quran, Linguistics & Science
+      {
+        pillar: 'SCIENCE_AND_ISLAM' as IslamicLogicPillar,
+        query:
+          'site:yaqeeninstitute.org OR site:aljazeera.net OR site:nu.or.id (cosmology OR "fine tuning" OR evolution OR astronomy OR "scientific demarcation")',
       },
     ]
 
     const selectedQueries = pillarsToProbe
-      ? islamicQueries.filter((q) => pillarsToProbe.includes(q.pillar))
+      ? islamicQueries.filter((i) => pillarsToProbe.includes(i.pillar))
       : islamicQueries
 
     for (const item of selectedQueries) {
       try {
-        const encoded = encodeURIComponent(item.query)
-        const rssUrl = `https://news.google.com/rss/search?q=${encoded}&hl=en-US&gl=US&ceid=US:en`
-        const res = await fetch(rssUrl, {
+        const url = `https://news.google.com/rss/search?q=${encodeURIComponent(item.query)}&hl=en-US&gl=US&ceid=US:en`
+        const res = await fetch(url, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ImanLogicsNewsroom/2.0',
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ImanLogicsDiscovery/2.0',
           },
           signal: AbortSignal.timeout(6000),
         })
 
         if (!res.ok) continue
         const xml = await res.text()
-        const rawItems = xml.match(/<item>[\s\S]*?<\/item>/g) || []
-
-        for (const raw of rawItems.slice(0, 6)) {
-          const titleMatch = raw.match(/<title>([\s\S]*?)<\/title>/)
-          const linkMatch = raw.match(/<link>([\s\S]*?)<\/link>/)
-          const pubDateMatch = raw.match(/<pubDate>([\s\S]*?)<\/pubDate>/)
-          const descMatch = raw.match(/<description>([\s\S]*?)<\/description>/)
-          const sourceMatch = raw.match(/<source[^>]*>([\s\S]*?)<\/source>/)
-
-          if (!titleMatch || !linkMatch) continue
-
-          const fullTitle = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim()
-          const sourceName = sourceMatch
-            ? sourceMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim()
-            : fullTitle.split(' - ').pop() || 'Academic Repository'
-          const cleanTitle = fullTitle.replace(/ - [^-]+$/, '').trim()
-          const link = linkMatch[1].trim()
-          const pubDateStr = pubDateMatch ? pubDateMatch[1].trim() : new Date().toUTCString()
-          const pubTime = new Date(pubDateStr).getTime()
-          const hoursAgo = Math.max(0, Math.round((Date.now() - pubTime) / (1000 * 60 * 60))) || 6
-          const snippet = descMatch
-            ? descMatch[1]
-                .replace(/<[^>]+>/g, '')
-                .replace(/&quot;/g, '"')
-                .replace(/&amp;/g, '&')
-                .trim()
-            : ''
-
-          const leadId = `islamic-${cleanTitle
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .slice(0, 45)}`
-
-          leads.push({
-            id: leadId,
-            title: cleanTitle,
-            url: link,
-            publishedAt: new Date(pubTime || Date.now()).toISOString(),
-            publishedHoursAgo: hoursAgo,
-            sourceOutlet: sourceName,
-            sourceDomain: this.extractDomain(link),
-            sourceTier: 1,
-            language: 'en',
-            category: 'islamic-logic',
-            subCategory: item.pillar,
-            snippet,
-            extractedClaims: [
-              `Studi akademis & wacana rasional: ${cleanTitle}`,
-              snippet.slice(0, 180),
-            ],
-            detectedPrimarySources: this.detectIslamicPrimarySources(
-              cleanTitle + ' ' + snippet,
-              item.pillar
-            ),
-            citationChainTrail: {
-              discoveryUrl: link,
-              secondaryOutlet: sourceName,
-            },
-          })
-        }
+        const parsed = this.parseRssResponse(xml, 'islamic-logic', item.pillar)
+        leads.push(...parsed)
       } catch (err) {
-        Logger.warn('WebDiscovery', `Islamic query failed for pillar ${item.pillar}: ${err}`)
+        Logger.warn('WebDiscovery', `Islamic feed probe for ${item.pillar} skipped.`)
       }
     }
 
@@ -341,29 +217,178 @@ export class WebDiscoveryService {
   }
 
   /**
-   * Directly fetches web page content to extract quotes, specifications, and primary references
+   * Parses Google News RSS XML response into structured DiscoveredWebLead entries with strict freshness enforcement
+   */
+  private static parseRssResponse(
+    xml: string,
+    category: 'tech-ai' | 'islamic-logic',
+    subCategory: string
+  ): DiscoveredWebLead[] {
+    const leads: DiscoveredWebLead[] = []
+    const itemRegex = /<item>([\s\S]*?)<\/item>/gi
+    let match: RegExpExecArray | null
+
+    const currentYear = new Date().getFullYear()
+
+    while ((match = itemRegex.exec(xml)) !== null) {
+      const itemContent = match[1]
+      const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/i)
+      const linkMatch = itemContent.match(/<link>([\s\S]*?)<\/link>/i)
+      const pubDateMatch = itemContent.match(/<pubDate>([\s\S]*?)<\/pubDate>/i)
+      const descMatch = itemContent.match(/<description>([\s\S]*?)<\/description>/i)
+      const sourceMatch = itemContent.match(/<source[^>]*>([\s\S]*?)<\/source>/i)
+
+      if (!titleMatch || !linkMatch) continue
+
+      let rawTitle = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1').trim()
+      const rawUrl = linkMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1').trim()
+      const pubDateStr = pubDateMatch
+        ? pubDateMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1').trim()
+        : new Date().toISOString()
+      const rawDesc = descMatch
+        ? descMatch[1]
+            .replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1')
+            .replace(/<[^>]+>/g, ' ')
+            .trim()
+        : ''
+      const sourceName = sourceMatch
+        ? sourceMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1').trim()
+        : 'Reputable Tech Media'
+
+      // Clean title from source suffix
+      rawTitle = rawTitle.replace(/\s*-\s*[^-]+$/, '').trim()
+
+      const pubTime = new Date(pubDateStr).getTime()
+      const pubYear = new Date(pubDateStr).getFullYear()
+      const now = Date.now()
+      const hoursAgo = Math.max(0, Math.round((now - (isNaN(pubTime) ? now : pubTime)) / 3600000))
+
+      // STRICT FRESHNESS GATE:
+      // Reject any lead older than 48 hours for Tech, older than 14 days (336h) for Islamic studies,
+      // or published before the current year 2026.
+      if (category === 'tech-ai' && hoursAgo > 48) continue
+      if (category === 'islamic-logic' && hoursAgo > 336) continue
+      if (pubYear < currentYear) continue
+
+      const slugId = `${category === 'tech-ai' ? 'tech' : 'islamic'}-${rawTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 45)}`
+
+      const domain = this.extractDomain(rawUrl)
+      const primarySources = this.detectPrimarySources(rawTitle + ' ' + rawDesc)
+
+      leads.push({
+        id: slugId,
+        title: rawTitle,
+        url: rawUrl,
+        publishedAt: isNaN(pubTime) ? new Date().toISOString() : new Date(pubTime).toISOString(),
+        publishedHoursAgo: hoursAgo,
+        sourceOutlet: sourceName,
+        sourceDomain: domain,
+        sourceTier: 2,
+        language: 'en',
+        category,
+        subCategory,
+        snippet: rawDesc.slice(0, 240),
+        extractedClaims: [
+          `Laporan aktual dari ${sourceName} terkait ${rawTitle}.`,
+          `Melibatkan telaah komprehensif pada domain ${subCategory}.`,
+        ],
+        extractedImageUrls: [],
+        detectedPrimarySources: primarySources,
+        citationChainTrail: {
+          discoveryUrl: rawUrl,
+          secondaryOutlet: sourceName,
+          primaryDocumentTitle: primarySources[0]?.name,
+          primaryDocumentUrl: primarySources[0]?.url,
+        },
+      })
+
+      if (leads.length >= 10) break
+    }
+
+    return leads
+  }
+
+  /**
+   * Directly fetches web page content to extract quotes, body paragraphs, and real article images
    */
   static async fetchWebArticleBody(url: string): Promise<{
     title?: string
+    description?: string
     bodyText: string
     detectedOutboundLinks: string[]
     specSheetQuotes: string[]
+    extractedImageUrls: string[]
   }> {
     try {
       const res = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ImanLogicsNewsroom/2.0',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 ImanLogicsNewsroom/2.0',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         },
-        signal: AbortSignal.timeout(8000),
+        redirect: 'follow',
+        signal: AbortSignal.timeout(9000),
       })
-      if (!res.ok) return { bodyText: '', detectedOutboundLinks: [], specSheetQuotes: [] }
+      if (!res.ok) {
+        return {
+          bodyText: '',
+          detectedOutboundLinks: [],
+          specSheetQuotes: [],
+          extractedImageUrls: [],
+        }
+      }
 
       const html = await res.text()
+
+      // 1. Extract Real Article Images (og:image, twitter:image, and body images)
+      const extractedImageUrls: string[] = []
+      const ogImageMatch =
+        html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i) ||
+        html.match(/<meta\s+content=["']([^"']+)["']\s+property=["']og:image["']/i)
+      if (ogImageMatch && ogImageMatch[1].startsWith('http')) {
+        extractedImageUrls.push(ogImageMatch[1])
+      }
+
+      const twImageMatch =
+        html.match(/<meta\s+name=["']twitter:image["']\s+content=["']([^"']+)["']/i) ||
+        html.match(/<meta\s+content=["']([^"']+)["']\s+name=["']twitter:image["']/i)
+      if (
+        twImageMatch &&
+        twImageMatch[1].startsWith('http') &&
+        !extractedImageUrls.includes(twImageMatch[1])
+      ) {
+        extractedImageUrls.push(twImageMatch[1])
+      }
+
+      const imgTagMatches =
+        html.match(/<img[^>]+src=["'](https?:\/\/[^"']+\.(?:jpg|jpeg|png|webp))["']/gi) || []
+      for (const m of imgTagMatches) {
+        const src = m.replace(/.*src=["'](https?:\/\/[^"']+)["'].*/i, '$1')
+        if (
+          src &&
+          !src.includes('avatar') &&
+          !src.includes('logo') &&
+          !src.includes('icon') &&
+          !extractedImageUrls.includes(src)
+        ) {
+          extractedImageUrls.push(src)
+          if (extractedImageUrls.length >= 4) break
+        }
+      }
+
+      // 2. Extract Clean Body Text
       const bodyCleaned = html
         .replace(/<script[\s\S]*?<\/script>/gi, '')
         .replace(/<style[\s\S]*?<\/style>/gi, '')
         .replace(/<nav[\s\S]*?<\/nav>/gi, '')
         .replace(/<footer[\s\S]*?<\/footer>/gi, '')
+        .replace(/<header[\s\S]*?<\/header>/gi, '')
+        .replace(/<aside[\s\S]*?<\/aside>/gi, '')
         .replace(/<[^>]+>/g, ' ')
         .replace(/\s+/g, ' ')
         .trim()
@@ -372,12 +397,15 @@ export class WebDiscoveryService {
         .map((m) => m.replace(/href=["']/i, '').replace(/["']$/, ''))
         .filter(
           (l) =>
-            !l.includes('google.com') && !l.includes('facebook.com') && !l.includes('twitter.com')
+            !l.includes('google.com') &&
+            !l.includes('facebook.com') &&
+            !l.includes('twitter.com') &&
+            !l.includes('youtube.com')
         )
 
       const specSheetQuotes = (
         bodyCleaned.match(
-          /\b\d+(\.\d+)?\s*(Gbps|GHz|nm|TFLOPS|TOPS|Watt|billion|parameters|MB|GB)\b[^.\n]{0,80}/gi
+          /\b\d+(\.\d+)?\s*(Gbps|GHz|nm|TFLOPS|TOPS|Watt|billion|parameters|MB|GB|CVE|vulnerability)\b[^.\n]{0,80}/gi
         ) || []
       ).slice(0, 5)
 
@@ -385,9 +413,15 @@ export class WebDiscoveryService {
         bodyText: bodyCleaned.slice(0, 4000),
         detectedOutboundLinks: outboundLinks.slice(0, 10),
         specSheetQuotes,
+        extractedImageUrls,
       }
     } catch {
-      return { bodyText: '', detectedOutboundLinks: [], specSheetQuotes: [] }
+      return {
+        bodyText: '',
+        detectedOutboundLinks: [],
+        specSheetQuotes: [],
+        extractedImageUrls: [],
+      }
     }
   }
 
@@ -425,6 +459,20 @@ export class WebDiscoveryService {
         type: 'research-paper',
       })
     }
+    if (lower.includes('microsoft') || lower.includes('powertoys') || lower.includes('windows')) {
+      detected.push({
+        name: 'Microsoft Official Documentation & Open Source Repository',
+        url: 'https://github.com/microsoft/PowerToys',
+        type: 'official-newsroom',
+      })
+    }
+    if (lower.includes('cve-') || lower.includes('nist') || lower.includes('zimbra')) {
+      detected.push({
+        name: 'NIST National Vulnerability Database (NVD) & Advisory',
+        url: 'https://nvd.nist.gov',
+        type: 'standards-body',
+      })
+    }
     if (lower.includes('tsmc') || lower.includes('foundry')) {
       detected.push({
         name: 'TSMC Official Technology Symposium Proceedings',
@@ -448,106 +496,18 @@ export class WebDiscoveryService {
     }
     if (lower.includes('qualcomm') || lower.includes('snapdragon') || lower.includes('oryon')) {
       detected.push({
-        name: 'Qualcomm Snapdragon Architecture & Performance Brief',
-        url: 'https://www.qualcomm.com/newsroom',
+        name: 'Qualcomm Snapdragon Technical Documentation',
+        url: 'https://www.qualcomm.com/news',
         type: 'official-newsroom',
       })
     }
 
     if (detected.length === 0) {
       detected.push({
-        name: 'Institutional Specification Sheet & Whitepaper Repository',
+        name: 'Institutional Documentation & Specification Archive',
         url: 'https://standards.ieee.org',
         type: 'standards-body',
       })
-    }
-
-    return detected
-  }
-
-  private static detectIslamicPrimarySources(
-    text: string,
-    pillar: IslamicLogicPillar
-  ): { name: string; url: string; type: string }[] {
-    const detected: { name: string; url: string; type: string }[] = []
-
-    switch (pillar) {
-      case 'JESUS_AND_MARY':
-        detected.push(
-          {
-            name: "Al-Qur'an Surah Maryam [19] & Ali Imran [3]",
-            url: 'https://quran.ksu.edu.sa',
-            type: 'classical-tafsir',
-          },
-          {
-            name: 'Gospel Manuscripts & Early Patristic Historical Sources',
-            url: 'https://referenceworks.brillonline.com',
-            type: 'archive',
-          }
-        )
-        break
-      case 'QURAN_AND_MODERN_DISCOVERY':
-      case 'SCIENCE_AND_ISLAM':
-        detected.push(
-          {
-            name: 'European Space Agency (ESA) Planck Cosmology & Nature Reviews',
-            url: 'https://www.esa.int',
-            type: 'standards-body',
-          },
-          {
-            name: 'Tafsir Al-Razi (Mafatih al-Ghaib) & Ibn Kathir',
-            url: 'https://quran.ksu.edu.sa',
-            type: 'classical-tafsir',
-          }
-        )
-        break
-      case 'RATIONALITY_OF_SHARIA':
-        detected.push(
-          {
-            name: 'International Monetary Fund (IMF) Debt Cycles & World Bank Economic Data',
-            url: 'https://www.imf.org',
-            type: 'standards-body',
-          },
-          {
-            name: 'World Health Organization (WHO) Parasitology & Neurotoxicity Reports',
-            url: 'https://www.who.int',
-            type: 'standards-body',
-          },
-          {
-            name: "Al-Jassas (Ahkam al-Qur'an) & Ibn Rushd (Bidayat al-Mujtahid)",
-            url: 'https://shamela.ws',
-            type: 'classical-tafsir',
-          }
-        )
-        break
-      case 'ISLAM_AND_EARLIER_PROPHETS':
-      case 'HISTORY_MANUSCRIPTS_ARCHAEOLOGY':
-        detected.push(
-          {
-            name: 'The Dead Sea Scrolls Digital Library & Codex Sinaiticus Project',
-            url: 'https://www.deadseascrolls.org.il',
-            type: 'archive',
-          },
-          {
-            name: 'Cadbury Research Library (Birmingham Quran Folio Analysis)',
-            url: 'https://www.birmingham.ac.uk',
-            type: 'archive',
-          }
-        )
-        break
-      default:
-        detected.push(
-          {
-            name: "Al-Ghazali (Tahafut al-Falasifah) & Ibn Taymiyyah (Dar' Ta'arud)",
-            url: 'https://shamela.ws',
-            type: 'classical-tafsir',
-          },
-          {
-            name: 'Yaqeen Institute Peer-Reviewed Theological Studies',
-            url: 'https://yaqeeninstitute.org',
-            type: 'academic-book',
-          }
-        )
     }
 
     return detected

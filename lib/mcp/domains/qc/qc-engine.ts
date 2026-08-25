@@ -14,6 +14,9 @@ export class EditorialQCEngine {
     let hardFailReason: string | undefined
 
     const content = article.content
+    const title = article.frontmatter.title || ''
+    const summary = article.frontmatter.summary || ''
+    const lang = article.language || article.frontmatter.language || 'id'
     const wordCount = content.trim().split(/\s+/).length
 
     // 1. HARD GATE: Zero AI Filler & Cliché Gate
@@ -32,9 +35,8 @@ export class EditorialQCEngine {
       }
     }
 
-    // 3. HARD GATE: Language Purity & Translation Parity Gate
+    // 3. HARD GATE: Body Language Purity & Translation Parity Gate
     if (!hardFailTriggered) {
-      const lang = article.language || article.frontmatter.language || 'id'
       const leakRes = LeakDetector.checkLanguagePurity(content, lang, article.filename)
       if (leakRes.failed) {
         hardFailTriggered = true
@@ -42,27 +44,46 @@ export class EditorialQCEngine {
       }
     }
 
-    // 4. HARD GATE: Freshness Gate for Breaking News
-    if (
-      !hardFailTriggered &&
-      (article.frontmatter.articleType === 'Breaking News' ||
-        article.frontmatter.articleType === 'NEWS')
-    ) {
-      const hours = article.publishedHoursAgo ?? 0
-      if (hours > 48) {
+    // 3B. HARD GATE: Frontmatter Title & Summary Language Purity Gate
+    if (!hardFailTriggered) {
+      const titleLeakRes = LeakDetector.checkTitleAndSummaryLanguage(
+        title,
+        summary,
+        lang,
+        article.filename
+      )
+      if (titleLeakRes.failed) {
         hardFailTriggered = true
-        hardFailReason = `Freshness Gate Failed: Story event is ${hours}h old (>48h). Stale events cannot be published as "Breaking News" today.`
+        hardFailReason = titleLeakRes.reason
+      }
+    }
+
+    // 4. HARD GATE: Universal Freshness Gate (Max 48h for Tech, Max 14d for Islamic Logic, No Year < 2026)
+    if (!hardFailTriggered) {
+      const hours = article.publishedHoursAgo ?? 0
+      const articleDate = article.frontmatter.date || ''
+      const articleYear = parseInt(articleDate.split('-')[0], 10)
+
+      if (!isNaN(articleYear) && articleYear < 2026) {
+        hardFailTriggered = true
+        hardFailReason = `Universal Freshness Gate Failed: Publication date is from year ${articleYear} (< 2026). Stale historical articles cannot be published as current insights.`
+      } else if (article.frontmatter.category === 'tech-ai' && hours > 48) {
+        hardFailTriggered = true
+        hardFailReason = `Freshness Gate Failed: Story event is ${hours}h old (>48h). Tech events must be fresh.`
+      } else if (article.frontmatter.category === 'islamic-logic' && hours > 336) {
+        hardFailTriggered = true
+        hardFailReason = `Freshness Gate Failed: Article lead is ${hours}h old (>14 days). Contemporary inquiries must be fresh.`
       }
     }
 
     // 5. HARD GATE: Mandatory Stakeholder Impact / Epistemological Demarcation Gate
     if (!hardFailTriggered) {
       const hasTechCareSection =
-        /Apakah Layanan AI|Ekonomi Data Center|Will AI Services|Datacenter Economics|اقتصاديات|هل ستنخفض|Dampak Ekonomi|Economic Breakdown|التحليل الاقتصادي|TCO|Efisiensi|Throughput|Arsitektur/i.test(
+        /Apakah Layanan AI|Ekonomi Data Center|Will AI Services|Datacenter Economics|اقتصاديات|هل ستنخفض|Dampak Ekonomi|Economic Breakdown|التحليل الاقتصادي|TCO|Efisiensi|Throughput|Arsitektur|Multitasking|Kerentanan|Keamanan|Workflow|Productivity/i.test(
           content
         )
       const hasIslamicCareSection =
-        /Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية|Demarkasi Ilmiah|Evidence Matrix|مصفوفة الشواهد|Kaidah|Rasionalitas/i.test(
+        /Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية|Demarkasi Ilmiah|Evidence Matrix|مصفوفة الشواهد|Kaidah|Rasionalitas|Miskonsepsi|Stereotip|Dialog/i.test(
           content
         )
 
@@ -128,7 +149,7 @@ export class EditorialQCEngine {
     // 12. HARD GATE: Citation Chain & Footnote Provenance Gate
     if (
       !hardFailTriggered &&
-      !/Rantai Provenance|Citation Chain|سلسلة التوثيق|Rujukan Primer|Primary Evidence/i.test(
+      !/Rantai Provenance|Citation Chain|سلسلة التوثيق|Rujukan Primer|Primary Evidence|Media Sekunder|Verified Secondary/i.test(
         content
       )
     ) {
@@ -140,6 +161,30 @@ export class EditorialQCEngine {
     if (!hardFailTriggered && /<script|<iframe|<style/i.test(content)) {
       hardFailTriggered = true
       hardFailReason = `Security Sanitization Gate Failed: Forbidden raw HTML script/iframe tags detected in markdown body.`
+    }
+
+    // 14. HARD GATE: Topic-Template Consistency Gate (No fake semiconductor boilerplate in software/security articles)
+    if (!hardFailTriggered && article.frontmatter.category === 'tech-ai') {
+      const isSoftwareOrSecurity =
+        /powertoys|windows|linux|software|cve|zimbra|breach|exploit|patch/i.test(title)
+      const hasSemiconductorBoilerplate =
+        /wafer semikonduktor|litografi euv|gaafet|die size|transistor 2nm/i.test(content)
+
+      if (isSoftwareOrSecurity && hasSemiconductorBoilerplate) {
+        hardFailTriggered = true
+        hardFailReason = `Topic Consistency Gate Failed: Software/Security article contains mismatched semiconductor wafer boilerplate.`
+      }
+    }
+
+    // 15. HARD GATE: Visual Relevance & Context Gate
+    if (!hardFailTriggered) {
+      const isSoftware = /powertoys|software|windows|desktop/i.test(title)
+      const hasLpddr6Alt = /lpddr6|smartphone modern/i.test(content)
+
+      if (isSoftware && hasLpddr6Alt) {
+        hardFailTriggered = true
+        hardFailReason = `Visual Relevance Gate Failed: Software article contains mismatched mobile LPDDR6 image alt text.`
+      }
     }
 
     // Multi-Dimensional Editorial Score Calculation (Scale 0-100)

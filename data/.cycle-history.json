@@ -1,7 +1,48 @@
 {
-  "lastUpdated": "2026-08-25T22:34:32.618Z",
-  "totalCyclesRun": 10,
+  "lastUpdated": "2026-08-25T22:34:53.047Z",
+  "totalCyclesRun": 11,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-25T22:34:44.638Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 6,
+      "articlesPublished": [
+        "data/blog/microsoft-powertoys-adds-alt-tab-style-switch.mdx",
+        "data/blog/microsoft-powertoys-adds-alt-tab-style-switch.en.mdx",
+        "data/blog/microsoft-powertoys-adds-alt-tab-style-switch.ar.mdx",
+        "data/blog/looking-beyond-stereotypes-disproving-misconc.mdx",
+        "data/blog/looking-beyond-stereotypes-disproving-misconc.en.mdx",
+        "data/blog/looking-beyond-stereotypes-disproving-misconc.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Microsoft PowerToys adds Alt+Tab-style switching for an app's windows",
+          "slug": "microsoft-powertoys-adds-alt-tab-style-switch",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        },
+        {
+          "title": "Looking Beyond Stereotypes: Disproving Misconceptions About Islam",
+          "slug": "looking-beyond-stereotypes-disproving-misconc",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "12e3249"
+    },
     {
       "cycleTimestamp": "2026-08-25T22:34:20.043Z",
       "sourcesScanned": 4,

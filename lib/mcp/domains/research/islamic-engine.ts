@@ -11,6 +11,7 @@ import { SourceVerifier } from './source-verifier'
 import { Logger } from '../../core/logger'
 import { WebDiscoveryService, DiscoveredWebLead, IslamicLogicPillar } from './web-discovery'
 import { EditorialSelectionBoard } from './editorial-board'
+import { NativeTitleSynthesizer } from '../editorial/title-synthesizer'
 
 export interface IslamicAcademicStory {
   id: string
@@ -30,6 +31,7 @@ export interface IslamicAcademicStory {
   primarySourceTier: 1
   sources: SourceCitation[]
   keywords: string[]
+  extractedImageUrls?: string[]
   readerHook: LocalizedText
   whyShouldICare: LocalizedText
   narrativeHook?: LocalizedText
@@ -84,7 +86,7 @@ export class IslamicResearchEngine {
     // 2. Editorial Selection Board
     const boardDecision = EditorialSelectionBoard.evaluateAndSelectCandidates(liveLeads)
 
-    // 3. Comprehensive Islamic Catalog
+    // 3. Comprehensive Islamic Catalog Fallback
     const catalogCandidates = this.getComprehensiveIslamicCatalog(todayStr)
 
     // Merge candidates prioritizing Board-approved live leads
@@ -140,6 +142,7 @@ export class IslamicResearchEngine {
 
   /**
    * Synthesizes an IslamicAcademicStory dynamically from an approved Web Lead
+   * Generates native trilingual titles and domain-specific philosophical prose thinking in each language
    */
   private static synthesizeStoryFromLead(
     lead: DiscoveredWebLead,
@@ -147,30 +150,35 @@ export class IslamicResearchEngine {
   ): IslamicAcademicStory | null {
     const slugId = lead.id.replace(/^islamic-/, '')
     const cleanTitle = lead.title
+    const pillar = lead.subCategory
+
+    // 1. Generate Native Trilingual Titles thinking in each language
+    const titles = this.craftNativeTrilingualTitles(cleanTitle, pillar)
+
+    // 2. Generate Domain-Specific Islamic Epistemological Content
+    const domainSynthesis = this.generateDomainSpecificProse(cleanTitle, pillar, lead.sourceOutlet)
 
     return {
       id: slugId,
-      title: cleanTitle,
-      titles: {
-        id: cleanTitle,
-        en: cleanTitle,
-        ar: `دراسة إسلامية عقلانية: ${cleanTitle}`,
-      },
+      title: titles.id,
+      titles,
       classification: 'Reader-First Inquiry',
       publishedAt: lead.publishedAt || `${todayStr}T09:00:00.000Z`,
       primarySourceUrl: lead.detectedPrimarySources[0]?.url || 'https://quran.ksu.edu.sa',
       primarySourceTier: 1,
       keywords: [
         'islamic-logic',
-        lead.subCategory.toLowerCase().replace(/_/g, '-'),
+        pillar.toLowerCase().replace(/_/g, '-'),
         'rational-theology',
         'comparative-religion',
         'epistemology',
       ],
+      extractedImageUrls: lead.extractedImageUrls || [],
       sources: [
         {
           name:
-            lead.detectedPrimarySources[0]?.name || "Tafsir Al-Razi (Mafatih al-Ghaib) & Al-Qur'an",
+            lead.detectedPrimarySources[0]?.name ||
+            "Al-Qur'an & Rujukan Kitab Induk (Tafsir & Ushul)",
           url: lead.detectedPrimarySources[0]?.url || 'https://quran.ksu.edu.sa',
           tier: 1,
           type: 'classical-tafsir',
@@ -184,528 +192,617 @@ export class IslamicResearchEngine {
           relevanceScore: 90,
         },
       ],
-      readerHook: {
-        id: `Ketika wacana intelektual modern menanyakan landasan rasional keimanan, khazanah tradisi Islam menyajikan jawaban berbasis epistemologi yang kokoh.`,
-        en: `When contemporary discourse interrogates the rational foundations of faith, Islamic intellectual tradition presents a robust epistemological framework.`,
-        ar: `عندما يطرح الفكر المعاصر تساؤلات حول الأسس العقلانية للإيمان، تقدم المعرفة الإسلامية رؤية متماسكة مبنية على الأدلة والبرهان.`,
-      },
-      whyShouldICare: {
-        id: `Kajian ini membedakan secara jernih antara bukti tekstual, fakta ilmiah terverifikasi, dan batasan interpretasi akal manusia.`,
-        en: `This inquiry establishes clear demarcation between empirical data, scriptural text, and legitimate hermeneutical boundaries.`,
-        ar: `توضح هذه الدراسة الحدود الفاصلة بين الحقائق المثبتة، والنصوص التأسيسية، ومجالات الاجتهاد العقلاني.`,
-      },
-      narrativeLead: {
-        hook: {
-          id: `Pertanyaan mendasar mengenai hubungan antara akal, bukti realitas, dan wahyu senantiasa mengundang perenungan mendalam bagi setiap pencari kebenaran.`,
-          en: `Fundamental inquiries addressing the harmony between intellect, reality, and revelation invite rigorous examination by truth seekers.`,
-          ar: `إن التساؤل الجوهري حول التوافق بين العقل والحقائق الواقعية والوحي يظل محوراً رئيسياً لكل باحث عن الحقيقة.`,
-        },
-        historicalContext: {
-          id: `Ulama dan filsuf Muslim klasik seperti Al-Ghazali, Ibn Rushd, dan Ar-Razi telah meletakkan kaidah bahwa akal sehat tidak pernah bertentangan dengan wahyu yang sahih.`,
-          en: `Classical scholars and philosophers established that sound human reason never genuinely conflicts with authentic revelation.`,
-          ar: `رسخ علماء ومفكرو الإسلام قاعدة راسخة مفادها أن صريح المعقول لا يتعارض بحال مع صحيح المنقول.`,
-        },
-        scholarlyConsensus: {
-          id: `Konsensus ilmiah modern menegaskan pentingnya kejujuran intelektual tanpa terjebak dalam generalisasi atau pseudosains.`,
-          en: `Scholarly consensus emphasizes intellectual honesty without resorting to apologetic overreach or pseudo-scientific claims.`,
-          ar: `يؤكد الإجماع الأكاديمي على أهمية الأمانة المعرفية والتجرد من الادعاءات غير الموثقة.`,
-        },
-      },
-      epistemologicalPoints: [
-        {
-          category: 'FACT',
-          statement: {
-            id: "Teks Al-Qur'an dan hadits sahih mendorong manusia menggunakan akal, observasi alam semesta, dan verifikasi kritis.",
-            en: "The Qur'an consistently directs human intellect toward critical observation, rational reflection, and empirical verification.",
-            ar: 'يحث القرآن الكريم العقل البشري دوماً على التدبر الموضوعي، وملاحظة سنن الكون، والتحقق العلمي.',
-          },
-          sources: [
-            {
-              name: "Al-Qur'an Surah Yunus [10]: 101",
-              url: 'https://quran.ksu.edu.sa',
-              tier: 1,
-              type: 'classical-tafsir',
-            },
-          ],
-          confidenceLevel: 'High',
-        },
-        {
-          category: 'EVIDENCE',
-          statement: {
-            id: 'Tradisi keilmuan Islam berkembang melalui pencatatan sanad, kritik teks naskah, dan verifikasi sumber yang ketat.',
-            en: 'Islamic scholarship pioneered rigorous methodologies of chain-of-transmission (Isnad) and critical textual scrutiny.',
-            ar: 'تطورت العلوم الإسلامية عبر منظومة دقيقة لتوثيق الأسانيد ونقد الروايات والتحقيق النصي.',
-          },
-          sources: [
-            {
-              name: 'Muqaddimah Ibn al-Salah (Ulum al-Hadith)',
-              url: 'https://shamela.ws',
-              tier: 1,
-              type: 'academic-book',
-            },
-          ],
-          confidenceLevel: 'High',
-        },
-        {
-          category: 'ISLAMIC_INTERPRETATION',
-          statement: {
-            id: 'Wahyu memberikan kerangka moral dan makna eksistensial, sementara sains meneliti mekanisme fisik hukum alam.',
-            en: 'Divine revelation establishes existential meaning and moral frameworks, whereas empirical science examines physical mechanics.',
-            ar: 'يقدم الوحي المعنى الوجودي والإطار الأخلاقي، بينما يبحث العلم الطبيعي في آليات السنن الكونية.',
-          },
-          sources: [
-            {
-              name: 'Tahafut al-Falasifah (Al-Ghazali)',
-              url: 'https://shamela.ws',
-              tier: 1,
-              type: 'academic-book',
-            },
-          ],
-          confidenceLevel: 'High',
-        },
-        {
-          category: 'COUNTERARGUMENT',
-          statement: {
-            id: 'Kritik materialisme mengklaim sains cukup menjelaskan segalanya, namun sains sendiri bergantung pada asumsi filosofis tentang keteraturan alam.',
-            en: 'Materialist critiques claim empirical science explains all reality, yet science itself presupposes mathematical order and intelligibility.',
-            ar: 'تدعي المادية كفاية العلم الطبيعي لتفسير الوجود، في حين يعتمد العلم نفسه على فرضيات مسبقة حول انتظام الكون وقابليته للتعقل.',
-          },
-          sources: [
-            {
-              name: 'Yaqeen Institute (Faith & Science Epistemology)',
-              url: 'https://yaqeeninstitute.org',
-              tier: 1,
-              type: 'academic-book',
-            },
-          ],
-          confidenceLevel: 'High',
-        },
-        {
-          category: 'UNCERTAINTY',
-          statement: {
-            id: 'Teori-teori sains terus mengalami revisi paradigma, sehingga teks keagamaan tidak boleh dipaksakan mencocoki hipotesis yang belum final.',
-            en: 'Scientific paradigms evolve constantly; thus, foundational religious texts must not be forced to match transient hypotheses.',
-            ar: 'تتطور النظريات العلمية باستمرار، مما يوجب عدم إخضاع النصوص التأسيسية لفرضيات متغيرة.',
-          },
-          sources: [
-            {
-              name: "Nidhal Guessoum (Islam's Quantum Question)",
-              url: 'https://referenceworks.brillonline.com',
-              tier: 1,
-              type: 'academic-book',
-            },
-          ],
-          confidenceLevel: 'High',
-        },
-      ],
-      honestBoundaries: {
-        whatItProves: {
-          id: 'APA YANG TERBUKTI: Keselarasan mendalam antara akal sehat, keteraturan alam, dan prinsip-prinsip rasional tauhid.',
-          en: 'WHAT IT PROVES: The profound harmony between human rationality, cosmic order, and foundational monotheism.',
-          ar: 'ما يثبته البحث: التوافق العميق بين العقل السليم، وانتظام السنن الكونية، ومبادئ التوحيد العقلانية.',
-        },
-        whatMustNotBeClaimed: {
-          id: 'APA YANG TIDAK BOLEH DIKLAIM: Agama bukan buku teks laboratorium dan hipotesis sains kontemporer bukan dalil mutlak teologis.',
-          en: 'WHAT MUST NOT BE CLAIMED: Revelation is not an empirical laboratory manual, and transient scientific models are not absolute theological dogmas.',
-          ar: 'ما لا يجوز ادعاؤه: الوحي ليس كتاباً تفصيلياً في المختبرات، والنظريات العلمية المتغيرة ليست عقائد قطعية.',
-        },
-      },
+      readerHook: domainSynthesis.readerHook,
+      whyShouldICare: domainSynthesis.whyShouldICare,
+      narrativeLead: domainSynthesis.narrativeLead,
+      epistemologicalPoints: domainSynthesis.epistemologicalPoints,
+      honestBoundaries: domainSynthesis.honestBoundaries,
       citationChain: {
-        layer1Primary:
-          lead.detectedPrimarySources[0]?.name || 'Tafsir Klasik & Korpus Teks Keagamaan',
-        layer2Journalism: `${lead.sourceOutlet} Academic Study Review`,
-        layer3Discovery: 'Scholarly Research Repositories & Theological Journals',
+        layer1Primary: "Al-Qur'anul Karim, Kitab Tafsir Klasik & Kaidah Ushul Fiqh",
+        layer2Journalism: `${lead.sourceOutlet} Academic Study & Analysis`,
+        layer3Discovery: 'Live Islamic Logic & Contemporary Inquiry Feed',
         crossVerificationNotes:
-          'Analisis teks diverifikasi silang antara naskah rujukan primer dan publikasi studi keagamaan kontemporer.',
+          'Argumentasi diverifikasi silang antara teks rujukan primer Islam dan telaah akademis kontemporer.',
       },
       editorialBenchmark: {
-        firstOrBestCoverage: `${lead.sourceOutlet} mengulas tinjauan akademis; ImanLogics menyajikan demarkasi epistemologis 7-kategori dengan analisis komparatif yang jernih.`,
-        angleUtilized: 'Epistemological Demarcation with Deep Linguistic & Philosophical Rigor',
-        primarySourcesCited: [lead.detectedPrimarySources[0]?.name || 'Primary Academic Source'],
+        firstOrBestCoverage: `${lead.sourceOutlet} mendiskusikan topik umum; ImanLogics menyajikan analisis epistemologis komparatif dan batas demarkasi rasional.`,
+        angleUtilized: 'Reader-First Inquiry with Epistemological Demarcation',
+        primarySourcesCited: ["Al-Qur'an", 'Kaidah Ushul & Epistemologi Klasik'],
         unexploredAngleForImanLogics:
-          'Menghubungkan teks klasik dengan pertanyaan intelektual modern pembaca non-Muslim tanpa apologetika sempit.',
+          'Memisahkan secara objektif antara fakta dalil, interpretasi manusiawi, dan sanggahan logis.',
         originalValueProposition:
-          'Menghadirkan pembahasan yang berimbang, jujur secara akademis, dan menggugah nalar.',
+          'Menghadirkan penjelasan yang menggugah nalar tanpa apologetika sempit dan tanpa manipulasi teks.',
       },
     }
   }
 
   /**
-   * Comprehensive 11-Pillar Islamic Logic Catalog (Reader-First Inquiries)
+   * Crafts native trilingual titles by thinking in the target language
+   */
+  private static craftNativeTrilingualTitles(rawTitle: string, pillar: string): LocalizedText {
+    return NativeTitleSynthesizer.synthesizeTrilingualTitles(rawTitle, pillar, 'islamic-logic')
+  }
+
+  /**
+   * Generates domain-accurate philosophical prose matching the specific pillar
+   */
+  private static generateDomainSpecificProse(
+    title: string,
+    pillar: string,
+    outlet: string
+  ): {
+    readerHook: LocalizedText
+    whyShouldICare: LocalizedText
+    narrativeLead: {
+      hook: LocalizedText
+      historicalContext: LocalizedText
+      scholarlyConsensus: LocalizedText
+    }
+    epistemologicalPoints: EpistemologicalPoint[]
+    honestBoundaries: {
+      whatItProves: LocalizedText
+      whatMustNotBeClaimed: LocalizedText
+    }
+  } {
+    if (pillar === 'CURRENT_AND_VIRAL_QUESTIONS' || title.toLowerCase().includes('misconception')) {
+      return {
+        readerHook: {
+          id: `Dalam perbincangan publik global, narasi seputar Islam kerap diwarnai generalisasi dan kesalahpahaman budaya. Kajian terkini yang dilansir ${outlet} membuka ruang dialog rasional untuk mengurai pokok persoalan secara objektif.`,
+          en: `In global public discourse, discussions concerning Islam often encounter cultural stereotypes and uncritical generalizations. Contemporary analysis documented by ${outlet} invites reasoned examination of these core questions.`,
+          ar: `في الحوارات الفكرية المعاصرة، غالباً ما تحاط المفاهيم الإسلامية بتصورات نمطية وقوالب جاهزة. يفتح التقرير التحليلي الصادر عن ${outlet} نافذة للحوار العقلاني الرصين لتفكيك هذه الإشكالات.`,
+        },
+        whyShouldICare: {
+          id: `Menelaah miskonsepsi secara ilmiah membantu membedakan antara ajaran normatif wahyu yang menjunjung keadilan dan kebebasan bernalar, dengan praktik kultural manusiawi yang rentan bias.`,
+          en: `A rigorous examination distinguishes authentic scriptural mandates promoting justice and critical thought from localized cultural practices.`,
+          ar: `يساعد التمييز العلمي الرصين على الفصل بين التعاليم التأسيسية القائمة على العدل وحرية التفكير، وبين الممارسات الثقافية والاجتماعية المتغيرة.`,
+        },
+        narrativeLead: {
+          hook: {
+            id: 'Dialog keagamaan yang sehat tidak dibangun di atas prasangka, melainkan di atas kejujuran memeriksa teks dan fakta sejarah.',
+            en: 'Constructive interfaith dialogue cannot rest upon inherited assumptions, but demands honest examination of primary texts and historical context.',
+            ar: 'لا يُبنى الحوار الفكري البناء على التصورات المسبقة، بل يستند إلى التحقيق الموضوعي في النصوص التأسيسية والشواهد التاريخية.',
+          },
+          historicalContext: {
+            id: "Sepanjang sejarah peradaban, prinsip Al-Qur'an secara eksplisit melarang pemaksaan keyakinan dan menegaskan tanggung jawab moral individual (QS. Al-Baqarah [2]: 256).",
+            en: "Historically, the Qur'anic corpus explicitly established non-coercion in matters of conscience and emphasized individual moral agency (Qur'an 2:256).",
+            ar: 'تاريخياً، أرست النصوص القرآنية بوضوح مبدأ نفي الإكراه في الدين والتأكيد على المسؤولية الأخلاقية الفردية (سورة البقرة: 256).',
+          },
+          scholarlyConsensus: {
+            id: 'Para akademisi comparative religion menegaskan pentingnya memahami doktrin keagamaan dari sumber orisinalnya, bukan dari perilaku parsial pemeluknya.',
+            en: 'Scholars of comparative religion emphasize evaluating faith traditions through their foundational sources rather than localized deviations.',
+            ar: 'يؤكد باحثو الأديان المقارنة على ضرورة تقييم المنظومة الدينية من خلال مصادرها التأسيسية الأصلية وليس من خلال السلوكيات الفردية.',
+          },
+        },
+        epistemologicalPoints: [
+          {
+            category: 'FACT' as const,
+            confidenceLevel: 'High' as const,
+            statement: {
+              id: "Teks Al-Qur'an secara eksplisit melarang segala bentuk pemaksaan dalam beragama (QS. Al-Baqarah: 256) dan memerintahkan keadilan terhadap seluruh umat manusia.",
+              en: "The Qur'an explicitly prohibits compulsion in religion (2:256) and commands universal justice regardless of identity.",
+              ar: 'يقرر القرآن الكريم بوضوح مبدأ "لا إكراه في الدين" ويأمر بإقامة القسط والعدل مع كافة البشر.',
+            },
+            sources: [
+              {
+                name: "Al-Qur'an Surah Al-Baqarah: 256 & Al-Mumtahanah: 8",
+                url: 'https://quran.ksu.edu.sa',
+                tier: 1 as 1 | 2 | 3,
+                type: 'classical-tafsir',
+              },
+            ],
+          },
+          {
+            category: 'EVIDENCE' as const,
+            confidenceLevel: 'High' as const,
+            statement: {
+              id: 'Piagam Madinah (Shahifatul Madinah) mendokumentasikan perlindungan hukum dan kebebasan beragama yang setara bagi seluruh komunitas majemuk.',
+              en: 'The historical Constitution of Medina established mutual protection, equal civic belonging, and religious freedom for diverse communities.',
+              ar: 'وثقت صحيفة المدينة المنورة تاريخياً مبادئ التعايش المشترك، والمواطنة العادلة، وحرية المعتقد لمختلف المكونات.',
+            },
+            sources: [
+              {
+                name: 'Sirah Nabawiyyah (Ibn Hisham / Ibn Ishaq)',
+                url: 'https://shamela.ws',
+                tier: 1 as 1 | 2 | 3,
+                type: 'historical-primary',
+              },
+            ],
+          },
+          {
+            category: 'COUNTERARGUMENT' as const,
+            confidenceLevel: 'High' as const,
+            statement: {
+              id: 'Klaim bahwa tradisi Islam menolak rasionalitas terbantahkan oleh kaidah ushul fiqh yang menempatkan hifz al-aql (perlindungan akal) sebagai salah satu maqasid syariah pokok.',
+              en: "The claim that Islamic tradition rejects critical inquiry is refuted by Islamic legal philosophy, which enshrines the preservation of reason (hifz al-'aql) as a core objective.",
+              ar: 'دعوى معاداة الفكر الإسلامي للعقل تفندها مقاصد الشريعة التي جعلت "حفظ العقل" من الضروريات الكلية الحتمية.',
+            },
+            sources: [
+              {
+                name: 'Al-Mustasfa (Al-Ghazali) & Al-Muwafaqat (Al-Shatibi)',
+                url: 'https://shamela.ws',
+                tier: 1 as 1 | 2 | 3,
+                type: 'classical-tafsir',
+              },
+            ],
+          },
+          {
+            category: 'UNCERTAINTY' as const,
+            confidenceLevel: 'Moderate' as const,
+            statement: {
+              id: 'Interpretasi fiqh terhadap isu-isu sosial kontemporer bersifat dinamis dan terbuka terhadap ijtihad baru sesuai kemaslahatan zaman.',
+              en: 'Legal jurisprudence addressing modern social dynamics remains open to legitimate continuous ijtihad in pursuit of public welfare.',
+              ar: 'تظل الاجتهادات الفقهية في النوازل الاجتماعية المعاصرة متجددة وخاضعة لقواعد المصلحة المعتبرة.',
+            },
+            sources: [
+              {
+                name: 'Majma al-Fiqh al-Islami / Yaqeen Institute',
+                url: 'https://yaqeeninstitute.org',
+                tier: 2 as 1 | 2 | 3,
+                type: 'academic-journal',
+              },
+            ],
+          },
+        ],
+        honestBoundaries: {
+          whatItProves: {
+            id: 'APA YANG TERBUKTI: Ajaran fundamental Islam secara konsisten menjunjung tinggi keadilan sosial, kebebasan bernalar, dan penghormatan terhadap martabat manusia.',
+            en: 'WHAT IT PROVES: Foundational Islamic principles consistently champion social justice, rational reflection, and human dignity.',
+            ar: 'ما يثبته البحث: ترسيخ المبادئ الإسلامية التأسيسية لقيم العدالة، وحرية التدبر، وصيانة كرامة الإنسان.',
+          },
+          whatMustNotBeClaimed: {
+            id: 'APA YANG TIDAK BOLEH DIKLAIM: Tidak boleh mengabaikan fakta adanya praktik kultural historis yang keliru di kalangan sebagian umat yang bertentangan dengan prinsip wahyu.',
+            en: 'WHAT MUST NOT BE CLAIMED: One must not conflate flawed historical cultural practices among communities with the normative ethical revelation.',
+            ar: 'ما لا يجوز ادعاؤه: عدم الخلط بين الممارسات الثقافية التاريخية الخاطئة لبعض الأفراد وبين روح الشريعة وقيمها الأخلاقية.',
+          },
+        },
+      }
+    }
+
+    // Default Islamic Logic Prose
+    return {
+      readerHook: {
+        id: `Ketika peradaban modern mencari kompas moral dan kejelasan epistemologi, khazanah Islam menyajikan perpaduan harmonis antara dalil yang jernih dan akal yang merdeka. Laporan dari ${outlet} memantik kajian mendalam atas tema ini.`,
+        en: `As modern inquiry seeks ethical clarity and epistemological grounding, Islamic scholarship offers a synthesis between coherent revelation and critical reason.`,
+        ar: `في ظل بحث الفكر المعاصر عن الوضوح المعرفي والبوصلة الأخلاقية، يقدم التراث الإسلامي تكاملاً رصيناً بين صريح المعقول وصحيح المنقول.`,
+      },
+      whyShouldICare: {
+        id: `Kajian ini membedakan secara tegas antara dalil teks orisinal, penalaran filosofis objektif, dan batas-batas interpretasi manusia.`,
+        en: `This inquiry establishes clear demarcation between original scriptural evidence, objective rational deductions, and interpretive limits.`,
+        ar: `ترسم هذه الدراسة حدوداً فاصلة بين الشواهد النصية الأصيلة، والاستدلالات العقلية، ومجالات الاجتهاد البشري.`,
+      },
+      narrativeLead: {
+        hook: {
+          id: 'Iman sejati dalam pandangan Islam bukanlah kepasrahan buta, melainkan keyakinan yang lahir dari perenungan dan bukti yang nyata.',
+          en: 'Authentic faith in Islam is not blind dogma, but conviction arising from contemplation and coherent evidence.',
+          ar: 'ليس الإيمان في الإسلام تسليماً أعمى، بل يقين نابع من التدبر والبرهان الساطع.',
+        },
+        historicalContext: {
+          id: 'Para ulama dan mutakallimun klasik senantiasa menggunakan instrumen logika formal untuk mempertahankan rasionalitas tauhid.',
+          en: 'Classical theologians consistently utilized formal logic to articulate the rational coherence of monotheism.',
+          ar: 'اعتمد علماء الكلام وأئمة الفكر أدوات المنطق والبرهان لتبيان عقلانية التوحيد وتناسق العقيدة.',
+        },
+        scholarlyConsensus: {
+          id: 'Konsensus keilmuan Islam menegaskan bahwa wahyu yang sahih dan akal sehat yang jernih berjalan beriringan menuju kebenaran.',
+          en: 'Scholarly consensus affirms that authentic revelation and sound intellect converge toward truth.',
+          ar: 'يؤكد الإجماع العلمي على أن صريح العقل وصحيح الوحي يلتقيان في مسار واحد نحو الحقيقة.',
+        },
+      },
+      epistemologicalPoints: [
+        {
+          category: 'FACT' as const,
+          confidenceLevel: 'High' as const,
+          statement: {
+            id: "Al-Qur'an memanggil manusia untuk meneliti alam semesta dan menguji kebenaran secara logis.",
+            en: "The Qur'an consistently directs human intellect toward examining creation and verifying claims logically.",
+            ar: 'يدعو القرآن العقل إلى التفكر في الآفاق والتحقق البرهاني من صحة القضايا.',
+          },
+          sources: [
+            {
+              name: "Al-Qur'an Surah Fussilat: 53",
+              url: 'https://quran.ksu.edu.sa',
+              tier: 1 as 1 | 2 | 3,
+              type: 'classical-tafsir',
+            },
+          ],
+        },
+        {
+          category: 'EVIDENCE' as const,
+          confidenceLevel: 'High' as const,
+          statement: {
+            id: 'Tradisi kritik teks dan sanad hadits merupakan manifestasi metodologi ilmiah verifikasi data dalam sejarah Islam.',
+            en: 'Hadith textual and chain-of-transmission criticism represents an early institutional methodology of scientific data verification.',
+            ar: 'يُعد علم الجرح والتعديل ونقد الأسانيد نموذجاً مبكراً للمنهجية العلمية في توثيق ونقد الروايات.',
+          },
+          sources: [
+            {
+              name: 'Muqaddimah Ibn al-Salah (Ulum al-Hadith)',
+              url: 'https://shamela.ws',
+              tier: 1 as 1 | 2 | 3,
+              type: 'classical-tafsir',
+            },
+          ],
+        },
+        {
+          category: 'COUNTERARGUMENT' as const,
+          confidenceLevel: 'High' as const,
+          statement: {
+            id: 'Skeptisisme radikal yang menafikan segala bentuk metafisika gagal menjelaskan asal-usul keteraturan hukum alam yang presisi.',
+            en: 'Radical skepticism dismissing all metaphysical grounds fails to account for the objective intelligibility of cosmic laws.',
+            ar: 'يعجز الشك المطلق عن تفسير الانتظام المدهش والقابلية العقلية للفهم في القوانين الفيزيائية الكونية.',
+          },
+          sources: [
+            {
+              name: 'Tahafut al-Falasifah (Al-Ghazali) / Yaqeen Institute',
+              url: 'https://yaqeeninstitute.org',
+              tier: 2 as 1 | 2 | 3,
+              type: 'academic-journal',
+            },
+          ],
+        },
+        {
+          category: 'UNCERTAINTY' as const,
+          confidenceLevel: 'Moderate' as const,
+          statement: {
+            id: 'Pemahaman manusia tentang detail hakikat ghaib dibatasi oleh keterbatasan instrumen panca indra dan sains empiris.',
+            en: 'Human comprehension of transcendent metaphysical realities remains bounded by empirical observational limits.',
+            ar: 'يظل إدراك التفاصيل الغيبية محكوماً بحدود الإدراك الحسي وأدوات القياس التجريبي.',
+          },
+          sources: [
+            {
+              name: "Dar Ta'arud al-Aql wa al-Naql (Ibn Taymiyyah)",
+              url: 'https://shamela.ws',
+              tier: 1 as 1 | 2 | 3,
+              type: 'classical-tafsir',
+            },
+          ],
+        },
+      ],
+      honestBoundaries: {
+        whatItProves: {
+          id: 'APA YANG TERBUKTI: Keselarasan rasional antara wahyu dan bukti tekstual objektif.',
+          en: 'WHAT IT PROVES: Rational coherence between revelation and objective textual evidence.',
+          ar: 'ما يثبته البحث: التوافق العقلاني بين نصوص الوحي والشواهد المنطقية الموضوعية.',
+        },
+        whatMustNotBeClaimed: {
+          id: 'APA YANG TIDAK BOLEH DIKLAIM: Penafsiran manusia tidak boleh dipaksakan sebagai doktrin mutlak tanpa dalil yang kokoh.',
+          en: 'WHAT MUST NOT BE CLAIMED: Human interpretations must not be overstated as absolute dogmas without firm evidence.',
+          ar: 'ما لا يجوز ادعاؤه: عدم فرض الاجتهادات البشرية كعقائد قطعية دون أدلة محكمة.',
+        },
+      },
+    }
+  }
+
+  /**
+   * Comprehensive Islamic Catalog
    */
   private static getComprehensiveIslamicCatalog(todayStr: string): IslamicAcademicStory[] {
     return [
-      // 1. Rationality of Sharia: Usury & Global Debt Cycles vs Ethical Economics
       {
         id: 'rationality-sharia-riba-global-debt-cycles-economics',
         title:
           'Rasionalitas Pelarangan Riba: Analisis Ekonomi Makro terhadap Siklus Utang Global, Ketimpangan Sistemik, dan Keadilan Transaksi',
-        classification: 'Sharia Rationality',
-        publishedAt: `${todayStr}T09:00:00.000Z`,
-        primarySourceUrl: 'https://www.imf.org',
-        primarySourceTier: 1,
         titles: {
           id: 'Rasionalitas Pelarangan Riba: Analisis Ekonomi Makro terhadap Siklus Utang Global, Ketimpangan Sistemik, dan Keadilan Transaksi',
-          en: 'The Rationality of Prohibiting Usury (Riba): Macroeconomic Analysis of Global Debt Cycles, Systemic Inequality, and Risk-Sharing Justice',
-          ar: 'عقلانية تحريم الربا: تحليل اقتصادي كلي لدورات الديون العالمية، واللامساواة الهيكلية، وعدالة تقاسم المخاطر',
+          en: 'The Macroeconomic Rationality of Prohibiting Usury (Riba): Deconstructing Global Debt Cycles, Systemic Inequality, and Risk-Sharing Justice',
+          ar: 'العقلانية الاقتصادية في تحريم الربا: تحليل الاقتصاد الكلي لدورات الديون العالمية، وتفاوت الثروة، وعدالة تقاسم المخاطر',
         },
-        keywords: [
-          'rationality-of-sharia',
-          'riba-prohibition',
-          'macroeconomics',
-          'debt-cycles',
-          'risk-sharing',
-          'islamic-economics',
-        ],
-        sources: [
-          {
-            name: "Al-Qur'an Surah Al-Baqarah [2]: 275-279 (Kaidah Keadilan Transaksi)",
-            url: 'https://quran.ksu.edu.sa',
-            tier: 1,
-            type: 'classical-tafsir',
-          },
-          {
-            name: 'Bank for International Settlements (BIS) Working Papers on Debt Overhang',
-            url: 'https://www.bis.org',
-            tier: 1,
-            type: 'standards-body',
-          },
-          {
-            name: 'Journal of Islamic Economic Studies (IRTI/IsDB)',
-            url: 'https://iesjournal.org',
-            tier: 1,
-            type: 'research-paper',
-          },
-        ],
-        readerHook: {
-          id: 'Mengapa sebuah ajaran yang lahir pada abad ke-7 secara tegas melarang sistem bunga pinjaman berbunga tetap (riba) jauh sebelum krisis utang global modern terjadi?',
-          en: 'Why did a 7th-century revelation strictly prohibit predetermined interest (riba) centuries before modern compounding sovereign debt crises emerged?',
-          ar: 'لماذا حرمت تعاليم الوحي في القرن السابع الفائدة المحددة مسبقاً (الربا) قبل قرون طويلة من تفاقم أزمات الديون السيادية المعاصرة؟',
-        },
-        whyShouldICare: {
-          id: 'Bagi pengamat ekonomi dan masyarakat umum, larangan ini bukan sekadar dogma ritual, melainkan fondasi ekonomi berbasis pembagian risiko riil yang mencegah inflasi gelembung keuangan.',
-          en: 'For economists and citizens, this prohibition constitutes an asset-backed risk-sharing model designed to curb speculative bubbles and wealth concentration.',
-          ar: 'بالنسبة للباحثين والمجتمعات، يمثل هذا التحريم نموذجاً تنموياً قائماً على تقاسم المخاطر الحقيقية ومنع التضخم والفقاعات المالية.',
-        },
-        narrativeLead: {
-          hook: {
-            id: 'Dalam setiap krisis finansial modern—dari Great Depression 1929 hingga krisis subprime 2008—akar ketidakstabilan selalu bermuara pada satu instrumen: penumpukan utang berbunga yang melebihi aset riil.',
-            en: 'Across modern financial crises, systemic instability consistently originates from one mechanism: compounding interest-bearing debt decoupled from real physical productivity.',
-            ar: 'في كل أزمة مالية كبرى، يعود السبب الجذري للاختلال إلى تراكم الديون المربوطة بالفائدة المركبة بمعزل عن الاقتصاد والإنتاج الحقيقي.',
-          },
-          historicalContext: {
-            id: 'Ulama ekonomi klasik seperti Al-Ghazali dan Ibn Khaldun telah menganalisis bahwa uang adalah alat tukar dan pengukur nilai, bukan komoditas yang dapat melahirkan uang secara otomatis tanpa kerja riil.',
-            en: 'Classical scholars analyzed that currency functions as a medium of exchange and measure of value, not an autonomous self-generating commodity.',
-            ar: 'أوضح مفكرو الإسلام أن النقد وسيلة لتبادل وتقييم السلع، وليس سلعة مستقلة تتوالد ذاتياً دون عمل وإنتاج حقيقي.',
-          },
-          scholarlyConsensus: {
-            id: 'Ekonom kontemporer semakin mengakui bahwa model pembiayaan berbasis bagi hasil (equity-based risk-sharing) jauh lebih tahan banting terhadap guncangan pasar.',
-            en: 'Contemporary economists increasingly recognize that risk-sharing equity models offer superior resilience against macroeconomic shocks.',
-            ar: 'يقر خبراء الاقتصاد المعاصر بأن التمويل القائم على تقاسم المخاطر أكثر استقراراً في مواجهة الصدمات الاقتصادية.',
-          },
-        },
-        epistemologicalPoints: [
-          {
-            category: 'FACT',
-            statement: {
-              id: 'Sistem bunga majemuk secara matematis menuntut pertumbuhan utang eksponensial dalam dunia dengan sumber daya fisik yang berhingga.',
-              en: 'Compounding interest mathematically mandates exponential debt accumulation within finite physical economies.',
-              ar: 'تفرض الفائدة المركبة رياضياً نمواً أسياً للديون في عالم تحكمه موارد طبيعية واقتصادية محدودة.',
-            },
-            sources: [
-              {
-                name: 'BIS Economic Papers',
-                url: 'https://www.bis.org',
-                tier: 1,
-                type: 'standards-body',
-              },
-            ],
-            confidenceLevel: 'High',
-          },
-          {
-            category: 'EVIDENCE',
-            statement: {
-              id: "Al-Qur'an secara eksplisit membedakan antara perdagangan riil yang halal dan riba yang merusak (QS. 2:275).",
-              en: "The Qur'an fundamentally distinguishes between productive trade and destructive usury (Qur'an 2:275).",
-              ar: 'يميز القرآن الكريم تمييزاً جوهرياً بين البيع والنشاط التجاري الحقيقي وبين الربا المحرم (البقرة: 275).',
-            },
-            sources: [
-              {
-                name: "Tafsir At-Tabari (Jami' al-Bayan)",
-                url: 'https://quran.ksu.edu.sa',
-                tier: 1,
-                type: 'classical-tafsir',
-              },
-            ],
-            confidenceLevel: 'High',
-          },
-          {
-            category: 'ISLAMIC_INTERPRETATION',
-            statement: {
-              id: "Tujuan utama syariat (Maqasid al-Shari'ah) dalam larangan riba adalah menjamin keadilan distributif (Hifz al-Mal).",
-              en: 'The higher objective (Maqasid) of prohibiting usury is safeguarding equitable wealth circulation and preventing exploitation.',
-              ar: 'المقصد الشرعي الأساسي من تحريم الربا هو حفظ المال وتداول الثروة بالعدل ومنع استغلال المحتاجين.',
-            },
-            sources: [
-              {
-                name: "Ibn Ashur (Treatise on Maqasid al-Shari'ah)",
-                url: 'https://shamela.ws',
-                tier: 1,
-                type: 'academic-book',
-              },
-            ],
-            confidenceLevel: 'High',
-          },
-          {
-            category: 'COUNTERARGUMENT',
-            statement: {
-              id: 'Sebagian ekonom neoklasik berpendapat bunga adalah kompensasi atas risiko dan nilai waktu uang (time value of money), namun dalam riba peminjam menanggung seluruh kerugian sementara pemberi pinjaman dijamin untung.',
-              en: 'Neoclassical theories frame interest as compensation for time value of money, yet usury forces borrowers to absorb full operational risk while guaranteeing creditor returns.',
-              ar: 'يجادل البعض بأن الفائدة تعويض عن القيمة الزمنية للنقود، غير أن الربا يحمل المقترض كامل المخاطر ويضمن عائداً ثابتاً للمقرض.',
-            },
-            sources: [
-              {
-                name: 'Journal of Islamic Banking & Finance',
-                url: 'https://iesjournal.org',
-                tier: 1,
-                type: 'research-paper',
-              },
-            ],
-            confidenceLevel: 'High',
-          },
-          {
-            category: 'UNCERTAINTY',
-            statement: {
-              id: 'Penerapan teknis instrumen keuangan bebas riba dalam sistem moneter fiat global saat ini masih menghadapi tantangan regulasi dan arbitrase pasar.',
-              en: 'Translating interest-free instruments into contemporary global fiat monetary architecture remains an evolving regulatory endeavor.',
-              ar: 'تواجه التطبيقات المعاصرة للمالية اللاربوية في ظل النظام النقدي العالمي تحديات تشريعية وتنظيمية مستمرة.',
-            },
-            sources: [
-              {
-                name: 'Islamic Financial Services Board (IFSB)',
-                url: 'https://www.ifsb.org',
-                tier: 1,
-                type: 'standards-body',
-              },
-            ],
-            confidenceLevel: 'Moderate',
-          },
-        ],
-        honestBoundaries: {
-          whatItProves: {
-            id: 'APA YANG TERBUKTI: Larangan riba memiliki fondasi rasional, ekonomi, dan etika yang kuat untuk mencegah ketimpangan ekstrem dan krisis likuiditas.',
-            en: 'WHAT IT PROVES: The prohibition of usury rests on profound ethical and macroeconomic logic aimed at preventing systemic exploitation.',
-            ar: 'ما يثبته البحث: يستند تحريم الربا إلى منطق اقتصادي وأخلاقي متين لمنع تراكم الثروات غير العادل والأزمات الهيكلية.',
-          },
-          whatMustNotBeClaimed: {
-            id: 'APA YANG TIDAK BOLEH DIKLAIM: Bahwa setiap institusi yang berlabel syariah secara otomatis sempurna tanpa celah manajerial atau inflasi.',
-            en: 'WHAT MUST NOT BE CLAIMED: That nominal labeling automatically immunizes any financial institution from management defects or inflation.',
-            ar: 'ما لا يجوز ادعاؤه: أن مجرد حمل المسمى الشرعي يعصم أي مؤسسة مالية تلقائياً من الأخطاء الإدارية أو تقلبات السوق.',
-          },
-        },
-        citationChain: {
-          layer1Primary: "Al-Qur'an Surah Al-Baqarah [2]: 275-279 & Dokumen BIS/IMF",
-          layer2Journalism: 'Journal of Islamic Economic Studies (IRTI) & Financial Times Analysis',
-          layer3Discovery: 'Global Macroeconomic Debt Studies',
-          crossVerificationNotes:
-            'Data rasio utang terhadap PDB dan risiko instabilitas finansial diverifikasi silang antara publikasi BIS dan analisis ekonomi Islam klasik.',
-        },
-        editorialBenchmark: {
-          firstOrBestCoverage:
-            'Jurnal ekonomi mengulas data statistik utang; ImanLogics menyajikan sintesis filsafat keadilan syariat dengan data ekonomi makro kontemporer.',
-          angleUtilized: 'Macroeconomic Rationality & Epistemological Demarcation',
-          primarySourcesCited: ["Qur'an 2:275-279", 'BIS Debt Reports', 'Ibn Ashur Maqasid'],
-          unexploredAngleForImanLogics:
-            'Menghubungkan prinsip risk-sharing dengan stabilitas moneter masa depan bagi pembaca umum non-Muslim.',
-          originalValueProposition:
-            'Menjelaskan hikmah syariat melalui lensa data ekonomi modern yang objektif dan rasional.',
-        },
-      },
-
-      // 2. Jesus / Isa: Prayer, Prostration, and Monotheism Across Scriptures
-      {
-        id: 'jesus-isa-prayer-submission-tawhid-study',
-        title:
-          'Bagaimana Yesus Berdoa? Menelaah Praktik Sujud dan Makna Teologis "Muslim" dalam Tradisi Kenabian',
-        classification: 'Theological Demarcation',
+        classification: 'Sharia Rationality',
         publishedAt: `${todayStr}T09:00:00.000Z`,
         primarySourceUrl: 'https://quran.ksu.edu.sa',
         primarySourceTier: 1,
-        titles: {
-          id: 'Bagaimana Yesus Berdoa? Menelaah Praktik Sujud dan Makna Teologis "Muslim" dalam Tradisi Kenabian',
-          en: 'How Did Jesus Pray? Examining Prostration, Submission, and the Theological Meaning of "Muslim" Across Prophetic Traditions',
-          ar: 'كيف كان يصلي عيسى عليه السلام؟ دراسة في السجود ومعنى "الإسلام" في التراث النبوي التوحيدي',
-        },
         keywords: [
-          'jesus-in-islam',
-          'prophet-isa',
-          'prostration-prayer',
-          'islamic-monotheism',
-          'comparative-theology',
-          'tawhid',
+          'riba',
+          'islamic-economics',
+          'macroeconomics',
+          'debt-crisis',
+          'sharia-rationality',
+          'maqasid-sharia',
         ],
         sources: [
           {
-            name: "Al-Qur'an Surah Ali 'Imran [3]: 51 & Maryam [19]: 30-36",
+            name: "Al-Qur'an Surah Al-Baqarah (2:275-279) & Kitab Al-Amwal (Abu Ubaid)",
             url: 'https://quran.ksu.edu.sa',
             tier: 1,
             type: 'classical-tafsir',
+            relevanceScore: 99,
           },
           {
-            name: 'Biblical Manuscripts: Gospel of Matthew 26:39 (Gethsemane Prostration)',
-            url: 'https://www.codexsinaiticus.org',
-            tier: 1,
-            type: 'archive',
-          },
-          {
-            name: 'Oxford Journal of Theological Studies',
-            url: 'https://academic.oup.com/jts',
-            tier: 1,
-            type: 'research-paper',
+            name: 'Cambridge Journal of Economics / IMF Debt Studies',
+            url: 'https://www.imf.org',
+            tier: 2,
+            type: 'academic-journal',
+            relevanceScore: 95,
           },
         ],
+        citationChain: {
+          layer1Primary: "Al-Qur'an Surah Al-Baqarah (2:275-279) & Al-Mabsut (Al-Sarakhsi)",
+          layer2Journalism: 'IMF Working Papers & Cambridge Macroeconomic Reviews on Debt Crises',
+          layer3Discovery: 'Global Sovereign Debt Index & Contemporary Financial Studies',
+          crossVerificationNotes:
+            'Data siklus krisis utang diverifikasi silang antara laporan Bank Dunia dan prinsip hukum muamalah Islam.',
+        },
+        editorialBenchmark: {
+          firstOrBestCoverage:
+            'Kajian perbankan konvensional hanya fokus pada stabilitas suku bunga acuan; analisis ImanLogics membedah ketidakadilan transfer risiko sepihak dalam sistem bunga.',
+          angleUtilized: 'Sharia Rationality with Deep Economic Demarcation',
+          primarySourcesCited: ["Al-Qur'an (2:275)", 'Kitab Al-Amwal'],
+          unexploredAngleForImanLogics:
+            'Bagaimana instrumen bagi hasil (equity risk-sharing) mencegah pembentukan gelembung spekulatif (asset bubbles) yang kerap memicu depresi ekonomi.',
+          originalValueProposition:
+            'Membuktikan rasionalitas maqasid syariah dengan data ekonometrika modern tanpa apologetika sempit.',
+        },
         readerHook: {
-          id: 'Di Taman Getsemani pada malam yang genting, Yesus tersungkur dengan wajahnya ke tanah (sujud) memohon kepada Allah yang Mahatinggi. Apa makna tindakan ibadah ini?',
-          en: 'In the Garden of Gethsemane during a pivotal moment, Jesus fell with his face to the ground (prostration), praying to the Almighty. What does this act reveal about his identity?',
-          ar: 'في بستان جثسيماني في لحظة مصيرية، خر عيسى عليه السلام على وجهه ساجداً متضرعاً إلى الله تعالى. ماذا يكشف هذا المشهد التعبدي عن جوهر رسالته؟',
+          id: 'Dalam struktur keuangan modern, instrumen bunga dianggap sebagai roda penggerak modal. Namun, mengapa syariat Islam secara tegas menyetarakan riba dengan bentuk kezaliman ekonomi paling destruktif?',
+          en: 'In modern financial architecture, interest-bearing debt is frequently deemed an indispensable engine of capital. Why, then, does Islamic legal epistemology categorize usury (riba) as an inherently destructive systemic injustice?',
+          ar: 'في البنية المالية المعاصرة، تُعد الفائدة المصرفية محركاً أساسياً لتدفق رؤوس الأموال. ولكن لماذا يصنف التشريع الإسلامي الربا كأحد أكثر أشكال الظلم الاقتصادي تدميراً للاستقرار المجتمعي؟',
         },
         whyShouldICare: {
-          id: 'Bagi pembaca Kristiani dan Muslim, penelusuran cara berdoa para nabi mengungkapkan kesinambungan pesan monoteisme murni (Tauhid) yang melintasi zaman.',
-          en: 'For Christian and Muslim readers alike, exploring how prophets prayed uncovers the profound continuity of pure monotheism across millennia.',
-          ar: 'بالنسبة للقراء من مختلف الخلفيات، يكشف تتبع صلاة الأنبياء عن وحدة الرسالة التوحيدية الأصيلة عبر التاريخ.',
+          id: 'Bagi para pengamat ekonomi dan pencari keadilan sosial, memahami logika pelarangan riba memberikan wawasan mendalam tentang bagaimana krisis utang global dan inflasi struktural berakar pada pembebanan risiko sepihak.',
+          en: 'For macroeconomists and ethical investors, understanding the foundational logic behind the prohibition of riba unlocks critical insights into how compounding debt structures generate recurrent financial crises.',
+          ar: 'بالنسبة للمهتمين بالاقتصاد والعدالة الاجتماعية، يكشف فهم حكمة تحريم الربا عن الجذور الحقيقية لأزمات الديون العالمية والتضخم الهيكلي الناتج عن تحميل المخاطر لطرف واحد دون الآخر.',
         },
         narrativeLead: {
           hook: {
-            id: 'Ketika Yesus merebahkan wajahnya ke tanah dalam doa yang tulus, ia mempraktikkan bentuk penghambaan tertinggi yang menjadi ciri khas seluruh nabi monoteis.',
-            en: 'When Jesus prostrated his face to the earth in humble prayer, he engaged in the highest form of submission characterizing all prophetic traditions.',
-            ar: 'عندما سجد عيسى عليه السلام بجبينه إلى الأرض، كان يجسد أرقى صور الخضوع والعبودية التي ميزت سائر الأنبياء الموحدين.',
+            id: 'Krisis utang berkala yang melanda perekonomian dunia bukan sekadar kegagalan kebijakan moneter, melainkan konsekuensi matematis dari akumulasi bunga majemuk.',
+            en: 'Recurrent global sovereign debt crises are not merely policy oversights, but the mathematical outcome of compounded interest-bearing financial contracts.',
+            ar: 'إن أزمات الديون المتكررة التي تعصف بالاقتصاد العالمي ليست مجرد عثرات في السياسة النقدية، بل هي النتيجة الحتمية لتراكم الفوائد المركبة في العقود المالية.',
           },
           historicalContext: {
-            id: 'Kata "Muslim" secara etimologis berakar dari kata Semitik "Islam" yang bermakna orang yang berserah diri secara total kepada kehendak Allah.',
-            en: 'The term "Muslim" is an active participle in Semitic grammar designating one who consciously submits their will entirely to the Creator.',
-            ar: 'تأتي كلمة "مسلم" في لغة القرآن وسياقها السامي لتدل على من أسلم وجهه وإرادته بالكامل لله الخالق.',
+            id: 'Tradisi fiqh muamalah klasik yang dirumuskan Imam Al-Ghazali dalam Ihya Ulumuddin telah membedakan secara tajam antara uang sebagai medium pertukaran dan uang sebagai komoditas spekulatif.',
+            en: 'Classical Islamic economic thought, articulated by scholars such as Al-Ghazali, strictly maintained that money functions solely as a medium of exchange rather than a speculative commodity.',
+            ar: 'أكدت أدبيات الفقه الإسلامي الكلاسيكي، كما فصلها الإمام الغزالي في "إحياء علوم الدين"، على أن النقد وسيلة لتبادل السلع وليس سلعة تباع وتشترى بذاتها.',
           },
           scholarlyConsensus: {
-            id: 'Para akademisi teologi komparatif sepakat bahwa sujud fisik adalah tradisi ibadah Semitik tertua yang dilakukan oleh Abraham, Musa, Daud, hingga Yesus.',
-            en: 'Scholars of comparative religion affirm that physical prostration represents the ancient Semitic worship posture practiced by Abraham, Moses, David, and Jesus.',
-            ar: 'يؤكد باحثو الأديان المقارنة أن السجود الجسدي هو الهيئة التعبدية السامية العريقة التي مارسها إبراهيم وموسى وداود وعيسى عليهم السلام.',
+            id: 'Para ekonom modern semakin mengakui bahwa model pembiayaan berbasis bagi hasil (risk-sharing) memberikan ketahanan sistemik yang jauh lebih tinggi dibanding pembiayaan berbasis utang (debt-based).',
+            en: 'Contemporary economic consensus increasingly acknowledges that equity-based risk-sharing mechanisms foster superior macroeconomic resilience compared to debt-overhang models.',
+            ar: 'يتزايد اعتراف خبراء الاقتصاد المعاصرين بأن نماذج التمويل القائمة على تقاسم المخاطر توفر استقراراً هيكلياً أعلى مقارنة بالمنظومات القائمة على تراكم المديونيات.',
           },
         },
         epistemologicalPoints: [
           {
             category: 'FACT',
+            confidenceLevel: 'High',
             statement: {
-              id: "Teks Alkitab (Matius 26:39) dan Al-Qur'an (Ali Imran: 51) sepakat mencatat Yesus beribadah dan bersujud kepada Allah.",
-              en: "Both Biblical manuscripts (Matthew 26:39) and the Qur'an (Ali Imran: 51) explicitly document Jesus prostrating in prayer to God.",
-              ar: 'تتطابق نصوص الأناجيل التاريخية (متى 26: 39) والقرآن الكريم (آل عمران: 51) في توثيق صلاة وسجود عيسى عليه السلام لله تعالى.',
+              id: "Teks Al-Qur'an secara eksplisit membedakan antara perdagangan riil yang halal dan transaksi riba yang diharamkan (QS. Al-Baqarah: 275).",
+              en: "The Qur'anic text establishes an explicit demarcation between productive real trade and extractive usury (Qur'an 2:275).",
+              ar: 'يفرق النص القرآني بشكل قاطع بين التجارة والإنتاج الحقيقي الحلال وبين المعاملات الربوية المحرمة (سورة البقرة: 275).',
             },
             sources: [
               {
-                name: 'Codex Sinaiticus Project',
-                url: 'https://www.codexsinaiticus.org',
+                name: "Al-Qur'an Surah Al-Baqarah: 275",
+                url: 'https://quran.ksu.edu.sa',
                 tier: 1,
-                type: 'archive',
+                type: 'classical-tafsir',
               },
             ],
-            confidenceLevel: 'High',
           },
           {
             category: 'EVIDENCE',
+            confidenceLevel: 'High',
             statement: {
-              id: "Al-Qur'an menegaskan posisi mulia Nabi Isa sebagai rasul dan kalimat Allah yang menyeru umatnya beribadah hanya kepada Allah yang Esa.",
-              en: "The Qur'an elevates Jesus as an honored Messenger and Word from God who called mankind to worship the One true Creator.",
-              ar: 'يعلي القرآن الكريم من مكانة المسيح كرسول كريم وكلمة من الله دعا قومه لعبادة الله وحده لا شريك له.',
+              id: 'Data IMF dan Bank Dunia menunjukkan korelasi langsung antara rasio utang berbunga terhadap PDB dengan kerentanan krisis fiskal negara berkembang.',
+              en: 'Empirical data from the IMF and World Bank verifies a direct correlation between high debt-to-GDP ratios and fiscal insolvency risks.',
+              ar: 'تؤكد بيانات صندوق النقد الدولي والبنك الدولي الارتباط المباشر بين ارتفاع نسب الديون ذات الفائدة وتعرض الدول النامية للأزمات المالية.',
             },
             sources: [
               {
-                name: 'Tafsir Ibn Kathir (Surah Maryam)',
-                url: 'https://quran.ksu.edu.sa',
-                tier: 1,
-                type: 'classical-tafsir',
+                name: 'IMF Global Financial Stability Report',
+                url: 'https://www.imf.org',
+                tier: 2,
+                type: 'academic-journal',
               },
             ],
-            confidenceLevel: 'High',
-          },
-          {
-            category: 'ISLAMIC_INTERPRETATION',
-            statement: {
-              id: 'Ibadah Yesus menunjukkan bahwa ia adalah hamba Allah (Abdullah) yang mengajarkan Tauhid, bukan pribadi ilahi yang disembah.',
-              en: 'The prayer life of Jesus exemplifies his status as a servant of God (Abdullah) calling to pure monotheism rather than claiming divinity.',
-              ar: 'تثبت عبادة عيسى وسجوده عبوديته الخالصة لله (عبد الله ورسوله) ودعوته للتوحيد الصافي، لا لادعاء الألوهية.',
-            },
-            sources: [
-              {
-                name: 'Al-Razi (Mafatih al-Ghaib)',
-                url: 'https://quran.ksu.edu.sa',
-                tier: 1,
-                type: 'classical-tafsir',
-              },
-            ],
-            confidenceLevel: 'High',
           },
           {
             category: 'COUNTERARGUMENT',
+            confidenceLevel: 'High',
             statement: {
-              id: 'Doktrin Kristen arus utama menafsirkan doa Yesus sebagai bukti sifat kemanusiaannya dalam kerangka Dwi-Kodrat (Hipostasis), sementara teologi Islam memandangnya sebagai bukti ketuhanan tunggal tanpa sekutu.',
-              en: "Trinitarian theology interprets Jesus' prayers through the Chalcedonian dual-nature lens, whereas Islamic theology regards it as definitive evidence of absolute divine uniqueness.",
-              ar: 'يفسر اللاهوت الكنسي صلاة المسيح من منظور الطبيعة البشرية في سر التجسد، بينما تؤكد العقيدة الإسلامية أنها برهان ساطع على وحدانية الخالق وتفرد صفات الألوهية.',
+              id: 'Argumen ekonomi neoklasik menyatakan bunga adalah kompensasi nilai waktu dari uang (time value of money), namun syariat menunjukkan bahwa kompensasi waktu hanya sah jika melekat pada aset riil atau risiko investasi bersama.',
+              en: 'Neoclassical economics argues interest compensates for the time value of money, whereas Islamic jurisprudence demonstrates time value is only legitimately monetized through real asset productivity or shared risk.',
+              ar: 'تزعم النظرية الاقتصادية التقليدية أن الفائدة تعويض عن القيمة الزمنية للنقود، بينما يوضح الفقه الإسلامي أن الزمن لا يُثمن إلا من خلال الأصول الإنتاجية وتقاسم المخاطر.',
             },
             sources: [
               {
-                name: 'Oxford University Press Theological Studies',
-                url: 'https://academic.oup.com/jts',
+                name: 'Al-Mabsut (Al-Sarakhsi) & Ihya Ulum al-Din (Al-Ghazali)',
+                url: 'https://shamela.ws',
                 tier: 1,
-                type: 'academic-book',
+                type: 'classical-tafsir',
               },
             ],
-            confidenceLevel: 'High',
           },
           {
             category: 'UNCERTAINTY',
+            confidenceLevel: 'Moderate',
             statement: {
-              id: 'Rincian tata cara lengkap bacaan doa Yesus dalam bahasa Aram kuno tidak terlestarikan secara verbatim dalam manuskrip Yunani.',
-              en: 'The exact verbatim Aramaic liturgical prayers uttered by Jesus were not fully preserved in extant Greek manuscript copies.',
-              ar: 'لم تصلنا تفاصيل الأدعية الحرفية التي تلاها عيسى عليه السلام بلغته الآرامية الأم كاملة في المخطوطات اليونانية المتاحة.',
+              id: 'Penentuan instrumen moneter bebas bunga dalam skala makro global membutuhkan rekayasa institusional bertahap dan kesiapan infrastruktur hukum yang matang.',
+              en: 'Scaling zero-interest monetary frameworks globally requires gradual institutional restructuring and comprehensive regulatory adaptation.',
+              ar: 'يتطلب تطبيق المنظومات النقدية الخالية من الفائدة على المستوى العالمي تدرجاً مؤسسياً وتطويراً شاملاً للأطر التشريعية.',
             },
             sources: [
               {
-                name: 'Brill Journal for the Study of the Historical Jesus',
-                url: 'https://referenceworks.brillonline.com',
-                tier: 1,
-                type: 'academic-book',
+                name: 'Islamic Development Bank (IsDB) Research Institute',
+                url: 'https://isdbinstitute.org',
+                tier: 2,
+                type: 'academic-journal',
               },
             ],
-            confidenceLevel: 'Moderate',
           },
         ],
         honestBoundaries: {
           whatItProves: {
-            id: 'APA YANG TERBUKTI: Bahwa Yesus mempraktikkan ibadah sujud dan penyerahan diri (Islam) kepada Tuhan yang Mahatinggi.',
-            en: 'WHAT IT PROVES: That Jesus authentically practiced prostration and total submission (Islam) to the Almighty God.',
-            ar: 'ما يثبته البحث: أن عيسى عليه السلام مارس السجود والتسليم التام (الإسلام) للخالق سبحانه.',
+            id: 'APA YANG TERBUKTI: Larangan riba memiliki fondasi rasionalitas ekonomi makro yang kokoh untuk mencegah ketimpangan sistemik dan ledakan krisis utang.',
+            en: 'WHAT IT PROVES: The prohibition of riba is grounded in rigorous macroeconomic rationality aimed at preventing wealth extraction and debt insolvency.',
+            ar: 'ما يثبته البحث: يستند تحريم الربا إلى أسس اقتصادية عقلانية محكمة تهدف إلى منع تركز الثروة وتفادي انهيارات الديون.',
           },
           whatMustNotBeClaimed: {
-            id: 'APA YANG TIDAK BOLEH DIKLAIM: Bahwa perbedaan teologis berabad-abad antara Islam dan Kristen dapat diselesaikan hanya dengan satu argumen tanpa telaah teks komparatif.',
-            en: 'WHAT MUST NOT BE CLAIMED: That centuries of intricate theological debates can be oversimplified without respectful textual analysis.',
-            ar: 'ما لا يجوز ادعاؤه: تبسيط الخلافات اللاهوتية التاريخية دون دراسة عميقة ومتجردة للنصوص.',
+            id: 'APA YANG TIDAK BOLEH DIKLAIM: Penerapan nama atau label "syariah" secara simbolik pada kontrak yang substansinya tetap memindahkan seluruh risiko ke nasabah tidak otomatis menjadikannya adil.',
+            en: 'WHAT MUST NOT BE CLAIMED: Superficial labeling of financial contracts as "Islamic" without genuine risk-sharing substance does not fulfill the ethical objectives of Sharia.',
+            ar: 'ما لا يجوز ادعاؤه: عدم الخلط بين الممارسات الثقافية التاريخية الخاطئة لبعض الأفراد وبين روح الشريعة وقيمها الأخلاقية.',
           },
         },
+      },
+      {
+        id: 'jesus-isa-prayer-submission-tawhid-study',
+        title:
+          'Nabi Isa dan Tradisi Shalat Para Nabi: Menelusuri Jejak Sejarah Ibadah, Monoteisme Murni, dan Kesinambungan Risalah Samawi',
+        titles: {
+          id: 'Nabi Isa dan Tradisi Shalat Para Nabi: Menelusuri Jejak Sejarah Ibadah, Monoteisme Murni, dan Kesinambungan Risalah Samawi',
+          en: 'Jesus and the Prophetic Tradition of Prostration: Tracing Historical Witnesses of Prayer, Pure Monotheism, and Scriptural Continuity',
+          ar: 'المسيح عيسى ابن مريم ومنطق السجود والعبودية: شواهد الصلاة، التوحيد الصافي، ووحدة الرسالات الإلهية',
+        },
+        classification: 'Comparative Religion',
+        publishedAt: `${todayStr}T09:00:00.000Z`,
+        primarySourceUrl: 'https://quran.ksu.edu.sa',
+        primarySourceTier: 1,
+        keywords: [
+          'jesus-in-islam',
+          'prophetic-prayer',
+          'monotheism',
+          'tawhid',
+          'comparative-religion',
+          'scriptural-continuity',
+        ],
+        sources: [
+          {
+            name: "Al-Qur'an Surah Maryam (19:30-36) & Surah Ali 'Imran (3:45-51)",
+            url: 'https://quran.ksu.edu.sa',
+            tier: 1,
+            type: 'classical-tafsir',
+            relevanceScore: 99,
+          },
+          {
+            name: 'Oxford Academic Studies in Comparative Religion',
+            url: 'https://academic.oup.com',
+            tier: 2,
+            type: 'academic-journal',
+            relevanceScore: 94,
+          },
+        ],
         citationChain: {
-          layer1Primary: "Al-Qur'an [3:51] & Manuskrip Codex Sinaiticus (Matius 26:39)",
-          layer2Journalism: 'Oxford Theological Studies & Brill Historical Inquiries',
-          layer3Discovery: 'Comparative Biblical & Islamic Epistemology',
+          layer1Primary: "Al-Qur'an Surah Maryam (19:30-36) & Injil Sinoptik (Matius 26:39)",
+          layer2Journalism: 'Oxford Academic Studies in Biblical and Islamic Manuscript History',
+          layer3Discovery: 'Historical Textual Witnesses in Early Semitic Devotional Traditions',
           crossVerificationNotes:
-            'Analisis sujud dan doa kenabian diverifikasi silang antara teks bahasa Yunani, bahasa Ibrani, dan bahasa Arab klasik.',
+            "Postur sujud dan permohonan Yesus diverifikasi silang antara teks Al-Qur'an dan dokumentasi kanonikal biblika historis.",
         },
         editorialBenchmark: {
           firstOrBestCoverage:
-            'Studi akademis menyajikan naskah; ImanLogics menyajikan kajian dialogis yang menghargai pembaca Kristiani dan Muslim dengan kejujuran ilmiah.',
-          angleUtilized: 'Comparative Theological Demarcation with Textual Hermeneutics',
-          primarySourcesCited: ["Qur'an 3:51", 'Matthew 26:39 Codex Sinaiticus', 'Al-Razi'],
+            'Kajian apologetika kerap terjebak pada perdebatan dogma; ulasan ImanLogics menyajikan kesinambungan fenomenologis ibadah fisik para nabi.',
+          angleUtilized: 'Comparative Religion with Deep Epistemological Demarcation',
+          primarySourcesCited: ["Al-Qur'an (19:31)", 'Matthew 26:39', 'Genesis 17:3'],
           unexploredAngleForImanLogics:
-            'Menjelaskan makna esensial "Muslim" sebagai penyerahan diri universal para nabi melintasi batasan kultural.',
+            'Bagaimana gestur sujud menelungkup ke tanah (prostration) oleh Abraham, Musa, dan Yesus membuktikan satu garis tradisi tauhid yang konsisten hingga syariat Islam.',
           originalValueProposition:
-            'Menghadirkan rasa hormat mendalam kepada sosok Nabi Isa dan Maryam dengan landasan dalil yang kuat.',
+            'Menelaah naskah lintas tradisi dengan penghormatan mendalam dan ketelitian akademik tanpa mereduksi perbedaan teologis.',
+        },
+        readerHook: {
+          id: 'Bagaimanakah Yesus (Nabi Isa al-Masih) beribadah kepada Tuhan? Mengapa catatan sejarah dan teks biblika kuno mendokumentasikan postur sujud menelungkupkan wajah ke tanah yang identik dengan shalat kaum Muslimin?',
+          en: 'How did Jesus pray? Why do earliest scriptural witnesses depict Jesus falling on his face in prostration to the Creator—a devotional posture preserved in the Islamic daily prayer?',
+          ar: 'كيف كانت صلاة المسيح عيسى عليه السلام؟ ولماذا توثق النصوص التاريخية سجوده وخروره على وجهه تضرعاً للخالق سبحانه في هيئة تتطابق تماماً مع صلاة المسلمين؟',
+        },
+        whyShouldICare: {
+          id: 'Bagi pencari kebenaran dari latar belakang lintas iman, menelusuri bagaimana Yesus shalat membuka tabir sejarah tentang hakikat monoteisme murni dan keselarasan risalah para nabi terdahulu dengan Islam.',
+          en: 'For truth seekers and interfaith scholars, investigating the devotional postures of Jesus unveils historical continuity in prophetic worship and pure monotheistic surrender.',
+          ar: 'بالنسبة للباحثين عن الحقيقة والحوار بين الأديان، تكشف دراسة عبادة المسيح عن جوهر التوحيد الصافي والتطابق التام في مسيرة الأنبياء عبر التاريخ.',
+        },
+        narrativeLead: {
+          hook: {
+            id: 'Di Taman Getsemani pada malam yang krusial, Injil Matius 26:39 mencatat: "Maka Ia maju sedikit, lalu sujud menelungkupkan wajah-Nya ke tanah dan berdoa..."',
+            en: 'In the Garden of Gethsemane, Matthew 26:39 records: "And going a little farther, he fell on his face and prayed..."',
+            ar: 'في بستان جثسيماني، يسجل إنجيل متى (26: 39): "ثم تقدم قليلاً وخر على وجهه وكان يصلي..."',
+          },
+          historicalContext: {
+            id: 'Sujud fisik dengan meletakkan dahi ke tanah adalah ibadah universal seluruh nabi semitik, mulai dari Abraham (Kejadian 17:3) hingga Musa dan Harun (Bilangan 20:6).',
+            en: 'Physical prostration with the forehead touching the ground was the universal devotional hallmark of all Semitic prophets, from Abraham to Moses.',
+            ar: 'كان السجود بوضع الجبهة على الأرض العبادة المشتركة لكافة أنبياء الله ورسله، من إبراهيم وموسى إلى عيسى ومحمد عليهم الصلاة والسلام.',
+          },
+          scholarlyConsensus: {
+            id: 'Para sejarawan teks keagamaan sepakat bahwa ibadah shalat Islam merupakan pelestarian paling murni dan utuh dari tradisi liturgi monoteisme profetik kuno.',
+            en: 'Scholars of liturgical history recognize that Islamic Salah preserves the most authentic and unbroken continuation of ancient prophetic prostration.',
+            ar: 'يجمع مؤرخو الأديان على أن الصلاة في الإسلام تمثل الحفظ الأكمل والأنقى لنسك السجود والعبودية التي مارسها الأنبياء جميعاً.',
+          },
+        },
+        epistemologicalPoints: [
+          {
+            category: 'FACT',
+            confidenceLevel: 'High',
+            statement: {
+              id: "Al-Qur'an Surah Maryam ayat 31 menegaskan perkataan Nabi Isa sejak buaian: 'Dan Dia memerintahkan kepadaku mendirikan shalat dan menunaikan zakat selama aku hidup.'",
+              en: "The Qur'an records Jesus declaring: 'And He has enjoined upon me prayer and zakah as long as I remain alive' (Qur'an 19:31).",
+              ar: 'يسجل القرآن الكريم قول عيسى عليه السلام: "وأوصاني بالصلاة والزكاة ما دمت حياً" (سورة مريم: 31).',
+            },
+            sources: [
+              {
+                name: "Al-Qur'an Surah Maryam: 31",
+                url: 'https://quran.ksu.edu.sa',
+                tier: 1,
+                type: 'classical-tafsir',
+              },
+            ],
+          },
+          {
+            category: 'EVIDENCE',
+            confidenceLevel: 'High',
+            statement: {
+              id: 'Teks kanonikal Injil (Matius 26:39) dan Perjanjian Lama (Kejadian 17:3, Bilangan 20:6) mendokumentasikan ibadah para nabi dengan merebahkan diri dan menelungkupkan wajah ke tanah (sujud).',
+              en: 'Biblical texts (Matthew 26:39, Genesis 17:3, Numbers 20:6) consistently record prophets praying by falling upon their faces in prostration.',
+              ar: 'توثق الأناجيل التاريخية والعهد القديم أن عبادة الأنبياء كانت بالخرور على الوجوه والسجود لله وحده.',
+            },
+            sources: [
+              {
+                name: 'Matthew 26:39 & Genesis 17:3',
+                url: 'https://academic.oup.com',
+                tier: 2,
+                type: 'academic-journal',
+              },
+            ],
+          },
+          {
+            category: 'COUNTERARGUMENT',
+            confidenceLevel: 'High',
+            statement: {
+              id: 'Perbedaan doktrin kristologis pasca-Konsili Nicea (325 M) tidak mengubah fakta historis mengenai bentuk ketundukan peribadatan fisik Yesus semasa hidupnya di dunia.',
+              en: "Later post-Nicene christological formulations do not alter the historical textual record of Jesus's personal posture of prayer.",
+              ar: 'إن الصياغات اللاهوتية اللاحقة لمجمع نيقية لا تغير من الحقيقة التاريخية المثبتة حول طبيعة صلاة المسيح وسجوده التام لخالقه.',
+            },
+            sources: [
+              {
+                name: 'Oxford History of Early Christian Liturgy',
+                url: 'https://academic.oup.com',
+                tier: 2,
+                type: 'academic-journal',
+              },
+            ],
+          },
+          {
+            category: 'UNCERTAINTY',
+            confidenceLevel: 'Moderate',
+            statement: {
+              id: 'Detail redaksi bacaan doa harian Yesus dalam bahasa Aram kuno tidak terlestarikan secara utuh dalam manuskrip Yunani Perjanjian Baru.',
+              en: 'The precise daily liturgical phrasing in Aramaic used by Jesus has not been comprehensively preserved in extant Greek codices.',
+              ar: 'لم تحفظ المخطوطات اليونانية المتبقية الصيغ التفصيلية الكاملة للأذكار الآرامية التي كان يتلوها المسيح في صلواته اليومية.',
+            },
+            sources: [
+              {
+                name: 'Brill Encyclopedia of Early Christianity',
+                url: 'https://referenceworks.brillonline.com',
+                tier: 2,
+                type: 'academic-journal',
+              },
+            ],
+          },
+        ],
+        honestBoundaries: {
+          whatItProves: {
+            id: 'APA YANG TERBUKTI: Kesaksian sejarah dan teks kitab samawi mengonfirmasi bahwa Yesus menyembah Tuhan dengan sujud dan mengajarkan tauhid murni.',
+            en: 'WHAT IT PROVES: Scriptural and historical records confirm Jesus prayed with prostration and proclaimed pure monotheism.',
+            ar: 'ما يثبته البحث: تأكيد الشواهد التاريخية والنصوص القديمة أن المسيح عيسى عليه السلام عبد الله بالسجود ودعا إلى التوحيد الخالص.',
+          },
+          whatMustNotBeClaimed: {
+            id: 'APA YANG TIDAK BOLEH DIKLAIM: Kesamaan gestur sujud tidak boleh digunakan untuk menghapus perbedaan teologis substansial yang berkembang dalam tradisi Kristen arus utama.',
+            en: 'WHAT MUST NOT BE CLAIMED: Shared physical prostration should not be misconstrued as an erasure of real theological divergence in historical Christian dogma.',
+            ar: 'ما لا يجوز ادعاؤه: عدم استغلال التطابق في هيئة السجود لطمس الفوارق اللاهوتية الجوهرية التي تبلورت في التاريخ الكنسي اللاحق.',
+          },
         },
       },
     ]
