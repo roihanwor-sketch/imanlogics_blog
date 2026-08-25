@@ -10,5 +10,5 @@ export const QC_SCORING_WEIGHTS = {
   languageQualityAndParity: 5,
 }
 
-export const MIN_EDITORIAL_PASSING_SCORE = 85
+export const MIN_EDITORIAL_PASSING_SCORE = 90
 export const PREFERRED_EDITORIAL_PASSING_SCORE = 90

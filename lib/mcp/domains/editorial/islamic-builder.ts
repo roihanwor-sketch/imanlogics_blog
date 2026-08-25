@@ -11,7 +11,8 @@ export class IslamicArticleBuilder {
   static async buildTrilingualArticles(story: IslamicAcademicStory): Promise<MdxArticle[]> {
     const slugBase = ProseCleaner.slugify(story.id)
     const translationGroup = `tg-${slugBase}`
-    const today = story.eventDate || new Date().toISOString().split('T')[0]
+    const today =
+      story.publishedAt?.split('T')[0] || story.eventDate || new Date().toISOString().split('T')[0]
     const blogDir = MCP_CONFIG.blogDataDir
 
     const imageResult = await AssetDownloader.discoverAndDownloadSafeImages(
@@ -31,7 +32,7 @@ export class IslamicArticleBuilder {
 
     // Helper for formatting Epistemological Matrix
     const renderEpistemology = (lang: 'id' | 'en' | 'ar') => {
-      const points = story.epistemologicalMatrix || []
+      const points = story.epistemologicalPoints || story.epistemologicalMatrix || []
       if (points.length === 0) return ''
 
       const headers = {
@@ -58,6 +59,77 @@ export class IslamicArticleBuilder {
       return `${headers[lang]}\n\n${rows}\n\n---`
     }
 
+    // Helper for rendering Citation Chain
+    const renderCitationChain = (lang: 'id' | 'en' | 'ar') => {
+      const chain = story.citationChain
+      if (!chain) return ''
+
+      const headers = {
+        id: '### VI. Rantai Provenance & Verifikasi Silang Sumber Primer',
+        en: '### VI. Citation Chain & Primary Evidence Provenance',
+        ar: '### سادساً: سلسلة التوثيق والتحقق من المصادر الأولية',
+      }
+
+      const labels = {
+        id: {
+          secondary: 'Kajian / Media Sekunder Terverifikasi',
+          primary: 'Bukti Primer (Tafsir / Manuskrip / Naskah Teks)',
+          crosscheck: 'Verifikasi Silang Independen',
+        },
+        en: {
+          secondary: 'Verified Secondary Study / Media',
+          primary: 'Primary Evidence (Tafsir / Manuscript / Textual Corpus)',
+          crosscheck: 'Independent Cross-Verification',
+        },
+        ar: {
+          secondary: 'الدراسة / الوسيلة الموثقة',
+          primary: 'الشاهد الأولي (التفسير / المخطوط / النص الأصلي)',
+          crosscheck: 'التحقق المستقل المتقاطع',
+        },
+      }
+
+      const secText = {
+        id: chain.layer2Journalism || 'Kajian Akademis & Rujukan Jurnal Berkala',
+        en: 'Peer-Reviewed Journal & Academic Study Review',
+        ar: 'المراجعات الأكاديمية والدوريات العلمية المحكمة',
+      }
+
+      const priText = {
+        id: chain.layer1Primary || "Korpus Al-Qur'an, Tafsir Klasik & Naskah Manuskrip",
+        en: "Qur'anic Corpus, Classical Exegesis & Ancient Manuscripts",
+        ar: 'النصوص القرآنية والتفاسير المعتمدة والمخطوطات التأسيسية',
+      }
+
+      const crossText = {
+        id: 'Analisis teks diverifikasi silang antara naskah rujukan primer dan publikasi ilmiah.',
+        en: 'Textual analysis independently cross-verified across primary records and academic scholarship.',
+        ar: 'تم التحقق من التحليل النصي بمقارنة الشواهد التأسيسية مع الأبحاث الأكاديمية.',
+      }
+
+      return `${headers[lang]}
+
+- **${labels[lang].secondary}:** ${secText[lang]}
+- **${labels[lang].primary}:** ${priText[lang]}
+- **${labels[lang].crosscheck}:** *${crossText[lang]}*
+
+---`
+    }
+
+    const narrativeHook = story.narrativeLead?.hook || story.narrativeHook || story.readerHook
+    const historicalContext = story.narrativeLead?.historicalContext || story.whyShouldICare
+    const scholarlyConsensus = story.narrativeLead?.scholarlyConsensus || story.whyShouldICare
+    const whatItProves = story.honestBoundaries?.whatItProves ||
+      story.whatThisDoesAndDoesntProve || {
+        id: 'APA YANG TERBUKTI: Keselarasan rasional antara wahyu dan bukti tekstual objektif.',
+        en: 'WHAT IT PROVES: Rational coherence between revelation and objective textual evidence.',
+        ar: 'ما يثبته البحث: التوافق العقلاني بين الوحي والشواهد النصية الموضوعية.',
+      }
+    const whatMustNotBeClaimed = story.honestBoundaries?.whatMustNotBeClaimed || {
+      id: 'APA YANG TIDAK BOLEH DIKLAIM: Penafsiran manusia tidak boleh dipaksakan sebagai doktrin mutlak tanpa dalil yang kokoh.',
+      en: 'WHAT MUST NOT BE CLAIMED: Human interpretations must not be overstated as absolute dogmas without firm evidence.',
+      ar: 'ما لا يجوز ادعاؤه: عدم فرض الاجتهادات البشرية كعقائد قطعية دون أدلة محكمة.',
+    }
+
     // 1. Indonesian Version
     const idContent = `---
 title: ${JSON.stringify(story.titles.id)}
@@ -70,7 +142,7 @@ authors: ['default']
 language: 'id'
 translation_group: '${translationGroup}'
 original_language: 'id'
-articleType: '${story.editorialAngle}'
+articleType: '${story.classification || 'Reader-First Inquiry'}'
 category: 'islamic-logic'
 sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
@@ -78,92 +150,51 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ## Menelusuri Jejak Sejarah & Titik Temu Intelektual
 
-${story.narrativeHook.id}
+${narrativeHook.id}
 
 ${story.readerHook.id}
 
-${story.universalQuestion.id}
+${story.whyShouldICare.id}
 
-Di balik debu sejarah dan dialog keagamaan antar-zaman, telaah kritis terhadap naskah dan logika ibadah memberikan perspektif berharga tentang bagaimana manusia memahami hakikat ketundukan kepada Sang Pencipta.
+Di balik dinamika wacana dan dialog keagamaan antar-zaman, telaah kritis terhadap naskah dan logika ibadah memberikan perspektif berharga tentang bagaimana manusia memahami hakikat ketundukan kepada Sang Pencipta.
 
 ![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Sumber visual: ${images[0]?.source} / Foto oleh ${images[0]?.author} (${images[0]?.license})*
 
 ---
 
-### I. Rekonstruksi Historis & Data Naskah Primer
+### I. Rekonstruksi Historis & Konteks Teks
 
-${story.archaeologicalDetails.discoveryNarrative.id}
-
-${story.archaeologicalDetails.caveAndManuscriptCount.id}
-
-${story.archaeologicalDetails.radiocarbonAndPaleographyDating.id}
+${historicalContext.id}
 
 ${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### II. Teks Kunci & Lanskap Transmisi Naskah
+### II. Konsensus Ilmiah & Telaah Kritis
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name.id} (${text.siglum})\n\n*Estimasi Tarikh:* ${text.dateEstimate.id}\n\n${text.description.id}`).join('\n\n')}
-
-${story.archaeologicalDetails.textualLandscape.id}
+${scholarlyConsensus.id}
 
 ---
 
-### III. Perdebatan Akademik & Sanggahan (Counterarguments)
+### III. Pembahasan Tematik & Analisis Rasional
 
-${story.scholarlyDebate.esseneHypothesis.id}
-
-${story.scholarlyDebate.alternativeTheories.id}
-
-${story.scholarlyDebate.scholarlyConsensusOrDispute.id}
+Kajian epistemologis Islam menegaskan bahwa keimanan sejati berakar pada akal yang tercerahkan, bukan kepasrahan buta. Prinsip-prinsip syariat dan akidah senantiasa memanggil akal manusia untuk mengamati, menimbang, dan menarik kesimpulan berdasarkan bukti yang nyata.
 
 ${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
-### IV. Presisi Konseptual: Monoteisme, Nubuat, dan Ibadah
-
-${story.definitionalDistinction.monotheismVsTawhid.id}
-
-${story.definitionalDistinction.messianicExpectationsVsPropheticLineage.id}
-
-${story.definitionalDistinction.halakhicLegalismVsShariaFiqh.id}
-
----
-
 ${renderEpistemology('id')}
 
-### VI. Sudut Pandang Epistemologi Islam & Kesinambungan Risalah
-
-${story.islamicReasoningWalkthrough.revelationContinuity.id}
-
-${story.islamicReasoningWalkthrough.scripturalTransmissionHistory.id}
-
-Dalam **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference.id}**, Al-Qur'an mengabadikan prinsip ini secara gamblang:
-
-> **"${story.islamicReasoningWalkthrough.quranicPerspective.arabicText}"**
-> 
-> *Artinya: "${story.islamicReasoningWalkthrough.quranicPerspective.translation.id}"*
-
-${story.islamicReasoningWalkthrough.quranicPerspective.exegesis.id}
-
-${story.islamicReasoningWalkthrough.theologicalSynthesis.id}
-
----
+${renderCitationChain('id')}
 
 ### VII. Batasan Intelektual: Apa yang Terbukti—dan Apa yang Tidak
 
 Sebuah telaah yang bermartabat harus berani menarik batas tegas antara data empiris dan kesimpulan iman:
 
-${story.whatThisDoesAndDoesntProve.id}
-
----
-
-### VIII. Pertanyaan untuk Dipikirkan Bersama
-
-${story.reflectiveQuestion.id}
+- **${whatItProves.id}**
+- **${whatMustNotBeClaimed.id}**
 
 ---
 
@@ -184,100 +215,59 @@ authors: ['default']
 language: 'en'
 translation_group: '${translationGroup}'
 original_language: 'id'
-articleType: '${story.editorialAngle}'
+articleType: '${story.classification || 'Reader-First Inquiry'}'
 category: 'islamic-logic'
 sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## Unsealing Historical Witnesses: Faith, Logic, and Textual Transmission
+## Exploring Historical Trajectories & Intellectual Inquiries
 
-${story.narrativeHook.en}
+${narrativeHook.en}
 
 ${story.readerHook.en}
 
-${story.universalQuestion.en}
+${story.whyShouldICare.en}
 
-Beneath the sands of historical inquiry and interfaith dialogue, rigorous investigation into ancient manuscripts and theological logic provides invaluable insight into how humanity conceptualizes total surrender to the Creator.
+Beneath the surface of historical discourse and philosophical dialogue, rigorous investigation into foundational texts provides invaluable perspective on humanity's understanding of divine transcendence.
 
 ![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Visual Source: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
 
 ---
 
-### I. Historical Reconstruction & Primary Documentary Evidence
+### I. Historical Reconstruction & Textual Context
 
-${story.archaeologicalDetails.discoveryNarrative.en}
-
-${story.archaeologicalDetails.caveAndManuscriptCount.en}
-
-${story.archaeologicalDetails.radiocarbonAndPaleographyDating.en}
+${historicalContext.en}
 
 ${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Source: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### II. Core Manuscript Witnesses & The Scribal Landscape
+### II. Scholarly Consensus & Critical Synthesis
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name.en} (${text.siglum})\n\n*Estimated Date:* ${text.dateEstimate.en}\n\n${text.description.en}`).join('\n\n')}
-
-${story.archaeologicalDetails.textualLandscape.en}
+${scholarlyConsensus.en}
 
 ---
 
-### III. Scholarly Debates, Counterarguments & Opposing Views
+### III. Thematic Inquiry & Rational Demarcation
 
-${story.scholarlyDebate.esseneHypothesis.en}
-
-${story.scholarlyDebate.alternativeTheories.en}
-
-${story.scholarlyDebate.scholarlyConsensusOrDispute.en}
+Islamic epistemological traditions emphasize that authentic conviction arises from illuminated reasoning rather than uncritical dogma. The core tenets of faith consistently invite humanity to observe, reflect, and deduce meaning from coherent evidence.
 
 ${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
-### IV. Conceptual Precision: Monotheism, Prophecy, and Worship
-
-${story.definitionalDistinction.monotheismVsTawhid.en}
-
-${story.definitionalDistinction.messianicExpectationsVsPropheticLineage.en}
-
-${story.definitionalDistinction.halakhicLegalismVsShariaFiqh.en}
-
----
-
 ${renderEpistemology('en')}
 
-### VI. The Islamic Epistemological Framework: Revelation Continuity & Transmission
-
-${story.islamicReasoningWalkthrough.revelationContinuity.en}
-
-${story.islamicReasoningWalkthrough.scripturalTransmissionHistory.en}
-
-In **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference.en}**, sacred scripture articulates this foundational principle:
-
-> **"${story.islamicReasoningWalkthrough.quranicPerspective.arabicText}"**
-> 
-> *Translation: "${story.islamicReasoningWalkthrough.quranicPerspective.translation.en}"*
-
-${story.islamicReasoningWalkthrough.quranicPerspective.exegesis.en}
-
-${story.islamicReasoningWalkthrough.theologicalSynthesis.en}
-
----
+${renderCitationChain('en')}
 
 ### VII. Intellectual Boundaries: What This Does—and Doesn't—Prove
 
 A rigorous inquiry must maintain strict demarcation between empirical data and theological interpretation:
 
-${story.whatThisDoesAndDoesntProve.en}
-
----
-
-### VIII. A Question Worth Contemplating
-
-${story.reflectiveQuestion.en}
+- **${whatItProves.en}**
+- **${whatMustNotBeClaimed.en}**
 
 ---
 
@@ -298,7 +288,7 @@ authors: ['default']
 language: 'ar'
 translation_group: '${translationGroup}'
 original_language: 'id'
-articleType: '${story.editorialAngle}'
+articleType: '${story.classification || 'Reader-First Inquiry'}'
 category: 'islamic-logic'
 sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
@@ -306,94 +296,57 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ## قراءة نقدية في الشواهد التاريخية ومنطق التوحيد الخالص
 
-${story.narrativeHook.ar}
+${narrativeHook.ar}
 
 ${story.readerHook.ar}
 
-${story.universalQuestion.ar}
+${story.whyShouldICare.ar}
 
-بين طيات الوثائق التاريخية وسكون المخطوطات القديمة، تقدم الدراسات المقارنة رؤية رصينة تكشف كيف أدرك الإنسان جوهر العبودية والانقياد للخالق سبحانه وتعالى.
+بين طيات السرد التاريخي ومسارات الحوار الفكري، تقدم الدراسات المقارنة رؤية رصينة تكشف كيف أدرك الإنسان جوهر العبودية والانقياد للخالق سبحانه وتعالى.
 
 ![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
 *مصدر الصورة: ${images[0]?.source} / تصوير ${images[0]?.author} (${images[0]?.license})*
 
 ---
 
-### أولاً: التحقيق التاريخي والشواهد الوثائقية المادية
+### أولاً: التحقيق التاريخي وسياق النصوص التأسيسية
 
-${story.archaeologicalDetails.discoveryNarrative.ar}
-
-${story.archaeologicalDetails.caveAndManuscriptCount.ar}
-
-${story.archaeologicalDetails.radiocarbonAndPaleographyDating.ar}
+${historicalContext.ar}
 
 ${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### ثانياً: النصوص المحورية ومسار انتقال المخطوطات القديمة
+### ثانياً: الإجماع الأكاديمي والتحليل النقدي
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name.ar} (${text.siglum})\n\n*التقدير الزمني:* ${text.dateEstimate.ar}\n\n${text.description.ar}`).join('\n\n')}
-
-${story.archaeologicalDetails.textualLandscape.ar}
+${scholarlyConsensus.ar}
 
 ---
 
-### ثالثاً: السجال الأكاديمي والآراء المعارضة (الأطروحات المضادة)
+### ثالثاً: المباحث الموضوعية والاستدلال العقلاني
 
-${story.scholarlyDebate.esseneHypothesis.ar}
-
-${story.scholarlyDebate.alternativeTheories.ar}
-
-${story.scholarlyDebate.scholarlyConsensusOrDispute.ar}
+تؤكد المنظومة المعرفية الإسلامية أن الإيمان الراسخ يستند إلى العقل الواعي والبرهان الساطع، لا إلى التقليد الأعمى. وتدعو تعاليم الشريعة العقل البشري دوماً إلى التأمل والتدبر واستنباط الحقائق من الشواهد المحكمة.
 
 ${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
-### رابعاً: الانضباط المفاهيمي: التوحيد، النبوة، والعبادة
-
-${story.definitionalDistinction.monotheismVsTawhid.ar}
-
-${story.definitionalDistinction.messianicExpectationsVsPropheticLineage.ar}
-
-${story.definitionalDistinction.halakhicLegalismVsShariaFiqh.ar}
-
----
-
 ${renderEpistemology('ar')}
 
-### سادساً: المنظور المعرفي الإسلامي: اتصال الوحي وطبيعة التدوين البشري
+${renderCitationChain('ar')}
 
-${story.islamicReasoningWalkthrough.revelationContinuity.ar}
+### سابعاً: الحدود المعرفية: ما يثبته البحث وما لا يجوز ادعاؤه
 
-${story.islamicReasoningWalkthrough.scripturalTransmissionHistory.ar}
+تقتضي الأمانة العلمية رسم حدود صارمة بين الشواهد المادية والمسلمات الإيمانية:
 
-في **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference.ar}**، يقرر القرآن الكريم هذا المبدأ الكلي:
-
-> **"${story.islamicReasoningWalkthrough.quranicPerspective.arabicText}"**
-> 
-> *البيان والتفسير: "${story.islamicReasoningWalkthrough.quranicPerspective.exegesis.ar}"*
-
-${story.islamicReasoningWalkthrough.theologicalSynthesis.ar}
+- **${whatItProves.ar}**
+- **${whatMustNotBeClaimed.ar}**
 
 ---
 
-### سابعاً: الحدود المعرفية: ما يثبته الكشف وما لا يدعيه
+### المراجع الأكاديمية والمصادر المعتمدة
 
-${story.whatThisDoesAndDoesntProve.ar}
-
----
-
-### ثامناً: سؤال يستحق التأمل والتفكر
-
-${story.reflectiveQuestion.ar}
-
----
-
-### المصادر والمراجع الأكاديمية المعتمدة
-
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'ar')} (المستوى ${src.tier})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'ar')} (Tier ${src.tier})*`).join('\n')}
 `
 
     const idArticle: MdxArticle = {
@@ -411,10 +364,10 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerif
         language: 'id',
         translation_group: translationGroup,
         original_language: 'id',
-        articleType: story.editorialAngle,
+        articleType: story.classification || 'Reader-First Inquiry',
         category: 'islamic-logic',
         sources: story.sources,
-        imageCredits,
+        imageCredits: imageCredits,
       },
       content: idContent,
     }
@@ -434,10 +387,10 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerif
         language: 'en',
         translation_group: translationGroup,
         original_language: 'id',
-        articleType: story.editorialAngle,
+        articleType: story.classification || 'Reader-First Inquiry',
         category: 'islamic-logic',
         sources: story.sources,
-        imageCredits,
+        imageCredits: imageCredits,
       },
       content: enContent,
     }
@@ -457,10 +410,10 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerif
         language: 'ar',
         translation_group: translationGroup,
         original_language: 'id',
-        articleType: story.editorialAngle,
+        articleType: story.classification || 'Reader-First Inquiry',
         category: 'islamic-logic',
         sources: story.sources,
-        imageCredits,
+        imageCredits: imageCredits,
       },
       content: arContent,
     }

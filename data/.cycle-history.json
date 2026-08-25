@@ -1,7 +1,43 @@
 {
-  "lastUpdated": "2026-08-25T13:04:56.195Z",
-  "totalCyclesRun": 5,
+  "lastUpdated": "2026-08-25T21:00:00.012Z",
+  "totalCyclesRun": 8,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-25T21:00:00.007Z",
+      "sourcesScanned": 0,
+      "candidatesDiscovered": 0,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 0,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
+    {
+      "cycleTimestamp": "2026-08-25T18:00:00.013Z",
+      "sourcesScanned": 0,
+      "candidatesDiscovered": 0,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 0,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
+    {
+      "cycleTimestamp": "2026-08-25T15:00:00.020Z",
+      "sourcesScanned": 0,
+      "candidatesDiscovered": 0,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 0,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
     {
       "cycleTimestamp": "2026-08-25T13:04:56.182Z",
       "sourcesScanned": 0,

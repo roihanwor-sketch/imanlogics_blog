@@ -1,5 +1,9 @@
 import { SourceCitation, SupportedLanguage } from '../../core/types'
-import { MEDIA_SOURCE_POOLS, PRIMARY_SOURCE_LAYERS } from '../../config/media-pool'
+import {
+  MEDIA_SOURCE_POOLS,
+  ISLAMIC_SOURCE_POOLS,
+  PRIMARY_SOURCE_LAYERS,
+} from '../../config/media-pool'
 
 export class SourceVerifier {
   static verifyDualTier(sources: SourceCitation[]): {
@@ -36,7 +40,7 @@ export class SourceVerifier {
 
     if (tier1Count === 0 && tier2Count < 2) {
       reasons.push(
-        'Story must cite at least one Tier 1 Primary Source (Whitepaper/Spec/Archive) or two verified Tier 2 Reputable Journalism sources.'
+        'Story must cite at least one Tier 1 Primary Source (Whitepaper/Spec/Archive/Tafsir) or two verified Tier 2 Reputable Journalism sources.'
       )
     }
 
@@ -62,6 +66,37 @@ export class SourceVerifier {
       ...MEDIA_SOURCE_POOLS.arabic,
     ]
     return allOutlets.some((m) => domain.toLowerCase().includes(m.domain.toLowerCase()))
+  }
+
+  static isSemanticallyDuplicate(
+    candidateTitle: string,
+    candidateKeywords: string[],
+    existingArticles: { title: string; keywords?: string[]; slug: string }[]
+  ): { isDuplicate: boolean; similarityReason?: string } {
+    const normCandidate = candidateTitle.toLowerCase().replace(/[^a-z0-9\s]/g, '')
+    const candWords = new Set(normCandidate.split(/\s+/).filter((w) => w.length > 3))
+
+    for (const existing of existingArticles) {
+      const normExisting = existing.title.toLowerCase().replace(/[^a-z0-9\s]/g, '')
+      const existWords = normExisting.split(/\s+/).filter((w) => w.length > 3)
+
+      let overlapCount = 0
+      for (const w of existWords) {
+        if (candWords.has(w)) overlapCount++
+      }
+
+      const similarityRatio = overlapCount / Math.max(candWords.size, existWords.length || 1)
+
+      // Strict duplicate if substance and key words overlap > 75%
+      if (similarityRatio >= 0.75) {
+        return {
+          isDuplicate: true,
+          similarityReason: `Substance overlaps (${Math.round(similarityRatio * 100)}%) with published article: "${existing.title}"`,
+        }
+      }
+    }
+
+    return { isDuplicate: false }
   }
 
   static localizeSourceType(type: string, lang: SupportedLanguage): string {
@@ -100,6 +135,11 @@ export class SourceVerifier {
         id: 'Jurnal Ilmiah Berkala',
         en: 'Peer-Reviewed Journal',
         ar: 'مجلة علمية محكّمة',
+      },
+      'classical-tafsir': {
+        id: 'Kitab Tafsir & Rujukan Primer Islam',
+        en: 'Classical Tafsir & Primary Scriptural Source',
+        ar: 'كتب التفسير المعتمدة والمصادر التأسيسية',
       },
       'media-pool-id': {
         id: 'Media Teknologi Terverifikasi (ID)',

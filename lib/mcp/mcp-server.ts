@@ -269,9 +269,9 @@ export function createImanLogicsMcpServer(): Server {
                   {
                     storyId,
                     titles: match?.titles,
-                    epistemologicalMatrix: match?.epistemologicalMatrix || [],
-                    scholarlyDebate: match?.scholarlyDebate,
-                    whatThisDoesAndDoesntProve: match?.whatThisDoesAndDoesntProve,
+                    epistemologicalPoints:
+                      match?.epistemologicalPoints || match?.epistemologicalMatrix || [],
+                    honestBoundaries: match?.honestBoundaries,
                     sources: match?.sources,
                   },
                   null,

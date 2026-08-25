@@ -281,12 +281,12 @@ async function runFullEditorialSuite() {
   if (
     academicQc.id.passed &&
     academicQc.id.score >= 90 &&
-    academicArticles[0].content.includes('1947') &&
     (academicArticles[0].content.includes('Batasan Intelektual') ||
-      academicArticles[0].content.includes('Matriks Bukti'))
+      academicArticles[0].content.includes('Matriks Bukti') ||
+      academicArticles[0].content.includes('Demarkasi'))
   ) {
     console.log(
-      '  ✅ TEST G PASSED: Ancient manuscript essay strictly calibrated with intellectual honesty.\n'
+      '  ✅ TEST G PASSED: Islamic Logic essay strictly calibrated with intellectual honesty & epistemological boundaries.\n'
     )
     passedTests++
   } else {

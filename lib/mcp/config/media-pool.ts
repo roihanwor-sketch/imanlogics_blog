@@ -731,3 +731,139 @@ export const MEDIA_SOURCE_POOLS: {
     },
   ],
 }
+
+export interface IslamicAcademicSource {
+  id: string
+  name: string
+  language: 'id' | 'en' | 'ar'
+  domain: string
+  category:
+    | 'logic-theology'
+    | 'quran-science'
+    | 'comparative-religion'
+    | 'hadith-sharia'
+    | 'classical-tafsir'
+  tier: 1 | 2
+  description: string
+}
+
+export const ISLAMIC_SOURCE_POOLS: {
+  indonesia: IslamicAcademicSource[]
+  globalEnglish: IslamicAcademicSource[]
+  arabic: IslamicAcademicSource[]
+} = {
+  indonesia: [
+    {
+      id: 'psq-id',
+      name: "Pusat Studi Al-Qur'an (PSQ)",
+      language: 'id',
+      domain: 'psq.or.id',
+      category: 'quran-science',
+      tier: 1,
+      description: 'Tafsir Tematik & Kajian Hermeneutika Kontemporer',
+    },
+    {
+      id: 'uin-research-id',
+      name: 'UIN Repository & Academic Journals',
+      language: 'id',
+      domain: 'journal.uinjkt.ac.id',
+      category: 'logic-theology',
+      tier: 1,
+      description: 'Jurnal Teologi, Filsafat Islam & Perbandingan Agama',
+    },
+    {
+      id: 'nu-online-keislaman',
+      name: 'NU Online Keislaman',
+      language: 'id',
+      domain: 'nu.or.id/keislaman',
+      category: 'hadith-sharia',
+      tier: 2,
+      description: 'Kajian Fiqih, Ushul Fiqih & Tradisi Klasik',
+    },
+    {
+      id: 'almanhaj-id',
+      name: 'Almanhaj Ilmiah',
+      language: 'id',
+      domain: 'almanhaj.or.id',
+      category: 'hadith-sharia',
+      tier: 2,
+      description: 'Takhrij Hadits & Rujukan Manhaj Salaf',
+    },
+  ],
+  globalEnglish: [
+    {
+      id: 'yaqeen-institute',
+      name: 'Yaqeen Institute for Islamic Research',
+      language: 'en',
+      domain: 'yaqeeninstitute.org',
+      category: 'logic-theology',
+      tier: 1,
+      description: 'Peer-reviewed Research on Faith, Doubt, Science & Ethics',
+    },
+    {
+      id: 'sapience-institute',
+      name: 'Sapience Institute (Academic Philosophy)',
+      language: 'en',
+      domain: 'sapienceinstitute.org',
+      category: 'logic-theology',
+      tier: 1,
+      description: 'Philosophy of Religion, Arguments for Theism & Rationality',
+    },
+    {
+      id: 'oxford-islamic-studies',
+      name: 'Oxford Journal of Islamic Studies',
+      language: 'en',
+      domain: 'academic.oup.com/jis',
+      category: 'comparative-religion',
+      tier: 1,
+      description: 'Academic Peer-Reviewed Historical & Theological Analyses',
+    },
+    {
+      id: 'brill-quran',
+      name: "Brill Encyclopaedia of the Qur'an",
+      language: 'en',
+      domain: 'referenceworks.brillonline.com',
+      category: 'classical-tafsir',
+      tier: 1,
+      description: 'Critical Scholarly Reference on Semitic Textual Traditions',
+    },
+  ],
+  arabic: [
+    {
+      id: 'ksu-tafsir-complex',
+      name: 'King Saud University Electronic Quran Project',
+      language: 'ar',
+      domain: 'quran.ksu.edu.sa',
+      category: 'classical-tafsir',
+      tier: 1,
+      description: "Tafsir At-Tabari, Al-Qurtubi, Ibn Kathir, Ar-Razi, As-Sa'di",
+    },
+    {
+      id: 'dorar-net',
+      name: 'Dorar.net Encyclopedia — الدرر السنية',
+      language: 'ar',
+      domain: 'dorar.net',
+      category: 'hadith-sharia',
+      tier: 1,
+      description: "Mawsu'ah al-Ahadith & Fiqh Usul Encyclopedia",
+    },
+    {
+      id: 'shamela-ws',
+      name: 'Al-Maktaba Al-Shamela — المكتبة الشاملة',
+      language: 'ar',
+      domain: 'shamela.ws',
+      category: 'classical-tafsir',
+      tier: 1,
+      description: 'Classical Arabic Manuscript & Primary Islamic Literature Database',
+    },
+    {
+      id: 'islamweb-fatawa',
+      name: 'Islamweb Research & Fatwa Center — إسلام ويب',
+      language: 'ar',
+      domain: 'islamweb.net',
+      category: 'hadith-sharia',
+      tier: 2,
+      description: 'Contemporary Sharia & Medical/Ethical Case Studies',
+    },
+  ],
+}

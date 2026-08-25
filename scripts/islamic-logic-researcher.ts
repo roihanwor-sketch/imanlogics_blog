@@ -1,23 +1,19 @@
 import {
   IslamicResearchEngine,
   IslamicAcademicStory,
-  TraceableHistoricalMetric,
-  KeyManuscriptText,
-  ArchaeologicalForensics,
-  ScholarlyDebateSection,
-  DefinitionalPrecisionSection,
-  IslamicReasoningWalkthrough,
 } from '../lib/mcp/domains/research/islamic-engine'
-import { SourceCitation, SourceClassification, LocalizedText } from '../lib/mcp/core/types'
+import {
+  SourceCitation,
+  SourceClassification,
+  LocalizedText,
+  EpistemologicalPoint,
+  EditorialBenchmarkResult,
+} from '../lib/mcp/core/types'
 
 export type {
   IslamicAcademicStory,
-  TraceableHistoricalMetric,
-  KeyManuscriptText,
-  ArchaeologicalForensics,
-  ScholarlyDebateSection,
-  DefinitionalPrecisionSection,
-  IslamicReasoningWalkthrough,
+  EpistemologicalPoint,
+  EditorialBenchmarkResult,
   SourceCitation,
   SourceClassification,
   LocalizedText,

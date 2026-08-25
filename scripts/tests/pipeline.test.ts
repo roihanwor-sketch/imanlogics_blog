@@ -108,14 +108,16 @@ async function runPipelineTests() {
   const islamicStories = IslamicResearchEngine.getFreshIslamicAcademicCandidates('2026-08-25')
   assert(islamicStories.length >= 2, 'Discovered deep Islamic academic candidate stories')
 
-  const dssStory = islamicStories.find((s) => s.id === 'qumran-dead-sea-scrolls-monotheism-study')
-  assert(Boolean(dssStory), 'Dead Sea Scrolls candidate is available')
+  const shariaStory = islamicStories.find(
+    (s) => s.id === 'rationality-sharia-riba-global-debt-cycles-economics'
+  )
+  assert(Boolean(shariaStory), 'Sharia Rationality (Riba & Macroeconomics) candidate is available')
   assert(
-    Boolean(dssStory?.epistemologicalMatrix),
-    'Dead Sea Scrolls contains explicit Epistemological Matrix'
+    Boolean(shariaStory?.epistemologicalPoints && shariaStory.epistemologicalPoints.length > 0),
+    'Sharia Rationality contains explicit Epistemological Points'
   )
 
-  const categories = dssStory?.epistemologicalMatrix.map((p) => p.category) || []
+  const categories = shariaStory?.epistemologicalPoints.map((p) => p.category) || []
   assert(categories.includes('FACT'), 'Epistemological matrix contains empirical FACT')
   assert(categories.includes('EVIDENCE'), 'Epistemological matrix contains physical EVIDENCE')
   assert(
@@ -130,7 +132,7 @@ async function runPipelineTests() {
   const jesusStory = islamicStories.find((s) => s.id === 'jesus-isa-prayer-submission-tawhid-study')
   assert(Boolean(jesusStory), 'Jesus / Isa prayer and submission candidate is available')
   assert(
-    jesusStory?.whatThisDoesAndDoesntProve.id.includes('APA YANG TERBUKTI'),
+    jesusStory?.honestBoundaries.whatItProves.id.includes('APA YANG TERBUKTI'),
     'Jesus prayer essay contains clear honest boundaries (What it does and does not prove)'
   )
 
@@ -138,22 +140,25 @@ async function runPipelineTests() {
   // Test 5: Multilingual Article Build & QC Evaluation
   // -------------------------------------------------------------
   console.log('\n📌 Test 5: Multilingual Article Build & QC Evaluation')
-  if (dssStory) {
-    const { articles, qcResults } = await buildIslamicAcademicMdxArticles(dssStory)
+  if (shariaStory) {
+    const { articles, qcResults } = await buildIslamicAcademicMdxArticles(shariaStory)
     assert(articles.length === 3, 'Generated 3 localized language versions (ID, EN, AR)')
     assert(qcResults.id.passed, `Indonesian article passed QC (Score: ${qcResults.id.score}/100)`)
     assert(qcResults.en.passed, `English article passed QC (Score: ${qcResults.en.score}/100)`)
     assert(qcResults.ar.passed, `Arabic article passed QC (Score: ${qcResults.ar.score}/100)`)
     assert(
-      articles[0].content.includes('Matriks Bukti'),
+      articles[0].content.includes('Matriks Bukti') ||
+        articles[0].content.includes('Demarkasi Ilmiah'),
       'ID article contains Epistemological Demarcation section'
     )
     assert(
-      articles[1].content.includes('Evidence Matrix'),
+      articles[1].content.includes('Evidence Matrix') ||
+        articles[1].content.includes('Epistemological Demarcation'),
       'EN article contains Epistemological Demarcation section'
     )
     assert(
-      articles[2].content.includes('مصفوفة الشواهد'),
+      articles[2].content.includes('مصفوفة الشواهد') ||
+        articles[2].content.includes('الفرز الإبستمولوجي'),
       'AR article contains Arabic Epistemological section'
     )
   }
