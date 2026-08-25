@@ -19,10 +19,15 @@ interface LayoutProps {
 export default function PostLayout({ content, next, prev, children }: LayoutProps) {
   const { path, slug, date, title } = content
 
+  const isRtl = content.language === 'ar' || slug.endsWith('.ar')
+  const articleLang = isRtl ? 'ar' : content.language || 'id'
+  const articleDir = isRtl ? 'rtl' : 'ltr'
+  const dateLocale = isRtl ? 'ar-EG' : articleLang === 'id' ? 'id-ID' : 'en-US'
+
   return (
     <SectionContainer>
       <ScrollTopAndComment />
-      <article>
+      <article lang={articleLang} dir={articleDir}>
         <div>
           <header>
             <div className="space-y-1 border-b border-gray-200 pb-10 text-center dark:border-gray-700">
@@ -30,7 +35,7 @@ export default function PostLayout({ content, next, prev, children }: LayoutProp
                 <div>
                   <dt className="sr-only">Published on</dt>
                   <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                    <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
+                    <time dateTime={date}>{formatDate(date, dateLocale)}</time>
                   </dd>
                 </div>
               </dl>
@@ -57,7 +62,7 @@ export default function PostLayout({ content, next, prev, children }: LayoutProp
                       className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                       aria-label={`Previous post: ${prev.title}`}
                     >
-                      &larr; {prev.title}
+                      {isRtl ? `${prev.title} ←` : `&larr; ${prev.title}`}
                     </Link>
                   </div>
                 )}
@@ -68,7 +73,7 @@ export default function PostLayout({ content, next, prev, children }: LayoutProp
                       className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                       aria-label={`Next post: ${next.title}`}
                     >
-                      {next.title} &rarr;
+                      {isRtl ? `→ ${next.title}` : `${next.title} &rarr;`}
                     </Link>
                   </div>
                 )}

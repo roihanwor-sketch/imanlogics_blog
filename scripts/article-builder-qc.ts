@@ -89,6 +89,58 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+export function localizeSourceType(type: string | undefined, lang: 'id' | 'en' | 'ar'): string {
+  if (!type)
+    return lang === 'ar' ? 'مرجع معتمد' : lang === 'id' ? 'Sumber Terverifikasi' : 'Verified Source'
+  if (lang === 'ar') {
+    switch (type) {
+      case 'Official Documentation':
+        return 'توثيق رسمي'
+      case 'Technical Whitepaper':
+        return 'ورقة فنية بيضاء'
+      case 'Academic Paper':
+      case 'Academic University Press':
+        return 'ورقة بحثية أكاديمية'
+      case 'Critical Textual Edition':
+        return 'تحقيق نصي نقدي'
+      case 'Independent Benchmark':
+        return 'اختبار أداء مستقل'
+      case 'Museum Catalog':
+        return 'سجل مقتنيات المتحف'
+      case 'Journalism':
+        return 'صحافة استقصائية'
+      case 'Expert Analysis':
+        return 'تحليل خبراء'
+      default:
+        return type
+    }
+  }
+  if (lang === 'id') {
+    switch (type) {
+      case 'Official Documentation':
+        return 'Dokumentasi Resmi'
+      case 'Technical Whitepaper':
+        return 'Whitepaper Teknis'
+      case 'Academic Paper':
+      case 'Academic University Press':
+        return 'Makalah Akademik'
+      case 'Critical Textual Edition':
+        return 'Edisi Teks Kritis'
+      case 'Independent Benchmark':
+        return 'Tolok Ukur Independen'
+      case 'Museum Catalog':
+        return 'Katalog Museum'
+      case 'Journalism':
+        return 'Jurnalisme'
+      case 'Expert Analysis':
+        return 'Analisis Pakar'
+      default:
+        return type
+    }
+  }
+  return type
+}
+
 /**
  * Human-Level Multidimensional Editorial QC Gatekeeper (100 Points Matrix)
  */
@@ -224,9 +276,7 @@ export const runMultidimensionalQC = runHumanLevelEditorialQC
 /**
  * Build Long-Form Investigative Technology Journalism MDX Articles (ID, EN, AR)
  */
-export async function buildTechMdxArticles(
-  story: TechNewsStory
-): Promise<{
+export async function buildTechMdxArticles(story: TechNewsStory): Promise<{
   articles: MdxArticle[]
   qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult>
 }> {
@@ -359,7 +409,7 @@ ${story.benchmarkAnalysis.economicAnalysis.consumerPriceImpact.id}
 
 ### Rujukan Arsitektur & Sumber Primer Otoritatif
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier}${src.publishedDate ? `, Terbit: ${src.publishedDate}` : ''})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${localizeSourceType(src.type, 'id')} (Tier ${src.tier}${src.publishedDate ? `, Terbit: ${src.publishedDate}` : ''})*`).join('\n')}
 `
 
   // 2. EN Article (International Tech Journalism)
@@ -389,7 +439,7 @@ ${story.universalQuestion.en}
 Amid the global AI compute scaling race, semiconductor architecture is undergoing a fundamental paradigm shift: rather than simply packing more graphics compute units onto a wafer, engineers are overhauling how floating-point numbers are calculated, how memory travels between chiplets, and how multi-megawatt server clusters manage power and thermodynamics.
 
 ![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Visual Credit: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
+*Visual Source: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
 
 ---
 
@@ -401,7 +451,7 @@ In mainstream enterprise commentary, system-level numbers are frequently conflat
 2. **${story.disambiguation.hardwareLevels.gb200Superchip.en}**
 3. **${story.disambiguation.hardwareLevels.gb200Nvl72Rack.en}**
 
-${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Credit: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Source: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -461,7 +511,7 @@ ${story.benchmarkAnalysis.economicAnalysis.consumerPriceImpact.en}
 
 ### Primary Architectural References & Authoritative Sources
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier}${src.publishedDate ? `, Published: ${src.publishedDate}` : ''})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${localizeSourceType(src.type, 'en')} (Tier ${src.tier}${src.publishedDate ? `, Published: ${src.publishedDate}` : ''})*`).join('\n')}
 `
 
   // 3. AR Article (Modern Standard Arabic Intellectual Journalism)
@@ -557,7 +607,7 @@ ${story.benchmarkAnalysis.economicAnalysis.consumerPriceImpact.ar}
 
 ### المصادر الفنية والمراجع الرسمية المعتمدة
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (المستوى ${src.tier}${src.publishedDate ? `، تاريخ النشر: ${src.publishedDate}` : ''})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${localizeSourceType(src.type, 'ar')} (المستوى ${src.tier}${src.publishedDate ? `، تاريخ النشر: ${src.publishedDate}` : ''})*`).join('\n')}
 `
 
   const idArticle: MdxArticle = {
@@ -645,9 +695,7 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (
 /**
  * Build Long-Form Investigative Historical & Academic MDX Articles for Islamic Logic (ID, EN, AR)
  */
-export async function buildIslamicAcademicMdxArticles(
-  story: IslamicAcademicStory
-): Promise<{
+export async function buildIslamicAcademicMdxArticles(story: IslamicAcademicStory): Promise<{
   articles: MdxArticle[]
   qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult>
 }> {
@@ -814,7 +862,7 @@ ${story.reflectiveQuestion.id}
 
 ### Rujukan Akademik & Sumber Otoritatif
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${localizeSourceType(src.type, 'id')} (Tier ${src.tier})*`).join('\n')}
 `
 
   // 2. English Version (International Historical Essay)
@@ -846,7 +894,7 @@ ${story.universalQuestion.en}
 Beneath the arid dust of the Judean desert and the silence of limestone bluffs, these fragile parchment leaves preserve an unparalleled record of how ancient humanity copied scriptures, formulated legal halakhah, and maintained their devotion to the transcendent Creator.
 
 ![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Visual Credit: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
+*Visual Source: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
 
 ---
 
@@ -858,7 +906,7 @@ ${story.archaeologicalDetails.caveAndManuscriptCount.en}
 
 The supreme challenge confronting modern paleographers was not merely locating intact scrolls, but executing an unprecedented feat of scientific forensics: assembling tens of thousands of brittle, decayed fragments—damaged by two millennia of desert weather and biological decay—into coherent textual witnesses.
 
-${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Credit: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Source: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -894,7 +942,7 @@ ${story.scholarlyDebate.alternativeTheories.en}
 
 ${story.scholarlyDebate.scholarlyConsensusOrDispute.en}
 
-${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Credit: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
+${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
@@ -944,7 +992,7 @@ ${story.reflectiveQuestion.en}
 
 ### Primary References & Scholarly Sources
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${localizeSourceType(src.type, 'en')} (Tier ${src.tier})*`).join('\n')}
 `
 
   // 3. Arabic Version (Modern Standard Arabic Intellectual Essay)
@@ -1064,7 +1112,7 @@ ${story.reflectiveQuestion.ar}
 
 ### المصادر والمراجع الأكاديمية المعتمدة
 
-${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (المستوى ${src.tier})*`).join('\n')}
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${localizeSourceType(src.type, 'ar')} (المستوى ${src.tier})*`).join('\n')}
 `
 
   const idArticle: MdxArticle = {

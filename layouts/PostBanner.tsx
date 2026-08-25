@@ -22,10 +22,14 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
   const displayImage =
     images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
 
+  const isRtl = content.language === 'ar' || slug.endsWith('.ar')
+  const articleLang = isRtl ? 'ar' : content.language || 'id'
+  const articleDir = isRtl ? 'rtl' : 'ltr'
+
   return (
     <SectionContainer>
       <ScrollTopAndComment />
-      <article>
+      <article lang={articleLang} dir={articleDir}>
         <div>
           <div className="space-y-1 pb-10 text-center dark:border-gray-700">
             <div className="w-full">
@@ -54,7 +58,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                     className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                     aria-label={`Previous post: ${prev.title}`}
                   >
-                    &larr; {prev.title}
+                    {isRtl ? `${prev.title} ←` : `&larr; ${prev.title}`}
                   </Link>
                 </div>
               )}
@@ -65,7 +69,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                     className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                     aria-label={`Next post: ${next.title}`}
                   >
-                    {next.title} &rarr;
+                    {isRtl ? `→ ${next.title}` : `${next.title} &rarr;`}
                   </Link>
                 </div>
               )}

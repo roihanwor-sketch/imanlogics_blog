@@ -1,14 +1,22 @@
 import { sendWhatsAppNotification } from './wa-notifier'
 
 async function main() {
-  console.log('📱 Dispatching WhatsApp notification...')
+  console.log('📱 Dispatching WhatsApp notification with updated multi-story report...')
   const success = await sendWhatsAppNotification({
     status: 'SUCCESS',
     articlesPublished: [
+      'data/blog/samsung-lpddr6-on-device-ai.mdx',
       'data/blog/nvidia-blackwell-b200-datacenter-benchmarks.mdx',
       'data/blog/qumran-dead-sea-scrolls-monotheism-study.mdx',
     ],
     publishedStories: [
+      {
+        category: 'tech-ai',
+        title:
+          'Samsung dan JEDEC Finalisasi Standar LPDDR6: Bandwidth 12.8 Gbps Mengakselerasi AI On-Device Tanpa Latensi Cloud',
+        slug: 'samsung-lpddr6-on-device-ai',
+        languages: ['id', 'en', 'ar'],
+      },
       {
         category: 'tech-ai',
         title:
@@ -24,11 +32,11 @@ async function main() {
         languages: ['id', 'en', 'ar'],
       },
     ],
-    techArticlesCount: 1,
+    techArticlesCount: 2,
     islamicArticlesCount: 1,
-    totalTrilingualArticles: 6,
-    qcAverageScore: 100,
-    gitPushStatus: 'Ter-push ke origin/main (Commit: 5d2e3b2)',
+    totalTrilingualArticles: 9,
+    qcAverageScore: 98,
+    gitPushStatus: 'Ter-push ke origin/main (Commit: 9870cb0)',
     nextCycleTime: '17:00 (Sore Ini)',
   })
 

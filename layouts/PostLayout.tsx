@@ -33,10 +33,15 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
   const { filePath, path, slug, date, title, tags } = content
   const basePath = path.split('/')[0]
 
+  const isRtl = content.language === 'ar' || slug.endsWith('.ar')
+  const articleLang = isRtl ? 'ar' : content.language || 'id'
+  const articleDir = isRtl ? 'rtl' : 'ltr'
+  const dateLocale = isRtl ? 'ar-EG' : articleLang === 'id' ? 'id-ID' : 'en-US'
+
   return (
     <SectionContainer>
       <ScrollTopAndComment />
-      <article>
+      <article lang={articleLang} dir={articleDir}>
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
           <header className="pt-6 xl:pb-6">
             <div className="space-y-1 text-center">
@@ -45,7 +50,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                   <dt className="sr-only">Published on</dt>
                   <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
                     <time dateTime={date}>
-                      {new Date(date).toLocaleDateString(siteMetadata.locale, postDateTemplate)}
+                      {new Date(date).toLocaleDateString(dateLocale, postDateTemplate)}
                     </time>
                   </dd>
                 </div>
@@ -97,10 +102,20 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               <div className="prose dark:prose-invert max-w-none pt-10 pb-8">{children}</div>
               <div className="pt-6 pb-6 text-sm text-gray-700 dark:text-gray-300">
                 <Link href={discussUrl(path)} rel="nofollow">
-                  Discuss on Twitter
+                  {isRtl
+                    ? 'ناقش على تويتر'
+                    : articleLang === 'id'
+                      ? 'Diskusikan di Twitter'
+                      : 'Discuss on Twitter'}
                 </Link>
                 {` • `}
-                <Link href={editUrl(filePath)}>View on GitHub</Link>
+                <Link href={editUrl(filePath)}>
+                  {isRtl
+                    ? 'عرض المصدر على GitHub'
+                    : articleLang === 'id'
+                      ? 'Lihat di GitHub'
+                      : 'View on GitHub'}
+                </Link>
               </div>
               {siteMetadata.comments && (
                 <div
@@ -116,9 +131,9 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                 {tags && (
                   <div className="py-4 xl:py-8">
                     <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                      Tags
+                      {isRtl ? 'الوسوم' : articleLang === 'id' ? 'Tagar' : 'Tags'}
                     </h2>
-                    <div className="flex flex-wrap">
+                    <div className="flex flex-wrap gap-2">
                       {tags.map((tag) => (
                         <Tag key={tag} text={tag} />
                       ))}
@@ -130,7 +145,11 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     {prev && prev.path && (
                       <div>
                         <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                          Previous Article
+                          {isRtl
+                            ? 'المقال السابق'
+                            : articleLang === 'id'
+                              ? 'Artikel Sebelumnya'
+                              : 'Previous Article'}
                         </h2>
                         <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
                           <Link href={`/${prev.path}`}>{prev.title}</Link>
@@ -140,7 +159,11 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     {next && next.path && (
                       <div>
                         <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                          Next Article
+                          {isRtl
+                            ? 'المقال التالي'
+                            : articleLang === 'id'
+                              ? 'Artikel Selanjutnya'
+                              : 'Next Article'}
                         </h2>
                         <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
                           <Link href={`/${next.path}`}>{next.title}</Link>
@@ -156,7 +179,11 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                   className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                   aria-label="Back to the blog"
                 >
-                  &larr; Back to the blog
+                  {isRtl
+                    ? 'العودة إلى المدونة ←'
+                    : articleLang === 'id'
+                      ? '← Kembali ke blog'
+                      : '← Back to the blog'}
                 </Link>
               </div>
             </footer>

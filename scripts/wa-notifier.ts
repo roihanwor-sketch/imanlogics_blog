@@ -166,8 +166,13 @@ export async function sendWhatsAppNotification(
     const success = await new Promise<boolean>((resolve) => {
       exec(pythonCmd, { cwd: AGENT_KULIAH_DIR }, (error, stdout, stderr) => {
         const outStr = (stdout || '') + (stderr || '')
-        if (outStr.includes('Failed to create a ProcessSingleton') || outStr.includes('being used by another process')) {
-          console.warn(`⏳ [WhatsApp Queue] Profile in use by D:\\KULIAH\\AGENT (Attempt ${attempt}/${maxRetries}). Waiting before retry...`)
+        if (
+          outStr.includes('Failed to create a ProcessSingleton') ||
+          outStr.includes('being used by another process')
+        ) {
+          console.warn(
+            `⏳ [WhatsApp Queue] Profile in use by D:\\KULIAH\\AGENT (Attempt ${attempt}/${maxRetries}). Waiting before retry...`
+          )
           resolve(false)
           return
         }

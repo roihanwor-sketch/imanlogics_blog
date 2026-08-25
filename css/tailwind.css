@@ -124,6 +124,122 @@
   }
 }
 
+/* ==========================================================================
+   GLOBAL ARTICLE TYPOGRAPHY & MULTILINGUAL (ID / EN / AR) STYLING
+   ========================================================================== */
+
+/* LTR Body Paragraphs (Indonesian & English): Justified Alignment */
+article:not([dir='rtl']) .prose > p,
+article[dir='ltr'] .prose > p,
+article[lang='id'] .prose > p,
+article[lang='en'] .prose > p {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
+/* RTL Body Paragraphs (Arabic): Semantic Right-to-Left, Justified, Generous Line-Height */
+article[dir='rtl'],
+[dir='rtl'] {
+  direction: rtl;
+}
+
+article[dir='rtl'] .prose,
+article[lang='ar'] .prose {
+  direction: rtl;
+  text-align: right;
+}
+
+article[dir='rtl'] .prose > p,
+article[lang='ar'] .prose > p {
+  text-align: justify;
+  text-justify: inter-word;
+  line-height: 2.1;
+  word-spacing: 0.04em;
+  direction: rtl;
+}
+
+/* Headings: Clean LTR Left-Aligned, RTL Right-Aligned */
+article:not([dir='rtl']) .prose :where(h1, h2, h3, h4, h5, h6),
+article[dir='ltr'] .prose :where(h1, h2, h3, h4, h5, h6),
+article[lang='id'] .prose :where(h1, h2, h3, h4, h5, h6),
+article[lang='en'] .prose :where(h1, h2, h3, h4, h5, h6) {
+  text-align: left;
+}
+
+article[dir='rtl'] .prose :where(h1, h2, h3, h4, h5, h6),
+article[lang='ar'] .prose :where(h1, h2, h3, h4, h5, h6) {
+  text-align: right;
+  letter-spacing: normal;
+  line-height: 1.6;
+}
+
+/* Blockquotes in RTL */
+article[dir='rtl'] .prose blockquote,
+article[lang='ar'] .prose blockquote {
+  border-right-width: 4px;
+  border-left-width: 0;
+  padding-right: 1.25rem;
+  padding-left: 0;
+  text-align: justify;
+  font-style: normal;
+}
+
+/* Lists in RTL */
+article[dir='rtl'] .prose ul,
+article[lang='ar'] .prose ul {
+  padding-right: 1.75rem;
+  padding-left: 0;
+  list-style-type: disc;
+  text-align: right;
+}
+
+article[dir='rtl'] .prose ol,
+article[lang='ar'] .prose ol {
+  padding-right: 1.75rem;
+  padding-left: 0;
+  list-style-type: decimal;
+  text-align: right;
+}
+
+article[dir='rtl'] .prose li,
+article[lang='ar'] .prose li {
+  text-align: right;
+}
+
+/* Captions and Visual Sourcing */
+article[dir='rtl'] .prose em,
+article[dir='rtl'] .prose figcaption,
+article[lang='ar'] .prose em,
+article[lang='ar'] .prose figcaption {
+  text-align: right;
+}
+
+/* Do NOT justify UI elements, navigation, buttons, code blocks, or tables */
+nav,
+button,
+.btn-primary,
+.btn-glass,
+table,
+thead,
+tbody,
+tr,
+th,
+td,
+pre,
+code,
+.katex,
+.katex-display {
+  text-align: initial;
+}
+
+article[dir='rtl'] .prose pre,
+article[dir='rtl'] .prose code,
+article[dir='rtl'] .katex-display {
+  direction: ltr;
+  text-align: left;
+}
+
 .task-list-item::before {
   @apply hidden;
 }
