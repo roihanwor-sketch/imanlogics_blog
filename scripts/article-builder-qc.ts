@@ -1,64 +1,61 @@
-import fs from 'fs';
-import path from 'path';
-import { TechNewsStory } from './tech-researcher';
-import { IslamicAcademicStory } from './islamic-logic-researcher';
-import { discoverSafeImagesForTopic, SafeImage } from './image-researcher';
-
-export interface ImageCreditRecord {
-  url: string;
-  source: string;
-  creator: string;
-  license: string;
-  licenseUrl: string;
-  downloadDate: string;
-  articleAssociation: string;
-}
+import fs from 'fs'
+import path from 'path'
+import { TechNewsStory, TraceableMetric } from './tech-researcher'
+import { IslamicAcademicStory, TraceableHistoricalMetric } from './islamic-logic-researcher'
+import { discoverSafeImagesForTopic, ImageCreditRecord } from './image-researcher'
 
 export interface MdxArticle {
-  filename: string;
-  filepath: string;
-  language: 'id' | 'en' | 'ar';
+  filename: string
+  filepath: string
+  language: 'id' | 'en' | 'ar'
   frontmatter: {
-    title: string;
-    date: string;
-    tags: string[];
-    draft: boolean;
-    summary: string;
-    images: string[];
-    authors: string[];
-    language: 'id' | 'en' | 'ar';
-    translation_group: string;
-    original_language: 'id';
-    articleType: string;
-    category: 'tech-ai' | 'islamic-logic';
-    sources: Array<{ name: string; url: string; tier: number; type?: string }>;
-    imageCredits: ImageCreditRecord[];
-  };
-  content: string;
-  publishedHoursAgo?: number;
+    title: string
+    date: string
+    tags: string[]
+    draft: boolean
+    summary: string
+    images: string[]
+    authors: string[]
+    language: 'id' | 'en' | 'ar'
+    translation_group: string
+    original_language: 'id'
+    articleType: string
+    category: 'tech-ai' | 'islamic-logic'
+    sources: Array<{
+      name: string
+      url: string
+      tier: number
+      type?: string
+      publishedDate?: string
+    }>
+    imageCredits: ImageCreditRecord[]
+  }
+  content: string
+  publishedHoursAgo?: number
 }
 
 export interface HumanEditorialScoreResult {
-  score: number; // 0 - 100
-  passed: boolean;
-  editorialDecision: 'PUBLISH_PREFERRED' | 'PUBLISH_CONDITIONAL' | 'REJECT_HARD_FAIL' | 'REJECT_LOW_SCORE';
-  hardFailTriggered: boolean;
-  hardFailReason?: string;
+  score: number // 0 - 100
+  passed: boolean
+  editorialDecision:
+    'PUBLISH_PREFERRED' | 'PUBLISH_CONDITIONAL' | 'REJECT_HARD_FAIL' | 'REJECT_LOW_SCORE'
+  hardFailTriggered: boolean
+  hardFailReason?: string
   breakdown: {
-    freshnessAndTiming: number; // Max 15
-    factualAccuracyAndRigor: number; // Max 20
-    sourceQualityAndAttribution: number; // Max 15
-    informationDensityAndDepth: number; // Max 15
-    narrativeAndStorytelling: number; // Max 10
-    originalInsightAndEconomics: number; // Max 10
-    intellectualHonestyAndNuance: number; // Max 5
-    visualLicensingAndProvenance: number; // Max 5
-    languageQualityAndParity: number; // Max 5
-  };
-  warnings: string[];
+    freshnessAndTiming: number // Max 15
+    factualAccuracyAndRigor: number // Max 20
+    sourceQualityAndAttribution: number // Max 15
+    informationDensityAndDepth: number // Max 15
+    narrativeAndStorytelling: number // Max 10
+    originalInsightAndEconomics: number // Max 10
+    intellectualHonestyAndNuance: number // Max 5
+    visualLicensingAndProvenance: number // Max 5
+    languageQualityAndParity: number // Max 5
+  }
+  warnings: string[]
 }
 
-export const MIN_EDITORIAL_PASSING_SCORE = 85;
+export const MIN_EDITORIAL_PASSING_SCORE = 85
 
 const BANNED_AI_FILLER_PATTERNS = [
   /di era digital yang terus berkembang/i,
@@ -74,7 +71,7 @@ const BANNED_AI_FILLER_PATTERNS = [
   /في عصرنا الرقمي المتسارع/i,
   /لا يخفى على أحد أن/i,
   /دعونا نغوص في تفاصيل/i,
-];
+]
 
 // Intellectual Overreach / Apologetic Leap Patterns (Strictly Banned)
 const BANNED_APOLOGETIC_LEAP_PATTERNS = [
@@ -82,33 +79,33 @@ const BANNED_APOLOGETIC_LEAP_PATTERNS = [
   /dead sea scrolls prove islam/i,
   /penemuan ini membuktikan ramalan al-quran secara langsung/i,
   /tidak ada keraguan lagi bahwa para ahli sepakat dengan/i,
-];
+]
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/^-+|-+$/g, '')
 }
 
 /**
  * Human-Level Multidimensional Editorial QC Gatekeeper (100 Points Matrix)
  */
 export function runHumanLevelEditorialQC(article: MdxArticle): HumanEditorialScoreResult {
-  const warnings: string[] = [];
-  let hardFailTriggered = false;
-  let hardFailReason: string | undefined;
+  const warnings: string[] = []
+  let hardFailTriggered = false
+  let hardFailReason: string | undefined
 
-  const content = article.content;
-  const wordCount = content.trim().split(/\s+/).length;
+  const content = article.content
+  const wordCount = content.trim().split(/\s+/).length
 
   // 1. HARD-FAIL CHECK: Zero AI Filler Policy
   for (const pattern of BANNED_AI_FILLER_PATTERNS) {
     if (pattern.test(content)) {
-      hardFailTriggered = true;
-      hardFailReason = `Zero-Filler Gate Failed: Detected banned generic AI filler phrase matching ${pattern.toString()}`;
-      break;
+      hardFailTriggered = true
+      hardFailReason = `Zero-Filler Gate Failed: Detected banned generic AI filler phrase matching ${pattern.toString()}`
+      break
     }
   }
 
@@ -116,46 +113,62 @@ export function runHumanLevelEditorialQC(article: MdxArticle): HumanEditorialSco
   if (!hardFailTriggered) {
     for (const pattern of BANNED_APOLOGETIC_LEAP_PATTERNS) {
       if (pattern.test(content)) {
-        hardFailTriggered = true;
-        hardFailReason = `Intellectual Honesty Gate Failed: Uncalibrated leap detected (${pattern.toString()}). Material evidence must be delineated from theological interpretation.`;
-        break;
+        hardFailTriggered = true
+        hardFailReason = `Intellectual Honesty Gate Failed: Uncalibrated leap detected (${pattern.toString()}). Material evidence must be delineated from theological interpretation.`
+        break
       }
     }
   }
 
   // 3. HARD-FAIL CHECK: Freshness Gate for Breaking News
-  if (!hardFailTriggered && article.frontmatter.articleType === 'Breaking News') {
-    const hours = article.publishedHoursAgo ?? 0;
+  if (
+    !hardFailTriggered &&
+    (article.frontmatter.articleType === 'Breaking News' ||
+      article.frontmatter.articleType === 'NEWS')
+  ) {
+    const hours = article.publishedHoursAgo ?? 0
     if (hours > 48) {
-      hardFailTriggered = true;
-      hardFailReason = `Freshness Gate Failed: Story event is ${hours}h old (>48h). Stale events cannot be published as "Breaking News" today.`;
+      hardFailTriggered = true
+      hardFailReason = `Freshness Gate Failed: Story event is ${hours}h old (>48h). Stale events cannot be published as "Breaking News" today.`
     }
   }
 
   // 4. HARD-FAIL CHECK: Mandatory "Why Should I Care?" Section
   if (!hardFailTriggered) {
-    const hasTechCareSection = /Apakah Layanan AI|Ekonomi Data Center|Will AI Services|Datacenter Economics|اقتصاديات|هل ستنخفض/i.test(content);
-    const hasIslamicCareSection = /Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية/i.test(content);
-    
+    const hasTechCareSection =
+      /Apakah Layanan AI|Ekonomi Data Center|Will AI Services|Datacenter Economics|اقتصاديات|هل ستنخفض/i.test(
+        content
+      )
+    const hasIslamicCareSection =
+      /Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية/i.test(
+        content
+      )
+
     if (article.frontmatter.category === 'tech-ai' && !hasTechCareSection) {
-      hardFailTriggered = true;
-      hardFailReason = `"Why Should I Care" Gate Failed: Tech article lacks explicit stakeholder impact & economic analysis section.`;
+      hardFailTriggered = true
+      hardFailReason = `"Why Should I Care" Gate Failed: Tech article lacks explicit stakeholder impact & economic analysis section.`
     } else if (article.frontmatter.category === 'islamic-logic' && !hasIslamicCareSection) {
-      hardFailTriggered = true;
-      hardFailReason = `"Why Should I Care" Gate Failed: Islamic logic essay lacks explicit universal inquiry & epistemological boundary section.`;
+      hardFailTriggered = true
+      hardFailReason = `"Why Should I Care" Gate Failed: Islamic logic essay lacks explicit universal inquiry & epistemological boundary section.`
     }
   }
 
   // 5. HARD-FAIL CHECK: Source Verification (Min 2 Verified Sources)
-  if (!hardFailTriggered && (!article.frontmatter.sources || article.frontmatter.sources.length < 2)) {
-    hardFailTriggered = true;
-    hardFailReason = `Source Gate Failed: Article must cite at least 2 verified institutional Tier 1/Tier 2 sources.`;
+  if (
+    !hardFailTriggered &&
+    (!article.frontmatter.sources || article.frontmatter.sources.length < 2)
+  ) {
+    hardFailTriggered = true
+    hardFailReason = `Source Gate Failed: Article must cite at least 2 verified institutional Tier 1/Tier 2 sources.`
   }
 
   // 6. HARD-FAIL CHECK: Image Provenance & Licensing Metadata
-  if (!hardFailTriggered && (!article.frontmatter.imageCredits || article.frontmatter.imageCredits.length === 0)) {
-    hardFailTriggered = true;
-    hardFailReason = `Visual Provenance Gate Failed: Article must include verified image licensing and copyright provenance records.`;
+  if (
+    !hardFailTriggered &&
+    (!article.frontmatter.imageCredits || article.frontmatter.imageCredits.length === 0)
+  ) {
+    hardFailTriggered = true
+    hardFailReason = `Visual Provenance Gate Failed: Article must include verified image licensing and copyright provenance records.`
   }
 
   // 7. Calculate 100-Point Editorial Breakdown
@@ -169,30 +182,30 @@ export function runHumanLevelEditorialQC(article: MdxArticle): HumanEditorialSco
     intellectualHonestyAndNuance: 5,
     visualLicensingAndProvenance: 5,
     languageQualityAndParity: 5,
-  };
+  }
 
   if (hardFailTriggered) {
-    breakdown.freshnessAndTiming = 0;
-    breakdown.factualAccuracyAndRigor = 0;
-    breakdown.intellectualHonestyAndNuance = 0;
-    breakdown.informationDensityAndDepth = 0;
+    breakdown.freshnessAndTiming = 0
+    breakdown.factualAccuracyAndRigor = 0
+    breakdown.intellectualHonestyAndNuance = 0
+    breakdown.informationDensityAndDepth = 0
   } else {
-    // Deduct points for borderline word counts without failing
-    if (wordCount < 600) {
-      breakdown.informationDensityAndDepth = 10;
-      warnings.push(`Article word count is relatively compact (${wordCount} words).`);
+    // Dynamic calibration for information density without arbitrary word-count forcing
+    if (wordCount < 500) {
+      breakdown.informationDensityAndDepth = 10
+      warnings.push(`Article word count is relatively compact (${wordCount} words).`)
     }
   }
 
   const totalScore = hardFailTriggered
     ? 0
-    : Object.values(breakdown).reduce((sum, val) => sum + val, 0);
+    : Object.values(breakdown).reduce((sum, val) => sum + val, 0)
 
-  let editorialDecision: HumanEditorialScoreResult['editorialDecision'] = 'REJECT_HARD_FAIL';
+  let editorialDecision: HumanEditorialScoreResult['editorialDecision'] = 'REJECT_HARD_FAIL'
   if (!hardFailTriggered) {
-    if (totalScore >= 90) editorialDecision = 'PUBLISH_PREFERRED';
-    else if (totalScore >= MIN_EDITORIAL_PASSING_SCORE) editorialDecision = 'PUBLISH_CONDITIONAL';
-    else editorialDecision = 'REJECT_LOW_SCORE';
+    if (totalScore >= 90) editorialDecision = 'PUBLISH_PREFERRED'
+    else if (totalScore >= MIN_EDITORIAL_PASSING_SCORE) editorialDecision = 'PUBLISH_CONDITIONAL'
+    else editorialDecision = 'REJECT_LOW_SCORE'
   }
 
   return {
@@ -203,48 +216,58 @@ export function runHumanLevelEditorialQC(article: MdxArticle): HumanEditorialSco
     hardFailReason,
     breakdown,
     warnings,
-  };
+  }
 }
 
-export const runMultidimensionalQC = runHumanLevelEditorialQC;
+export const runMultidimensionalQC = runHumanLevelEditorialQC
 
 /**
  * Build Long-Form Investigative Technology Journalism MDX Articles (ID, EN, AR)
  */
 export async function buildTechMdxArticles(
   story: TechNewsStory
-): Promise<{ articles: MdxArticle[]; qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult> }> {
-  console.log(`✍️ [Tech Journalism Builder] Crafting 9-stage investigative feature for: "${story.title}"`);
+): Promise<{
+  articles: MdxArticle[]
+  qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult>
+}> {
+  console.log(
+    `✍️ [Tech Journalism Builder] Crafting 9-stage investigative feature for: "${story.title}"`
+  )
 
-  const blogDir = path.join(process.cwd(), 'data', 'blog');
-  if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
+  const blogDir = path.join(process.cwd(), 'data', 'blog')
+  if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true })
 
-  const slugBase = slugify(story.id);
-  const translationGroup = `tg-${slugBase}`;
-  const today = story.eventDate || new Date().toISOString().split('T')[0];
+  const slugBase = slugify(story.id)
+  const translationGroup = `tg-${slugBase}`
+  const today = story.eventDate || new Date().toISOString().split('T')[0]
 
-  const imageResult = await discoverSafeImagesForTopic(story.keywords, 'tech-ai', 2, 3);
-  const images = imageResult.images;
-  const coverImage = images[0]?.url || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80';
+  const imageResult = await discoverSafeImagesForTopic(story.keywords, 'tech-ai', 2, 3, slugBase)
+  const images = imageResult.images
+  const coverImage =
+    images[0]?.localPath ||
+    images[0]?.url ||
+    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80'
 
-  const imageCredits: ImageCreditRecord[] = images.map(img => ({
+  const imageCredits: ImageCreditRecord[] = images.map((img, idx) => ({
     url: img.url,
-    source: img.source,
+    localPath: img.localPath || img.url,
+    sourceWebsite: img.source,
     creator: img.author,
     license: img.license,
     licenseUrl: img.licenseUrl,
     downloadDate: today,
     articleAssociation: slugBase,
-  }));
+    attributionText: `${img.source} / Foto oleh ${img.author} (${img.license})`,
+  }))
 
-  // 1. ID Article (9-Stage Story Architecture)
+  // 1. ID Article (Indonesian Tech Journalism)
   const idContent = `---
 title: ${JSON.stringify(story.titles.id)}
 date: '${today}'
 tags: ${JSON.stringify(story.keywords)}
 draft: false
 summary: ${JSON.stringify(story.summary.id)}
-images: ${JSON.stringify(images.map(img => img.url))}
+images: ${JSON.stringify(images.map((img) => img.localPath || img.url))}
 authors: ['default']
 language: 'id'
 translation_group: '${translationGroup}'
@@ -259,9 +282,11 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ${story.narrativeHook.id}
 
-Di tengah ledakan komputasi kecerdasan buatan, arsitektur Blackwell memperkenalkan pergeseran paradigma: bukan sekadar memperbanyak core grafis, melainkan merestrukturisasi bagaimana angka-angka floating point diproses, bagaimana data dialirkan antar-chip, dan bagaimana seluruh ekosistem rak data center beroperasi secara termal dan elektrikal.
+${story.universalQuestion.id}
 
-![${images[0]?.altText.id || story.titles.id}](${images[0]?.url || coverImage})
+Di tengah ledakan komputasi kecerdasan buatan, pertempuran hardware masa kini memperkenalkan pergeseran paradigma: bukan sekadar memperbanyak core grafis, melainkan merestrukturisasi bagaimana angka-angka floating point diproses, bagaimana data dialirkan antar-chip, dan bagaimana seluruh ekosistem rak data center beroperasi secara termal dan elektrikal.
+
+![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Sumber visual: ${images[0]?.source} / Foto oleh ${images[0]?.author} (${images[0]?.license})*
 
 ---
@@ -274,7 +299,7 @@ Dalam diskursus teknologi populer, sering kali terjadi kerancuan antara keping a
 2. **${story.disambiguation.hardwareLevels.gb200Superchip.id}**
 3. **${story.disambiguation.hardwareLevels.gb200Nvl72Rack.id}**
 
-${images[1] ? `![${images[1].altText.id}](${images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -306,46 +331,45 @@ ${story.fp4Analysis.accuracyTradeoffs.id}
 
 Bagi para engineer dan pengambil keputusan infrastruktur, memisahkan antara klaim peluncuran dan hasil benchmark dunia nyata adalah hal krusial:
 
-* **${story.benchmarks.officialLaunchClaim.claimText.id}**
-  * *Sistem Pengujian Resmi:* ${story.benchmarks.officialLaunchClaim.systemTested}
-  * *Model yang Diuji:* ${story.benchmarks.officialLaunchClaim.modelTested}
-  * *Baseline Pembanding:* ${story.benchmarks.officialLaunchClaim.comparisonBaseline}
+* **${story.benchmarkAnalysis.officialLaunchClaim.id}**
+
+#### Metrik Terverifikasi & Sumber Baseline
+
+${story.traceableMetrics.map((m, idx) => `* **Metrik ${idx + 1} (${m.claim}):** ${m.exactValue} ${m.unit} vs ${m.baseline} (${m.attributionText})`).join('\n')}
 
 #### Realitas Pengujian Independen di Lapangan
 
-${story.benchmarks.independent2026Benchmarks.costPerMillionTokens.id}
-
-${story.benchmarks.independent2026Benchmarks.realWorldSpeedup.id}
+${story.benchmarkAnalysis.independent2026Benchmarks.id}
 
 ---
 
 ### V. Ekonomi Data Center: Densitas Daya 120 kW dan Pendingin Cairan
 
-${story.benchmarks.economicAnalysis.costPerToken.id}
+${story.benchmarkAnalysis.economicAnalysis.costPerToken.id}
 
-${story.benchmarks.economicAnalysis.powerAndCooling.id}
+${story.benchmarkAnalysis.economicAnalysis.powerAndCooling.id}
 
 ---
 
 ### VI. Apakah Layanan AI Akan Otomatis Lebih Murah bagi Pengguna?
 
-${story.benchmarks.economicAnalysis.consumerPriceImpact.id}
+${story.benchmarkAnalysis.economicAnalysis.consumerPriceImpact.id}
 
 ---
 
 ### Rujukan Arsitektur & Sumber Primer Otoritatif
 
-${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
-`;
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier}${src.publishedDate ? `, Terbit: ${src.publishedDate}` : ''})*`).join('\n')}
+`
 
-  // 2. EN Article
+  // 2. EN Article (International Tech Journalism)
   const enContent = `---
 title: ${JSON.stringify(story.titles.en)}
 date: '${today}'
 tags: ${JSON.stringify(story.keywords)}
 draft: false
 summary: ${JSON.stringify(story.summary.en)}
-images: ${JSON.stringify(images.map(img => img.url))}
+images: ${JSON.stringify(images.map((img) => img.localPath || img.url))}
 authors: ['default']
 language: 'en'
 translation_group: '${translationGroup}'
@@ -360,9 +384,11 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ${story.narrativeHook.en}
 
-Amid the global AI compute scaling race, the Blackwell architecture introduces a fundamental paradigm shift: rather than simply packing more graphics compute units onto a wafer, it fundamentally overhauls how floating-point numbers are calculated, how memory travels between chiplets, and how multi-megawatt server clusters manage power and thermodynamics.
+${story.universalQuestion.en}
 
-![${images[0]?.altText.en || story.titles.en}](${images[0]?.url || coverImage})
+Amid the global AI compute scaling race, semiconductor architecture is undergoing a fundamental paradigm shift: rather than simply packing more graphics compute units onto a wafer, engineers are overhauling how floating-point numbers are calculated, how memory travels between chiplets, and how multi-megawatt server clusters manage power and thermodynamics.
+
+![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Visual Credit: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
 
 ---
@@ -375,7 +401,7 @@ In mainstream enterprise commentary, system-level numbers are frequently conflat
 2. **${story.disambiguation.hardwareLevels.gb200Superchip.en}**
 3. **${story.disambiguation.hardwareLevels.gb200Nvl72Rack.en}**
 
-${images[1] ? `![${images[1].altText.en}](${images[1].url})\n*Visual Credit: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Credit: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -407,46 +433,45 @@ ${story.fp4Analysis.accuracyTradeoffs.en}
 
 For infrastructure engineers and cloud architects, rigorous evaluation requires distinguishing vendor launch headlines from verifiable datacenter telemetry:
 
-* **${story.benchmarks.officialLaunchClaim.claimText.en}**
-  * *Vendor Test Configuration:* ${story.benchmarks.officialLaunchClaim.systemTested}
-  * *Target Workload:* ${story.benchmarks.officialLaunchClaim.modelTested}
-  * *Comparative Baseline:* ${story.benchmarks.officialLaunchClaim.comparisonBaseline}
+* **${story.benchmarkAnalysis.officialLaunchClaim.en}**
+
+#### Verified Metrics & Baseline Attributions
+
+${story.traceableMetrics.map((m, idx) => `* **Metric ${idx + 1} (${m.claim}):** ${m.exactValue} ${m.unit} vs ${m.baseline} (${m.source})`).join('\n')}
 
 #### The Independent 2026 Benchmark Data
 
-${story.benchmarks.independent2026Benchmarks.costPerMillionTokens.en}
-
-${story.benchmarks.independent2026Benchmarks.realWorldSpeedup.en}
+${story.benchmarkAnalysis.independent2026Benchmarks.en}
 
 ---
 
 ### V. Datacenter Economics: 120 kW Rack Density & Direct Liquid Cooling
 
-${story.benchmarks.economicAnalysis.costPerToken.en}
+${story.benchmarkAnalysis.economicAnalysis.costPerToken.en}
 
-${story.benchmarks.economicAnalysis.powerAndCooling.en}
+${story.benchmarkAnalysis.economicAnalysis.powerAndCooling.en}
 
 ---
 
 ### VI. Will AI Services Automatically Become Cheaper for Consumers?
 
-${story.benchmarks.economicAnalysis.consumerPriceImpact.en}
+${story.benchmarkAnalysis.economicAnalysis.consumerPriceImpact.en}
 
 ---
 
 ### Primary Architectural References & Authoritative Sources
 
-${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
-`;
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier}${src.publishedDate ? `, Published: ${src.publishedDate}` : ''})*`).join('\n')}
+`
 
-  // 3. AR Article
+  // 3. AR Article (Modern Standard Arabic Intellectual Journalism)
   const arContent = `---
 title: ${JSON.stringify(story.titles.ar)}
 date: '${today}'
 tags: ${JSON.stringify(story.keywords)}
 draft: false
 summary: ${JSON.stringify(story.summary.ar)}
-images: ${JSON.stringify(images.map(img => img.url))}
+images: ${JSON.stringify(images.map((img) => img.localPath || img.url))}
 authors: ['default']
 language: 'ar'
 translation_group: '${translationGroup}'
@@ -461,9 +486,11 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ${story.narrativeHook.ar}
 
-في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تقدم معمارية Blackwell تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
+${story.universalQuestion.ar}
 
-![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.url || coverImage})
+في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تشهد هندسة أشباه الموصلات تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
+
+![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
 *مصدر الصورة: ${images[0]?.source} / تصوير ${images[0]?.author} (${images[0]?.license})*
 
 ---
@@ -476,7 +503,7 @@ ${story.narrativeHook.ar}
 2. **${story.disambiguation.hardwareLevels.gb200Superchip.ar}**
 3. **${story.disambiguation.hardwareLevels.gb200Nvl72Rack.ar}**
 
-${images[1] ? `![${images[1].altText.ar}](${images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -502,37 +529,36 @@ ${story.fp4Analysis.accuracyTradeoffs.ar}
 
 ### رابعاً: التحقق من الأداء: ادعاءات الإطلاق الرسمية مقابل واقع الاختبارات الميدانية 2026
 
-* **${story.benchmarks.officialLaunchClaim.claimText.ar}**
-  * *النظام المختبر رسمياً:* ${story.benchmarks.officialLaunchClaim.systemTested}
-  * *النموذج المختبر:* ${story.benchmarks.officialLaunchClaim.modelTested}
-  * *خط الأساس المقارن:* ${story.benchmarks.officialLaunchClaim.comparisonBaseline}
+* **${story.benchmarkAnalysis.officialLaunchClaim.ar}**
+
+#### المؤشرات الموثقة ومصادر القياس المعتمدة
+
+${story.traceableMetrics.map((m, idx) => `* **المؤشر ${idx + 1} (${m.claim}):** ${m.exactValue} ${m.unit} مقارنة بـ ${m.baseline} (${m.source})`).join('\n')}
 
 #### واقع الاختبارات المستقلة في مراكز البيانات
 
-${story.benchmarks.independent2026Benchmarks.costPerMillionTokens.ar}
-
-${story.benchmarks.independent2026Benchmarks.realWorldSpeedup.ar}
+${story.benchmarkAnalysis.independent2026Benchmarks.ar}
 
 ---
 
 ### خامساً: اقتصاديات مراكز البيانات: كثافة طاقة تصل إلى 120 كيلوواط والتبريد السائل
 
-${story.benchmarks.economicAnalysis.costPerToken.ar}
+${story.benchmarkAnalysis.economicAnalysis.costPerToken.ar}
 
-${story.benchmarks.economicAnalysis.powerAndCooling.ar}
+${story.benchmarkAnalysis.economicAnalysis.powerAndCooling.ar}
 
 ---
 
 ### سادساً: هل ستنخفض تكلفة خدمات الذكاء الاصطناعي للمستخدم النهائي؟
 
-${story.benchmarks.economicAnalysis.consumerPriceImpact.ar}
+${story.benchmarkAnalysis.economicAnalysis.consumerPriceImpact.ar}
 
 ---
 
 ### المصادر الفنية والمراجع الرسمية المعتمدة
 
-${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (المستوى ${src.tier})*`).join('\n')}
-`;
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (المستوى ${src.tier}${src.publishedDate ? `، تاريخ النشر: ${src.publishedDate}` : ''})*`).join('\n')}
+`
 
   const idArticle: MdxArticle = {
     filename: `${slugBase}.mdx`,
@@ -545,7 +571,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       tags: story.keywords,
       draft: false,
       summary: story.summary.id,
-      images: images.map(img => img.url),
+      images: images.map((img) => img.localPath || img.url),
       authors: ['default'],
       language: 'id',
       translation_group: translationGroup,
@@ -556,7 +582,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       imageCredits,
     },
     content: idContent,
-  };
+  }
 
   const enArticle: MdxArticle = {
     filename: `${slugBase}.en.mdx`,
@@ -569,7 +595,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       tags: story.keywords,
       draft: false,
       summary: story.summary.en,
-      images: images.map(img => img.url),
+      images: images.map((img) => img.localPath || img.url),
       authors: ['default'],
       language: 'en',
       translation_group: translationGroup,
@@ -580,7 +606,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       imageCredits,
     },
     content: enContent,
-  };
+  }
 
   const arArticle: MdxArticle = {
     filename: `${slugBase}.ar.mdx`,
@@ -593,7 +619,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       tags: story.keywords,
       draft: false,
       summary: story.summary.ar,
-      images: images.map(img => img.url),
+      images: images.map((img) => img.localPath || img.url),
       authors: ['default'],
       language: 'ar',
       translation_group: translationGroup,
@@ -604,16 +630,16 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       imageCredits,
     },
     content: arContent,
-  };
+  }
 
-  const qcId = runHumanLevelEditorialQC(idArticle);
-  const qcEn = runHumanLevelEditorialQC(enArticle);
-  const qcAr = runHumanLevelEditorialQC(arArticle);
+  const qcId = runHumanLevelEditorialQC(idArticle)
+  const qcEn = runHumanLevelEditorialQC(enArticle)
+  const qcAr = runHumanLevelEditorialQC(arArticle)
 
   return {
     articles: [idArticle, enArticle, arArticle],
     qcResults: { id: qcId, en: qcEn, ar: qcAr },
-  };
+  }
 }
 
 /**
@@ -621,29 +647,45 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
  */
 export async function buildIslamicAcademicMdxArticles(
   story: IslamicAcademicStory
-): Promise<{ articles: MdxArticle[]; qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult> }> {
-  console.log(`✍️ [Islamic Academic Builder] Crafting 9-stage investigative feature for: "${story.title}"`);
+): Promise<{
+  articles: MdxArticle[]
+  qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult>
+}> {
+  console.log(
+    `✍️ [Islamic Academic Builder] Crafting 9-stage investigative feature for: "${story.title}"`
+  )
 
-  const blogDir = path.join(process.cwd(), 'data', 'blog');
-  if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
+  const blogDir = path.join(process.cwd(), 'data', 'blog')
+  if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true })
 
-  const slugBase = slugify(story.id);
-  const translationGroup = `tg-${slugBase}`;
-  const today = story.eventDate || new Date().toISOString().split('T')[0];
+  const slugBase = slugify(story.id)
+  const translationGroup = `tg-${slugBase}`
+  const today = story.eventDate || new Date().toISOString().split('T')[0]
 
-  const imageResult = await discoverSafeImagesForTopic(story.keywords, 'islamic-logic', 2, 3);
-  const images = imageResult.images;
-  const coverImage = images[0]?.url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80';
+  const imageResult = await discoverSafeImagesForTopic(
+    story.keywords,
+    'islamic-logic',
+    2,
+    3,
+    slugBase
+  )
+  const images = imageResult.images
+  const coverImage =
+    images[0]?.localPath ||
+    images[0]?.url ||
+    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80'
 
-  const imageCredits: ImageCreditRecord[] = images.map(img => ({
+  const imageCredits: ImageCreditRecord[] = images.map((img, idx) => ({
     url: img.url,
-    source: img.source,
+    localPath: img.localPath || img.url,
+    sourceWebsite: img.source,
     creator: img.author,
     license: img.license,
     licenseUrl: img.licenseUrl,
     downloadDate: today,
     articleAssociation: slugBase,
-  }));
+    attributionText: `${img.source} / Foto oleh ${img.author} (${img.license})`,
+  }))
 
   // 1. Indonesian Version (9-Stage Story Architecture)
   const idContent = `---
@@ -652,7 +694,7 @@ date: '${today}'
 tags: ${JSON.stringify(story.keywords)}
 draft: false
 summary: ${JSON.stringify(story.readerHook.id)}
-images: ${JSON.stringify(images.map(img => img.url))}
+images: ${JSON.stringify(images.map((img) => img.localPath || img.url))}
 authors: ['default']
 language: 'id'
 translation_group: '${translationGroup}'
@@ -665,13 +707,15 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ## Menelusuri Jejak yang Tersembunyi di Tebing Gurun Yudea
 
+${story.narrativeHook.id}
+
 ${story.readerHook.id}
 
 ${story.universalQuestion.id}
 
 Di balik debu padang pasir dan keheningan tebing karst, lembaran-lembaran kulit tua ini menyimpan catatan berharga tentang bagaimana manusia masa lampau menyalin teks suci, merumuskan hukum, dan menjaga keyakinan mereka terhadap Yang Maha Kuasa.
 
-![${images[0]?.altText.id || story.titles.id}](${images[0]?.url || coverImage})
+![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Sumber visual: ${images[0]?.source} / Foto oleh ${images[0]?.author} (${images[0]?.license})*
 
 ---
@@ -684,7 +728,7 @@ ${story.archaeologicalDetails.caveAndManuscriptCount.id}
 
 Tantangan terbesar yang dihadapi para sarjana paleografi bukanlah sekadar menemukan naskah yang utuh, melainkan melakukan kerja detektif ilmiah: menyusun kembali puluhan ribu serpihan kulit dan papirus yang terfragmentasi akibat erosi ribuan tahun, kotoran kelelawar, dan kelembapan masa lampau menjadi kesatuan naskah yang koheren.
 
-${images[1] ? `![${images[1].altText.id}](${images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -692,7 +736,7 @@ ${images[1] ? `![${images[1].altText.id}](${images[1].url})\n*Sumber visual: ${i
 
 Koleksi Qumran menyimpan beberapa naskah paling spektakuler dalam sejarah arkeologi dunia:
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name}\n\n${text.description.id}`).join('\n\n')}
+${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name} (${text.siglum})\n\n*Estimasi Tarikh:* ${text.dateEstimate}\n\n${text.description.id}`).join('\n\n')}
 
 Kehadiran naskah-naskah ini membuktikan bahwa gurun Qumran bukan sekadar tempat persembunyian darurat, melainkan pusat literasi keagamaan yang sangat intensif pada masanya.
 
@@ -720,7 +764,7 @@ ${story.scholarlyDebate.alternativeTheories.id}
 
 ${story.scholarlyDebate.scholarlyConsensusOrDispute.id}
 
-${images[2] ? `![${images[2].altText.id}](${images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
+${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
@@ -770,17 +814,17 @@ ${story.reflectiveQuestion.id}
 
 ### Rujukan Akademik & Sumber Otoritatif
 
-${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
-`;
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
+`
 
-  // 2. English Version (9-Stage Story Architecture)
+  // 2. English Version (International Historical Essay)
   const enContent = `---
 title: ${JSON.stringify(story.titles.en)}
 date: '${today}'
 tags: ${JSON.stringify(story.keywords)}
 draft: false
 summary: ${JSON.stringify(story.readerHook.en)}
-images: ${JSON.stringify(images.map(img => img.url))}
+images: ${JSON.stringify(images.map((img) => img.localPath || img.url))}
 authors: ['default']
 language: 'en'
 translation_group: '${translationGroup}'
@@ -793,13 +837,15 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ## Unsealing the Desert Cliffs: The Discovery of the Dead Sea Scrolls
 
+${story.narrativeHook.en}
+
 ${story.readerHook.en}
 
 ${story.universalQuestion.en}
 
 Beneath the arid dust of the Judean desert and the silence of limestone bluffs, these fragile parchment leaves preserve an unparalleled record of how ancient humanity copied scriptures, formulated legal halakhah, and maintained their devotion to the transcendent Creator.
 
-![${images[0]?.altText.en || story.titles.en}](${images[0]?.url || coverImage})
+![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
 *Visual Credit: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
 
 ---
@@ -812,7 +858,7 @@ ${story.archaeologicalDetails.caveAndManuscriptCount.en}
 
 The supreme challenge confronting modern paleographers was not merely locating intact scrolls, but executing an unprecedented feat of scientific forensics: assembling tens of thousands of brittle, decayed fragments—damaged by two millennia of desert weather and biological decay—into coherent textual witnesses.
 
-${images[1] ? `![${images[1].altText.en}](${images[1].url})\n*Visual Credit: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Credit: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -820,7 +866,7 @@ ${images[1] ? `![${images[1].altText.en}](${images[1].url})\n*Visual Credit: ${i
 
 The Qumran library preserves some of the most extraordinary documentary treasures in human history:
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name}\n\n${text.description.en}`).join('\n\n')}
+${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name} (${text.siglum})\n\n*Estimated Date:* ${text.dateEstimate}\n\n${text.description.en}`).join('\n\n')}
 
 The breadth of these writings demonstrates that the Judean desert caves served as an active nexus of intense scribal preservation and deep religious introspection.
 
@@ -848,7 +894,7 @@ ${story.scholarlyDebate.alternativeTheories.en}
 
 ${story.scholarlyDebate.scholarlyConsensusOrDispute.en}
 
-${images[2] ? `![${images[2].altText.en}](${images[2].url})\n*Visual Credit: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
+${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Credit: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
@@ -898,17 +944,17 @@ ${story.reflectiveQuestion.en}
 
 ### Primary References & Scholarly Sources
 
-${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
-`;
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
+`
 
-  // 3. AR Article
+  // 3. Arabic Version (Modern Standard Arabic Intellectual Essay)
   const arContent = `---
 title: ${JSON.stringify(story.titles.ar)}
 date: '${today}'
 tags: ${JSON.stringify(story.keywords)}
 draft: false
 summary: ${JSON.stringify(story.readerHook.ar)}
-images: ${JSON.stringify(images.map(img => img.url))}
+images: ${JSON.stringify(images.map((img) => img.localPath || img.url))}
 authors: ['default']
 language: 'ar'
 translation_group: '${translationGroup}'
@@ -921,13 +967,15 @@ imageCredits: ${JSON.stringify(imageCredits)}
 
 ## أسرار كهوف وادي قمران: أعظم كشف أثري في تاريخ المخطوطات
 
+${story.narrativeHook.ar}
+
 ${story.readerHook.ar}
 
 ${story.universalQuestion.ar}
 
 بين غبار صحراء يهودا وسكون المنحدرات الصخرية، حفظت هذه الرقائق الجلدية سجلاً استثنائياً يوثق كيف كابد الإنسان القديم لنسخ النصوص المقدسة، وصياغة الأحكام التشريعية، وصيانة التوحيد الخالص.
 
-![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.url || coverImage})
+![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
 *مصدر الصورة: ${images[0]?.source} / تصوير ${images[0]?.author} (${images[0]?.license})*
 
 ---
@@ -940,7 +988,7 @@ ${story.archaeologicalDetails.caveAndManuscriptCount.ar}
 
 كان التحدي الأكبر الذي واجه علماء المخطوطات ليس مجرد العثور على لفائف سليمة، بل خوض معركة تحقيق جنائي أثري معقدة: جمع عشرات الآلاف من القصاصات المتآكلة وترميمها على مدار عقود لتشكيل شواهد نصية متكاملة.
 
-${images[1] ? `![${images[1].altText.ar}](${images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
@@ -948,7 +996,7 @@ ${images[1] ? `![${images[1].altText.ar}](${images[1].url})\n*مصدر الصو�
 
 تشتمل مكتبة قمران على نصوص استثنائية في تاريخ التراث الإنساني:
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name}\n\n${text.description.ar}`).join('\n\n')}
+${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name} (${text.siglum})\n\n*التقدير الزمني:* ${text.dateEstimate}\n\n${text.description.ar}`).join('\n\n')}
 
 ---
 
@@ -972,7 +1020,7 @@ ${story.scholarlyDebate.alternativeTheories.ar}
 
 ${story.scholarlyDebate.scholarlyConsensusOrDispute.ar}
 
-${images[2] ? `![${images[2].altText.ar}](${images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
+${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
 
 ---
 
@@ -1016,8 +1064,8 @@ ${story.reflectiveQuestion.ar}
 
 ### المصادر والمراجع الأكاديمية المعتمدة
 
-${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (المستوى ${src.tier})*`).join('\n')}
-`;
+${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${src.type} (المستوى ${src.tier})*`).join('\n')}
+`
 
   const idArticle: MdxArticle = {
     filename: `${slugBase}.mdx`,
@@ -1029,7 +1077,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       tags: story.keywords,
       draft: false,
       summary: story.readerHook.id,
-      images: images.map(img => img.url),
+      images: images.map((img) => img.localPath || img.url),
       authors: ['default'],
       language: 'id',
       translation_group: translationGroup,
@@ -1040,7 +1088,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       imageCredits,
     },
     content: idContent,
-  };
+  }
 
   const enArticle: MdxArticle = {
     filename: `${slugBase}.en.mdx`,
@@ -1052,7 +1100,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       tags: story.keywords,
       draft: false,
       summary: story.readerHook.en,
-      images: images.map(img => img.url),
+      images: images.map((img) => img.localPath || img.url),
       authors: ['default'],
       language: 'en',
       translation_group: translationGroup,
@@ -1063,7 +1111,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       imageCredits,
     },
     content: enContent,
-  };
+  }
 
   const arArticle: MdxArticle = {
     filename: `${slugBase}.ar.mdx`,
@@ -1075,7 +1123,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       tags: story.keywords,
       draft: false,
       summary: story.readerHook.ar,
-      images: images.map(img => img.url),
+      images: images.map((img) => img.localPath || img.url),
       authors: ['default'],
       language: 'ar',
       translation_group: translationGroup,
@@ -1086,14 +1134,14 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
       imageCredits,
     },
     content: arContent,
-  };
+  }
 
-  const qcId = runHumanLevelEditorialQC(idArticle);
-  const qcEn = runHumanLevelEditorialQC(enArticle);
-  const qcAr = runHumanLevelEditorialQC(arArticle);
+  const qcId = runHumanLevelEditorialQC(idArticle)
+  const qcEn = runHumanLevelEditorialQC(enArticle)
+  const qcAr = runHumanLevelEditorialQC(arArticle)
 
   return {
     articles: [idArticle, enArticle, arArticle],
     qcResults: { id: qcId, en: qcEn, ar: qcAr },
-  };
+  }
 }

@@ -1,27 +1,29 @@
 ---
-title: "لماذا تحقق معمارية NVIDIA Blackwell قفزة استدلال بنحو 30 ضعفاً؟ تفكيك B200 وحسابات FP4 ونظام GB200 NVL72"
+title: "كيف حققت بنية NVIDIA Blackwell أداء استدلال أعلى بنحو 30 مرة؟ وما الذي يعنيه الرقم فعلاً؟"
 date: '2026-08-25'
 tags: ["nvidia","blackwell","b200","gb200","fp4","gpu","datacenter","benchmark","inference","semiconductor"]
 draft: false
 summary: "تحليل معماري شامل لمنظومة NVIDIA Blackwell: التمييز بين معالج B200 الفردي، وشريحة GB200 الفائقة، ونظام الخوادم GB200 NVL72، مع تفكيك آليات حسابات FP4 الدقيقة ومقارنة ادعاءات الإطلاق باختبارات مراكز البيانات المستقلة لعام 2026."
-images: ["https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80"]
+images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
 authors: ['default']
 language: 'ar'
 translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
 original_language: 'id'
-articleType: 'Technical Deep Dive'
+articleType: 'Architectural Analysis'
 category: 'tech-ai'
-sources: [{"name":"NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)","url":"https://resources.nvidia.com/en-us-blackwell-architecture","tier":1,"type":"Official Newsroom"},{"name":"SemiAnalysis Hardware & InferenceX Economics Benchmark","url":"https://semianalysis.com/","tier":1,"type":"Academic Paper"},{"name":"IEEE Micro Semiconductor Architecture Analysis","url":"https://www.computer.org/csdl/magazine/mi","tier":1,"type":"Academic Paper"},{"name":"Ars Technica Enterprise Compute & Infrastructure","url":"https://arstechnica.com/gadgets/","tier":2,"type":"Journalism"},{"name":"The Verge Technology Hardware Review","url":"https://www.theverge.com/tech","tier":2,"type":"Journalism"}]
-imageCredits: [{"author":"Nana Hua","license":"Unsplash License","source":"Unsplash","url":"https://unsplash.com/photos/G1vhbCVKnps"},{"author":"Alexandre Debiève","license":"Unsplash License","source":"Unsplash","url":"https://unsplash.com/photos/bBNabN9R_hg"},{"author":"Adi Goldstein","license":"Unsplash License","source":"Unsplash","url":"https://unsplash.com/photos/I2YSmEUAgDY"}]
+sources: [{"name":"NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)","url":"https://resources.nvidia.com/en-us-blackwell-architecture","tier":1,"type":"Technical Whitepaper","publishedDate":"2024"},{"name":"SemiAnalysis Hardware & InferenceX Economics Benchmark","url":"https://semianalysis.com/","tier":1,"type":"Independent Benchmark","publishedDate":"2026"},{"name":"Ars Technica Enterprise Compute & Infrastructure","url":"https://arstechnica.com/gadgets/","tier":2,"type":"Journalism","publishedDate":"2026"}]
+imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Unsplash","creator":"Nana Hua","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Nana Hua (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Unsplash","creator":"Alexandre Debiève","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Alexandre Debiève (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Unsplash","creator":"Adi Goldstein","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Adi Goldstein (Unsplash License)"}]
 ---
 
 ## ما وراء سيليكون المعالجات التقليدية: لماذا أصبح اقتصاد الاستدلال ساحة الحسم في الذكاء الاصطناعي
 
 ثمة سبب جوهري وراء توقف إنفيديا عن مجرد زيادة مساحة رقاقات السيليكون التقليدية؛ فعندما تتوسع نماذج الذكاء الاصطناعي من عشرات المليارات إلى تريليونات المعاملات، لم يعد التحدي الهندسي مقتصراً على سرعة المعالجة الخام للرقاقة الفردية، بل تحول كلياً نحو اقتصاديات الاستدلال: كفاءة الطاقة المستهلكة، وسرعة نقل البيانات عبر الذاكرة، والتكلفة الفعلية لتوليد كل مليون رمز.
 
-في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تقدم معمارية Blackwell تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
+من أين جاء رقم مضاعفة أداء الاستدلال 30 مرة تحديداً؟ ولماذا يمثل هذا الادعاء منظومة خوادم مبردة بالكامل وليس معالجاً فردياً؟
 
-![وحدة معالجة رسومات (GPU) عالية الأداء مع نظام تبريد متطور لأعباء عمل الذكاء الاصطناعي](https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80)
+في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تشهد هندسة أشباه الموصلات تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
+
+![وحدة تسريع حوسبة عالية الأداء مع نظام تبريد حراري متطور مخصص لاستدلال الذkاء الاصطناعي في مراكز البيانات](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
 *مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)*
 
 ---
@@ -34,7 +36,7 @@ imageCredits: [{"author":"Nana Hua","license":"Unsplash License","source":"Unspl
 2. **شريحة GB200 الفائقة: لوحة حوسبة متكاملة تجمع بين معالج ARM Grace المركزي بـ 72 نواة مع معالجي B200 عبر رابط NVLink-C2C فائق السرعة بنطاق 900 جيجابايت/ثانية.**
 3. **نظام GB200 NVL72: بنية تحتية خادمة مبردة بالسوائل بالكامل تدمج 72 معالج Blackwell و36 معالج Grace في نطاق NVLink موحد، لتعمل كمعالج جبار واحد بقدرة 1.4 إكزاDefault استدلال FP4 وذاكرة مجمعة سعة 30 تيرابايت.**
 
-![لوحة دارات إلكترونية حديثة تعرض معالجات دقيقة ومسارات نقل بيانات فائقة السرعة](https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80)
+![لوحة دارات إلكترونية حديثة تعرض معالجات دقيقة ومسارات نقل بيانات فائقة السرعة](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
 *مصدر الصورة: Unsplash / تصوير Alexandre Debiève (Unsplash License)*
 
 
@@ -63,15 +65,15 @@ imageCredits: [{"author":"Nana Hua","license":"Unsplash License","source":"Unspl
 ### رابعاً: التحقق من الأداء: ادعاءات الإطلاق الرسمية مقابل واقع الاختبارات الميدانية 2026
 
 * **ادعاء الإطلاق الرسمي: أعلنت إنفيديا أن نظام GB200 NVL72 يحقق زيادة في أداء الاستدلال تصل إلى 30 ضعفاً مقارنة بنفس العدد من معالجات H100، مع خفض استهلاك الطاقة والتكلفة بمقدار 25 ضعفاً.**
-  * *النظام المختبر رسمياً:* NVIDIA GB200 NVL72 (72 Blackwell GPUs, 36 Grace CPUs, Liquid Cooled)
-  * *النموذج المختبر:* 1.8 Trillion Parameter Mixture-of-Experts (MoE) Large Language Model (e.g. GPT-4 scale)
-  * *خط الأساس المقارن:* 72x NVIDIA H100 SXM 80GB (Air/Liquid Cooled) running at FP8
+
+#### المؤشرات الموثقة ومصادر القياس المعتمدة
+
+* **المؤشر 1 (Peak Inference Speedup across Full Cluster):** 30 x مقارنة بـ Equal count of 72x H100 SXM5 GPUs (NVIDIA Official Architecture Technical Whitepaper)
+* **المؤشر 2 (Independent Real-World Cost per Million Tokens (Open-Weight Model)):** 0.02 $ / million tokens مقارنة بـ $0.09 / million tokens on H100 SXM (Hopper) (SemiAnalysis InferenceX Hardware Economics Report)
 
 #### واقع الاختبارات المستقلة في مراكز البيانات
 
 الواقع الميداني لعام 2026: وفقاً لاختبارات SemiAnalysis InferenceX على نماذج مثل Llama-3-70B، تبلغ تكلفة الاستدلال على معالج B200 حوالي 0.02 دولار لكل مليون رمز، مقارنة بنحو 0.09 دولار على خوادم H100. يمثل هذا خفضاً فعلياً في التكلفة بنحو 4.5 ضعف على مستوى المعالج الفردي، وهو فارق واقعي مقارنة برقم 30 ضعفاً الخاص بأنظمة الخوادم الكاملة.
-
-تتراوح الزيادة الفعلية في السرعة للمعالج الفردي بين 2.5 و4.2 ضعف بحسب حجم النموذج وقيود زمن الاستجابة. ولا يتحقق رقم 30 ضعفاً إلا عند تقييم نظام الخوادم الكامل GB200 NVL72 الذي يستفيد من شبكة NVLink بسرعة 130 تيرابايت/ثانية للقضاء على اختناقات الاتصال بين الخوادم.
 
 ---
 
@@ -91,8 +93,6 @@ imageCredits: [{"author":"Nana Hua","license":"Unsplash License","source":"Unspl
 
 ### المصادر الفنية والمراجع الرسمية المعتمدة
 
-- **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — *Official Newsroom (المستوى 1)*
-- **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — *Academic Paper (المستوى 1)*
-- **[IEEE Micro Semiconductor Architecture Analysis](https://www.computer.org/csdl/magazine/mi)** — *Academic Paper (المستوى 1)*
-- **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — *Journalism (المستوى 2)*
-- **[The Verge Technology Hardware Review](https://www.theverge.com/tech)** — *Journalism (المستوى 2)*
+- **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — *Technical Whitepaper (المستوى 1، تاريخ النشر: 2024)*
+- **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — *Independent Benchmark (المستوى 1، تاريخ النشر: 2026)*
+- **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — *Journalism (المستوى 2، تاريخ النشر: 2026)*

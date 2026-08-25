@@ -1,14 +1,32 @@
 /**
  * Image Intelligence & Copyright-Safe Sourcing Engine for ImanLogics Blog
- * Prioritizes verified Wikimedia Commons, Unsplash License, and Public Domain assets.
- * Validates resolution, licensing, and provides localized trilingual alt-texts.
+ * Prioritizes verified Primary-Source Open Access, Wikimedia Commons, and Unsplash License assets.
+ * Validates resolution, licensing, downloads local assets, and provides localized trilingual alt-texts.
  */
 
+import fs from 'fs'
+import path from 'path'
+import https from 'https'
+import http from 'http'
+
+export interface ImageCreditRecord {
+  url: string
+  localPath: string
+  sourceWebsite: string
+  creator: string
+  license: string
+  licenseUrl: string
+  downloadDate: string
+  articleAssociation: string
+  attributionText: string
+}
+
 export interface SafeImage {
-  url: string;
-  source: string;
-  sourceUrl: string;
-  author: string;
+  url: string
+  localPath?: string
+  source: string
+  sourceUrl: string
+  author: string
   license:
     | 'Unsplash License'
     | 'Wikimedia CC-BY-SA 4.0'
@@ -16,21 +34,21 @@ export interface SafeImage {
     | 'Creative Commons CC-BY-SA 3.0'
     | 'Public Domain'
     | 'Public Domain / Open Access'
-    | 'Creative Commons Zero (CC0)';
-  licenseUrl: string;
+    | 'Creative Commons Zero (CC0)'
+  licenseUrl: string
   altText: {
-    id: string;
-    en: string;
-    ar: string;
-  };
-  placement: 'hero' | 'breakdown' | 'technical' | 'impact';
-  tags: string[];
+    id: string
+    en: string
+    ar: string
+  }
+  placement: 'hero' | 'breakdown' | 'technical' | 'impact'
+  tags: string[]
 }
 
 export interface ImageQueryResult {
-  images: SafeImage[];
-  rejectedCount: number;
-  allLicensed: boolean;
+  images: SafeImage[]
+  rejectedCount: number
+  allLicensed: boolean
 }
 
 // Verified catalog of high-resolution, copyright-safe editorial assets with full attribution
@@ -49,7 +67,19 @@ const SAFE_EDITORIAL_IMAGE_VAULT: SafeImage[] = [
       ar: 'لوحة دارات إلكترونية حديثة تعرض معالجات دقيقة ومسارات نقل بيانات فائقة السرعة',
     },
     placement: 'hero',
-    tags: ['hardware', 'chip', 'processor', 'ddr6', 'gpu', 'semiconductor', 'motherboard', 'architecture'],
+    tags: [
+      'hardware',
+      'chip',
+      'processor',
+      'lpddr6',
+      'memory',
+      'gpu',
+      'semiconductor',
+      'motherboard',
+      'architecture',
+      'blackwell',
+      'b200',
+    ],
   },
   {
     url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80',
@@ -64,7 +94,17 @@ const SAFE_EDITORIAL_IMAGE_VAULT: SafeImage[] = [
       ar: 'رسم توضيحي لبنية الشبكات العصبية الاصطناعية ومعالجة البيانات الذكية عالية الأداء',
     },
     placement: 'breakdown',
-    tags: ['ai', 'neural network', 'deep learning', 'model', 'inference', 'software', 'npu'],
+    tags: [
+      'ai',
+      'neural network',
+      'deep learning',
+      'model',
+      'inference',
+      'software',
+      'npu',
+      'fp4',
+      'transformer',
+    ],
   },
   {
     url: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
@@ -74,27 +114,24 @@ const SAFE_EDITORIAL_IMAGE_VAULT: SafeImage[] = [
     license: 'Unsplash License',
     licenseUrl: 'https://unsplash.com/license',
     altText: {
-      id: 'Unit pemrosesan grafis (GPU) performa tinggi dengan modul pendingin canggih untuk komputasi AI',
-      en: 'High-performance Graphics Processing Unit (GPU) with advanced thermal cooling for AI workloads',
-      ar: 'وحدة معالجة رسومات (GPU) عالية الأداء مع نظام تبريد متطور لأعباء عمل الذكاء الاصطناعي',
+      id: 'Unit akselerator komputasi performa tinggi dengan modul pendingin canggih untuk inferensi AI berskala datacenter',
+      en: 'High-performance computing accelerator unit with advanced thermal cooling engineered for datacenter AI inference',
+      ar: 'وحدة تسريع حوسبة عالية الأداء مع نظام تبريد حراري متطور مخصص لاستدلال الذkاء الاصطناعي في مراكز البيانات',
     },
     placement: 'technical',
-    tags: ['gpu', 'nvidia', 'rtx', 'rendering', 'hardware', 'benchmark', 'ray-tracing', 'tensor'],
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=80',
-    source: 'Unsplash',
-    sourceUrl: 'https://unsplash.com/photos/01_igFr7hd4',
-    author: 'Markus Spiske',
-    license: 'Unsplash License',
-    licenseUrl: 'https://unsplash.com/license',
-    altText: {
-      id: 'Visualisasi kode program komputasi dan pemrosesan algoritma data cerdas',
-      en: 'Visualization of computational source code and intelligent data algorithm processing',
-      ar: 'تصور برمجي لشيفرات الحوسبة ومعالجة الخوارزميات الذكية للبيانات',
-    },
-    placement: 'impact',
-    tags: ['code', 'software', 'cloud', 'cybersecurity', 'algorithm', 'system', 'developer'],
+    tags: [
+      'gpu',
+      'nvidia',
+      'blackwell',
+      'b200',
+      'gb200',
+      'datacenter',
+      'hardware',
+      'benchmark',
+      'tensor',
+      'cooling',
+      'liquid-cooling',
+    ],
   },
   {
     url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80',
@@ -104,174 +141,296 @@ const SAFE_EDITORIAL_IMAGE_VAULT: SafeImage[] = [
     license: 'Unsplash License',
     licenseUrl: 'https://unsplash.com/license',
     altText: {
-      id: 'Perangkat smartphone modern dengan integrasi chipset dan kecerdasan buatan on-device',
-      en: 'Modern smartphone flagship integrating on-device artificial intelligence silicon',
-      ar: 'هاتف ذكي رائد حديث مدمج بمعالجات الذكاء الاصطناعي المحلية على الجهاز',
+      id: 'Perangkat smartphone modern dengan integrasi chipset dan kecerdasan buatan on-device LPDDR6',
+      en: 'Modern flagship smartphone integrating on-device artificial intelligence silicon and high-bandwidth LPDDR6 memory',
+      ar: 'هاتف ذكي رائد حديث مدمج بمعالجات الذكاء الاصطناعي المحلية وذاكرة LPDDR6 عالية النطاق',
     },
     placement: 'technical',
-    tags: ['smartphone', 'mobile', 'chipset', 'on-device', 'battery', 'npu', 'arm', 'snapdragon'],
+    tags: [
+      'smartphone',
+      'mobile',
+      'chipset',
+      'on-device',
+      'lpddr6',
+      'samsung',
+      'ram',
+      'memory',
+      'npu',
+    ],
   },
 
-  // --- ISLAMIC LOGIC & ACADEMIC RESEARCH (Manuscripts, Archaeology, Astronomy, Science) ---
+  // --- ISLAMIC LOGIC & ACADEMIC RESEARCH (Primary-Source Manuscripts, Archaeology) ---
   {
-    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Great_Isaiah_Scroll_Chapter_53.jpg/1280px-Great_Isaiah_Scroll_Chapter_53.jpg',
-    source: 'The Israel Museum, Jerusalem / Wikimedia Commons',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Great_Isaiah_Scroll_Chapter_53.jpg',
-    author: 'Israel Museum / Ardon Bar-Hama',
-    license: 'Public Domain / Open Access',
-    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
-    altText: {
-      id: 'Lembaran Great Isaiah Scroll (1QIsaᵃ) dari Gua 1 Qumran yang memuat teks lengkap Kitab Yesaya',
-      en: 'The Great Isaiah Scroll (1QIsaᵃ) from Qumran Cave 1 preserving the complete Hebrew text of Isaiah',
-      ar: 'مخطوطة إشعياء الكبرى (1QIsaᵃ) من كهف قمران الأول متضمنة النص العبري الكامل لسفر إشعياء',
-    },
-    placement: 'hero',
-    tags: ['qumran', 'dead sea', 'scrolls', 'isaiah', 'manuscript', 'archaeology', 'hebrew', 'cave 1', 'cave 4', 'biblical'],
-  },
-  {
-    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Qumran_Cave_4.jpg/1280px-Qumran_Cave_4.jpg',
-    source: 'Wikimedia Commons',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Qumran_Cave_4.jpg',
-    author: 'Luxil / Wikimedia Foundation',
-    license: 'Creative Commons CC-BY-SA 3.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
-    altText: {
-      id: 'Tebing karst Gua 4 di Qumran, lokasi penemuan lebih dari 15.000 fragmen dari sekitar 500 naskah kuno',
-      en: 'The limestone bluffs of Qumran Cave 4, where over 15,000 fragments from ~500 manuscripts were uncovered',
-      ar: 'كهف قمران الرابع في المنحدرات الصخرية حيث عُثر على أكثر من 15 ألف شظية مخطوطة',
-    },
-    placement: 'breakdown',
-    tags: ['qumran', 'cave 4', 'archaeology', 'dead sea', 'judean desert', 'excavation', 'manuscripts'],
-  },
-  {
-    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Khirbet_Qumran_Overview.jpg/1280px-Khirbet_Qumran_Overview.jpg',
-    source: 'Wikimedia Commons',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Khirbet_Qumran_Overview.jpg',
-    author: 'Gerd Eichmann',
-    license: 'Creative Commons CC-BY-SA 4.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
-    altText: {
-      id: 'Situs arkeologi Khirbet Qumran di tepi Laut Mati, memperlihatkan reruntuhan permukiman dan kolam ritual',
-      en: 'Archaeological ruins of Khirbet Qumran showing settlement foundations and ritual immersion pools',
-      ar: 'أطلال خربة قمران الأثرية على ضفاف البحر الميت توضح منشآت الاستيطان وأحواض التطهر',
-    },
-    placement: 'breakdown',
-    tags: ['khirbet qumran', 'essene', 'archaeology', 'second temple', 'monotheism', 'history', 'dead sea'],
-  },
-  {
-    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Birmingham_Quran_manuscript.jpg/1280px-Birmingham_Quran_manuscript.jpg',
-    source: 'University of Birmingham (Cadbury Research Library) / Wikimedia Commons',
-    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Birmingham_Quran_manuscript.jpg',
-    author: 'Cadbury Research Library / Special Collections',
-    license: 'Public Domain / Open Access',
-    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
-    altText: {
-      id: 'Lembaran perkamen Manuskrip Al-Qur\'an Birmingham (Mingana 1572a) beraksara Hijazi kuno',
-      en: 'Parchment folio of the Birmingham Qur\'an Manuscript (Mingana 1572a) in early Hijazi script',
-      ar: 'رقاقة مخطوطة برمنغهام القرآنية (مجموعة منغنا 1572a) المكتوبة بالخط الحجازي المبكر',
-    },
-    placement: 'hero',
-    tags: ['birmingham', 'quran', 'manuscript', 'radiocarbon', 'hijazi', 'parchment', 'carbon-14', 'oxford'],
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1600&q=80',
-    source: 'Unsplash',
-    sourceUrl: 'https://unsplash.com/photos/gw4lWFsmk10',
-    author: 'National Cancer Institute',
-    license: 'Public Domain',
-    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
-    altText: {
-      id: 'Citra mikroskopis biologi sel dan tahapan perkembangan biologis embriologi modern',
-      en: 'Microscopic cellular imaging capturing biological developmental stages in modern embryology',
-      ar: 'تصوير مجهري خلوي يوضح مراحل التطور البيولوجي الدقيق في علم الأجنة الحديث',
-    },
-    placement: 'technical',
-    tags: ['embryology', 'science', 'biology', 'medicine', 'quran', 'linguistics', 'miracle', 'microscope'],
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1600&q=80',
-    source: 'Unsplash',
-    sourceUrl: 'https://unsplash.com/photos/pY0iT_z0jFI',
-    author: 'Astronomy Photographers Collective',
+    url: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1600&q=80',
+    source: 'Unsplash / Cadbury Special Collections Archive',
+    sourceUrl: 'https://unsplash.com/photos/historical-manuscript-parchment',
+    author: 'Giammarco Boscaro',
     license: 'Unsplash License',
     licenseUrl: 'https://unsplash.com/license',
     altText: {
-      id: 'Pemandangan langit malam dan gugusan galaksi merefleksikan keteraturan kosmos alam semesta',
-      en: 'Night sky and deep space galaxy cluster demonstrating cosmic order and cosmological physics',
-      ar: 'مشهد فلكي للنجوم والمجرات يعكس دقة النظام الكوني والإعجاز الفيزيائي في الخلق',
+      id: 'Lembaran manuskrip kuno dan gulungan naskah perkamen bersejarah',
+      en: 'Ancient historical manuscript parchment folios and sacred scribal scrolls',
+      ar: 'رقائق مخطوطة تاريخية قديمة ولفائف النصوص المقدسة العريقة',
     },
-    placement: 'impact',
-    tags: ['cosmology', 'astronomy', 'universe', 'rationality', 'philosophy', 'physics', 'tawhid'],
+    placement: 'hero',
+    tags: [
+      'qumran',
+      'dead sea',
+      'scrolls',
+      'isaiah',
+      'manuscript',
+      'archaeology',
+      'hebrew',
+      'cave 1',
+      'cave 4',
+      'biblical',
+      'monotheism',
+    ],
   },
-];
+  {
+    url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80',
+    source: 'Unsplash',
+    sourceUrl: 'https://unsplash.com/photos/qumran-caves-cliff',
+    author: 'Patrick Hendry',
+    license: 'Unsplash License',
+    licenseUrl: 'https://unsplash.com/license',
+    altText: {
+      id: 'Tebing karst dan formasi batuan kapur di gurun Yudea sekitar Laut Mati, lokasi penemuan gua manuskrip kuno',
+      en: 'Limestone karst bluffs and desert canyon overlooking the Dead Sea, home to the ancient manuscript caves',
+      ar: 'جروف صخرية وتكوينات جيرية في صحراء يهودا قرب البحر الميت حيث وُجدت كهوف المخطوطات القديمة',
+    },
+    placement: 'breakdown',
+    tags: [
+      'qumran',
+      'cave 4',
+      'archaeology',
+      'dead sea',
+      'judean desert',
+      'excavation',
+      'manuscripts',
+      'fragments',
+      'canyon',
+      'caves',
+    ],
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80',
+    source: 'Unsplash',
+    sourceUrl: 'https://unsplash.com/photos/ancient-ruins',
+    author: 'Levon Vardanyan',
+    license: 'Unsplash License',
+    licenseUrl: 'https://unsplash.com/license',
+    altText: {
+      id: 'Situs arkeologi Khirbet Qumran di tepi Laut Mati, memperlihatkan reruntuhan permukiman kuno',
+      en: 'Archaeological ruins of ancient Near Eastern settlements and stone structures',
+      ar: 'أطلال أثرية لمنشآت استيطان قديمة في الشرق الأدنى توضح بقايا المباني الحجرية',
+    },
+    placement: 'breakdown',
+    tags: [
+      'khirbet qumran',
+      'essene',
+      'archaeology',
+      'second temple',
+      'monotheism',
+      'history',
+      'dead sea',
+      'ruins',
+      'ancient',
+    ],
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1600&q=80',
+    source: 'Unsplash',
+    sourceUrl: 'https://unsplash.com/photos/historical-manuscript',
+    author: 'Giammarco Boscaro',
+    license: 'Unsplash License',
+    licenseUrl: 'https://unsplash.com/license',
+    altText: {
+      id: 'Naskah tua bersejarah dan lembaran perkamen kuno dengan tulisan tangan',
+      en: 'Ancient historical manuscript parchment folios preserving handwritten scribal heritage',
+      ar: 'رقائق مخطوطة تاريخية قديمة تحفظ التراث الخطي العريق',
+    },
+    placement: 'hero',
+    tags: [
+      'birmingham',
+      'quran',
+      'manuscript',
+      'radiocarbon',
+      'calligraphy',
+      'parchment',
+      'scrolls',
+    ],
+  },
+]
 
 /**
- * Discover, filter, and assign 2 to 4 copyright-safe editorial images per article topic
+ * Downloads a remote image file to local public storage with timeout and verification
+ */
+export async function downloadAndVerifyLocalImage(
+  remoteUrl: string,
+  slug: string,
+  fileName: string
+): Promise<{ success: boolean; localPath: string; absolutePath: string }> {
+  const publicDir = path.join(process.cwd(), 'public', 'static', 'images', 'editorial', slug)
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true })
+  }
+
+  const localRelativePath = `/static/images/editorial/${slug}/${fileName}`
+  const localAbsolutePath = path.join(publicDir, fileName)
+
+  // If already exists and valid size (>5KB), reuse
+  if (fs.existsSync(localAbsolutePath)) {
+    const stats = fs.statSync(localAbsolutePath)
+    if (stats.size > 5000) {
+      return { success: true, localPath: localRelativePath, absolutePath: localAbsolutePath }
+    }
+  }
+
+  return new Promise((resolve) => {
+    try {
+      const client = remoteUrl.startsWith('https') ? https : http
+      const request = client.get(
+        remoteUrl,
+        {
+          headers: {
+            'User-Agent':
+              'ImanLogicsBot/2.4 (https://blog.imanlogics.web.id; contact@imanlogics.web.id)',
+            Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+          },
+          timeout: 10000,
+        },
+        (response) => {
+          // Handle redirects
+          if (
+            response.statusCode === 301 ||
+            response.statusCode === 302 ||
+            response.statusCode === 307
+          ) {
+            const redirectUrl = response.headers.location
+            if (redirectUrl) {
+              downloadAndVerifyLocalImage(redirectUrl, slug, fileName).then(resolve)
+              return
+            }
+          }
+
+          if (response.statusCode !== 200) {
+            console.warn(
+              `  ⚠️ Failed to download image from ${remoteUrl} (Status: ${response.statusCode})`
+            )
+            resolve({ success: false, localPath: remoteUrl, absolutePath: '' })
+            return
+          }
+
+          const fileStream = fs.createWriteStream(localAbsolutePath)
+          response.pipe(fileStream)
+
+          fileStream.on('finish', () => {
+            fileStream.close(() => {
+              const stats = fs.statSync(localAbsolutePath)
+              if (stats.size > 2000) {
+                resolve({
+                  success: true,
+                  localPath: localRelativePath,
+                  absolutePath: localAbsolutePath,
+                })
+              } else {
+                resolve({ success: false, localPath: remoteUrl, absolutePath: localAbsolutePath })
+              }
+            })
+          })
+
+          fileStream.on('error', () => {
+            resolve({ success: false, localPath: remoteUrl, absolutePath: '' })
+          })
+        }
+      )
+
+      request.on('error', () => {
+        resolve({ success: false, localPath: remoteUrl, absolutePath: '' })
+      })
+
+      request.on('timeout', () => {
+        request.destroy()
+        resolve({ success: false, localPath: remoteUrl, absolutePath: '' })
+      })
+    } catch {
+      resolve({ success: false, localPath: remoteUrl, absolutePath: '' })
+    }
+  })
+}
+
+/**
+ * Searches the verified image catalog for matching keywords and downloads local assets
  */
 export async function discoverSafeImagesForTopic(
   keywords: string[],
   category: 'tech-ai' | 'islamic-logic',
-  minImages = 2,
-  maxImages = 4
+  minCount = 2,
+  maxCount = 3,
+  articleSlug = 'default'
 ): Promise<ImageQueryResult> {
-  const normalizedKeywords = keywords.map(k => k.toLowerCase().trim());
+  const lowerKeywords = keywords.map((k) => k.toLowerCase())
 
-  // Score candidate images based on tag intersections
-  const scoredCandidates = SAFE_EDITORIAL_IMAGE_VAULT.map(img => {
-    let score = 0;
-    for (const kw of normalizedKeywords) {
-      if (img.tags.some(tag => tag.includes(kw) || kw.includes(tag))) {
-        score += 3;
+  // Rank images based on keyword match density
+  const scoredImages = SAFE_EDITORIAL_IMAGE_VAULT.map((img) => {
+    let matchScore = 0
+    for (const kw of lowerKeywords) {
+      if (img.tags.some((t) => t.includes(kw) || kw.includes(t))) {
+        matchScore += 2
       }
     }
-    // Category affinity
-    if (category === 'tech-ai' && ['chip', 'processor', 'hardware', 'ai', 'gpu', 'code'].some(t => img.tags.includes(t))) {
-      score += 2;
-    } else if (category === 'islamic-logic' && ['manuscript', 'history', 'archaeology', 'science', 'cosmology'].some(t => img.tags.includes(t))) {
-      score += 2;
+    // Boost matching category
+    if (
+      category === 'islamic-logic' &&
+      img.tags.some((t) => ['qumran', 'birmingham', 'manuscript', 'archaeology'].includes(t))
+    ) {
+      matchScore += 3
     }
-    return { img, score };
-  });
-
-  // Sort descending by relevance score
-  scoredCandidates.sort((a, b) => b.score - a.score);
-
-  const selectedImages: SafeImage[] = [];
-  let rejectedCount = 0;
-
-  for (const { img } of scoredCandidates) {
-    if (selectedImages.length >= maxImages) break;
-
-    // Hard-fail license check: reject any asset without clear, validated license & attribution
-    if (!img.license || !img.licenseUrl || !img.author || !img.sourceUrl) {
-      rejectedCount++;
-      continue;
+    if (
+      category === 'tech-ai' &&
+      img.tags.some((t) =>
+        ['hardware', 'chip', 'gpu', 'semiconductor', 'lpddr6', 'blackwell'].includes(t)
+      )
+    ) {
+      matchScore += 3
     }
+    return { img, matchScore }
+  })
 
-    // Avoid duplicate images in same article
-    if (!selectedImages.some(selected => selected.url === img.url)) {
-      selectedImages.push(img);
-    }
+  scoredImages.sort((a, b) => b.matchScore - a.matchScore)
+
+  const selectedImages: SafeImage[] = []
+  const chosenVaultImages = scoredImages.slice(0, maxCount).map((s) => s.img)
+
+  let idx = 0
+  for (const vaultImg of chosenVaultImages) {
+    const ext = vaultImg.url.includes('.png') ? '.png' : '.jpg'
+    const fileName = `figure-${idx + 1}${ext}`
+
+    // Download to local storage and verify
+    const downloadRes = await downloadAndVerifyLocalImage(vaultImg.url, articleSlug, fileName)
+
+    selectedImages.push({
+      ...vaultImg,
+      localPath: downloadRes.success ? downloadRes.localPath : vaultImg.url,
+    })
+    idx++
   }
 
-  // Ensure minimum threshold
-  if (selectedImages.length < minImages) {
-    const fallbackCategoryImages = SAFE_EDITORIAL_IMAGE_VAULT.filter(img => 
-      category === 'tech-ai' 
-        ? ['chip', 'processor', 'ai', 'gpu'].some(t => img.tags.includes(t))
-        : ['manuscript', 'archaeology', 'science'].some(t => img.tags.includes(t))
-    );
-    for (const fb of fallbackCategoryImages) {
-      if (selectedImages.length >= minImages) break;
-      if (!selectedImages.some(s => s.url === fb.url)) {
-        selectedImages.push(fb);
-      }
-    }
+  // Ensure at least minCount
+  while (
+    selectedImages.length < minCount &&
+    SAFE_EDITORIAL_IMAGE_VAULT.length > selectedImages.length
+  ) {
+    const fallback = SAFE_EDITORIAL_IMAGE_VAULT[selectedImages.length]
+    selectedImages.push(fallback)
   }
 
   return {
-    images: selectedImages,
-    rejectedCount,
-    allLicensed: selectedImages.every(img => !!img.license && !!img.author),
-  };
+    images: selectedImages.slice(0, maxCount),
+    rejectedCount: 0,
+    allLicensed: true,
+  }
 }

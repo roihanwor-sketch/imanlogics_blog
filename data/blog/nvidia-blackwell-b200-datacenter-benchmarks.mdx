@@ -4,24 +4,26 @@ date: '2026-08-25'
 tags: ["nvidia","blackwell","b200","gb200","fp4","gpu","datacenter","benchmark","inference","semiconductor"]
 draft: false
 summary: "Membongkar arsitektur komputasi NVIDIA Blackwell: membedakan antara chip B200, superchip GB200, dan sistem rak GB200 NVL72, menelaah mekanisme matematika presisi FP4, serta membandingkan klaim pemasaran 30x dengan data pengujian independen datacenter 2026."
-images: ["https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80"]
+images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
 authors: ['default']
 language: 'id'
 translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
 original_language: 'id'
-articleType: 'Technical Deep Dive'
+articleType: 'Architectural Analysis'
 category: 'tech-ai'
-sources: [{"name":"NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)","url":"https://resources.nvidia.com/en-us-blackwell-architecture","tier":1,"type":"Official Newsroom"},{"name":"SemiAnalysis Hardware & InferenceX Economics Benchmark","url":"https://semianalysis.com/","tier":1,"type":"Academic Paper"},{"name":"IEEE Micro Semiconductor Architecture Analysis","url":"https://www.computer.org/csdl/magazine/mi","tier":1,"type":"Academic Paper"},{"name":"Ars Technica Enterprise Compute & Infrastructure","url":"https://arstechnica.com/gadgets/","tier":2,"type":"Journalism"},{"name":"The Verge Technology Hardware Review","url":"https://www.theverge.com/tech","tier":2,"type":"Journalism"}]
-imageCredits: [{"author":"Nana Hua","license":"Unsplash License","source":"Unsplash","url":"https://unsplash.com/photos/G1vhbCVKnps"},{"author":"Alexandre Debiève","license":"Unsplash License","source":"Unsplash","url":"https://unsplash.com/photos/bBNabN9R_hg"},{"author":"Adi Goldstein","license":"Unsplash License","source":"Unsplash","url":"https://unsplash.com/photos/I2YSmEUAgDY"}]
+sources: [{"name":"NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)","url":"https://resources.nvidia.com/en-us-blackwell-architecture","tier":1,"type":"Technical Whitepaper","publishedDate":"2024"},{"name":"SemiAnalysis Hardware & InferenceX Economics Benchmark","url":"https://semianalysis.com/","tier":1,"type":"Independent Benchmark","publishedDate":"2026"},{"name":"Ars Technica Enterprise Compute & Infrastructure","url":"https://arstechnica.com/gadgets/","tier":2,"type":"Journalism","publishedDate":"2026"}]
+imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Unsplash","creator":"Nana Hua","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Nana Hua (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Unsplash","creator":"Alexandre Debiève","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Alexandre Debiève (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Unsplash","creator":"Adi Goldstein","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Adi Goldstein (Unsplash License)"}]
 ---
 
 ## Di Balik Perlombaan Silikon AI: Mengapa Efisiensi Inferensi Menjadi Medan Tempur Baru
 
 Ada alasan fundamental mengapa NVIDIA tidak lagi sekadar memperbesar ukuran chip GPU konvensional. Ketika model kecerdasan buatan berevolusi dari puluhan miliar menuju triliunan parameter, medan pertempuran komputasi bukan lagi tentang kecepatan mentah satu keping silikon, melainkan tentang ekonomi inferensi: berapa daya listrik yang dihabiskan, seberapa cepat memori bertukar data, dan berapa biaya riil untuk menghasilkan setiap satu juta token.
 
-Di tengah ledakan komputasi kecerdasan buatan, arsitektur Blackwell memperkenalkan pergeseran paradigma: bukan sekadar memperbanyak core grafis, melainkan merestrukturisasi bagaimana angka-angka floating point diproses, bagaimana data dialirkan antar-chip, dan bagaimana seluruh ekosistem rak data center beroperasi secara termal dan elektrikal.
+Dari mana sebenarnya angka 30x efisiensi inferensi berasal, dan mengapa klaim tersebut mewakili arsitektur satu rak penuh bukan GPU tunggal?
 
-![Unit pemrosesan grafis (GPU) performa tinggi dengan modul pendingin canggih untuk komputasi AI](https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80)
+Di tengah ledakan komputasi kecerdasan buatan, pertempuran hardware masa kini memperkenalkan pergeseran paradigma: bukan sekadar memperbanyak core grafis, melainkan merestrukturisasi bagaimana angka-angka floating point diproses, bagaimana data dialirkan antar-chip, dan bagaimana seluruh ekosistem rak data center beroperasi secara termal dan elektrikal.
+
+![Unit akselerator komputasi performa tinggi dengan modul pendingin canggih untuk inferensi AI berskala datacenter](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
 *Sumber visual: Unsplash / Foto oleh Nana Hua (Unsplash License)*
 
 ---
@@ -34,7 +36,7 @@ Dalam diskursus teknologi populer, sering kali terjadi kerancuan antara keping a
 2. **GB200 Grace Blackwell Superchip: Modul komputasi gabungan yang menyatukan 1 prosesor ARM Grace CPU 72-core dengan 2 chip GPU B200 melalui antarmuka 900 GB/s ultra-low-latency NVLink-C2C.**
 3. **GB200 NVL72: Sistem berskala rak berpendingin cairan penuh (liquid-cooled) yang mengintegrasikan 72 GPU Blackwell dan 36 Grace CPU dalam satu domain NVLink tunggal, bertindak sebagai satu akselerator raksasa dengan performa inferensi 1.4 Exaflops FP4 dan memori agregat 30 TB.**
 
-![Papan sirkuit komputasi modern dengan prosesor mikro dan jalur interkoneksi data berkecepatan tinggi](https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80)
+![Papan sirkuit komputasi modern dengan prosesor mikro dan jalur interkoneksi data berkecepatan tinggi](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
 *Sumber visual: Unsplash / Foto oleh Alexandre Debiève (Unsplash License)*
 
 
@@ -69,15 +71,15 @@ Batasan & Tradeoff: FP4 sangat efektif untuk beban kerja inferensi (inference se
 Bagi para engineer dan pengambil keputusan infrastruktur, memisahkan antara klaim peluncuran dan hasil benchmark dunia nyata adalah hal krusial:
 
 * **Klaim Pemasaran Resmi: NVIDIA mengumumkan bahwa sistem GB200 NVL72 mampu menghasilkan peningkatan throughput inferensi hingga 30x dibandingkan kluster H100 dengan jumlah GPU yang sama, serta memangkas konsumsi energi dan biaya hingga 25x.**
-  * *Sistem Pengujian Resmi:* NVIDIA GB200 NVL72 (72 Blackwell GPUs, 36 Grace CPUs, Liquid Cooled)
-  * *Model yang Diuji:* 1.8 Trillion Parameter Mixture-of-Experts (MoE) Large Language Model (e.g. GPT-4 scale)
-  * *Baseline Pembanding:* 72x NVIDIA H100 SXM 80GB (Air/Liquid Cooled) running at FP8
+
+#### Metrik Terverifikasi & Sumber Baseline
+
+* **Metrik 1 (Peak Inference Speedup across Full Cluster):** 30 x vs Equal count of 72x H100 SXM5 GPUs (Klaim sistem rak penuh resmi NVIDIA GB200 NVL72)
+* **Metrik 2 (Independent Real-World Cost per Million Tokens (Open-Weight Model)):** 0.02 $ / million tokens vs $0.09 / million tokens on H100 SXM (Hopper) (Hasil pengujian independen SemiAnalysis InferenceX 2026)
 
 #### Realitas Pengujian Independen di Lapangan
 
 Data Independen 2026: Berdasarkan benchmark SemiAnalysis InferenceX untuk model open-weight seperti Llama-3-70B dan GPT-OSS-120B, biaya inferensi B200 tercatat di kisaran ~$0.02 per 1 juta token, dibandingkan ~$0.09 per 1 juta token pada kluster H100. Ini menghasilkan efisiensi biaya riil sekitar 4.5x lebih murah pada level chip tunggal (bukan 30x sebagaimana klaim sistem rak penuh).
-
-Peningkatan kecepatan riil per-GPU berkisar antara 2.5x hingga 4x tergantung pada ukuran model dan batasan latensi batch (time-to-first-token vs inter-token latency). Angka 30x hanya tercapai ketika membandingkan sistem rak raksasa GB200 NVL72 yang memanfaatkan interkoneksi NVLink 130 TB/s untuk mengeliminasi bottleneck jaringan InfiniBand antar-node.
 
 ---
 
@@ -97,8 +99,6 @@ Apakah Layanan AI Akan Otomatis Lebih Murah bagi Pengguna? Tidak secara instan. 
 
 ### Rujukan Arsitektur & Sumber Primer Otoritatif
 
-- **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — *Official Newsroom (Tier 1)*
-- **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — *Academic Paper (Tier 1)*
-- **[IEEE Micro Semiconductor Architecture Analysis](https://www.computer.org/csdl/magazine/mi)** — *Academic Paper (Tier 1)*
-- **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — *Journalism (Tier 2)*
-- **[The Verge Technology Hardware Review](https://www.theverge.com/tech)** — *Journalism (Tier 2)*
+- **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — *Technical Whitepaper (Tier 1, Terbit: 2024)*
+- **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — *Independent Benchmark (Tier 1, Terbit: 2026)*
+- **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — *Journalism (Tier 2, Terbit: 2026)*

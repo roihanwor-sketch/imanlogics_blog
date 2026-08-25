@@ -32,10 +32,22 @@ module.exports = () => {
       remotePatterns: [
         {
           protocol: 'https',
+          hostname: 'images.unsplash.com',
+        },
+        {
+          protocol: 'https',
+          hostname: 'upload.wikimedia.org',
+        },
+        {
+          protocol: 'https',
+          hostname: 'commons.wikimedia.org',
+        },
+        {
+          protocol: 'https',
           hostname: 'picsum.photos',
         },
       ],
-      unoptimized,
+      unoptimized: true,
     },
 
     webpack: (config, options) => {
