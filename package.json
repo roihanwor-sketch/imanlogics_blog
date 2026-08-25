@@ -7,6 +7,7 @@
     "dev": "cross-env INIT_CWD=$PWD next dev",
     "cms:proxy": "npx decap-server",
     "auto:publish": "npx tsx scripts/auto-publisher-cron.ts",
+    "test:pipeline": "npx tsx scripts/tests/pipeline.test.ts",
     "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",

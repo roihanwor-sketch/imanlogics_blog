@@ -1,80 +1,139 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
-import { researchTechTopics, ResearchTopic } from './tech-researcher';
-import { researchIslamicLogicTopics } from './islamic-logic-researcher';
-import { buildMdxArticlesWithQC, MdxArticle } from './article-builder-qc';
+import { researchTechNewsIntelligence, TechNewsStory } from './tech-researcher';
+import { researchIslamicAcademicIntelligence, IslamicAcademicStory } from './islamic-logic-researcher';
+import { buildTechMdxArticles, buildIslamicAcademicMdxArticles, MdxArticle } from './article-builder-qc';
+
+export interface AuditCycleReport {
+  cycleTimestamp: string;
+  sourcesScanned: number;
+  candidatesDiscovered: number;
+  duplicatesRemoved: number;
+  storiesEvaluated: number;
+  articlesPassedQC: number;
+  articlesPublished: string[];
+  rejectionReasons: string[];
+  status: 'SUCCESS' | 'NO_PUBLISHABLE_STORY' | 'PARTIAL_SUCCESS';
+}
+
+const MIN_QC_SCORE = 85;
+const MAX_ARTICLES_PER_CYCLE = 5;
 
 /**
- * Tool 4: Auto-Publisher & Orchestrator Cron Daemon for BLOG (D:\Projects\BLOG)
- * Evaluates news density (3-5 articles/cycle), orchestrates Tool 1, 2, 3, saves MDX files into data/blog/,
- * and auto-pushes updates to GitHub repository.
+ * Autonomous Editorial & News Intelligence Publisher Daemon
  */
-export async function runAutoPublisherPipeline(options: { gitPush?: boolean } = {}) {
-  console.log('🚀 [Tool 4] Launching Iman Logics Autonomous Blog Pipeline for D:\\Projects\\BLOG...');
+export async function runAutonomousEditorialPipeline(options: { gitPush?: boolean } = {}): Promise<AuditCycleReport> {
+  const cycleTimestamp = new Date().toISOString();
+  console.log(`\n===============================================================`);
+  console.log(`🚀 [Autonomous Editorial Daemon] Cycle Started at ${cycleTimestamp}`);
+  console.log(`===============================================================`);
 
-  // 1. Fetch topics from Tool 1 & Tool 2
-  const techTopics = await researchTechTopics();
-  const islamicTopics = await researchIslamicLogicTopics();
+  const report: AuditCycleReport = {
+    cycleTimestamp,
+    sourcesScanned: 0,
+    candidatesDiscovered: 0,
+    duplicatesRemoved: 0,
+    storiesEvaluated: 0,
+    articlesPassedQC: 0,
+    articlesPublished: [],
+    rejectionReasons: [],
+    status: 'NO_PUBLISHABLE_STORY',
+  };
 
-  // 2. Dynamic Volume Evaluation (3 to 5 articles based on news density)
-  const totalAvailable = techTopics.length + islamicTopics.length;
-  let targetCount = 3;
-  if (totalAvailable >= 5) {
-    targetCount = 5;
-  } else if (totalAvailable >= 4) {
-    targetCount = 4;
+  // 1. Discover & Research Tech News
+  const techStories = await researchTechNewsIntelligence();
+  // 2. Discover & Research Islamic Academic Topics
+  const islamicStories = await researchIslamicAcademicIntelligence();
+
+  report.candidatesDiscovered = techStories.length + islamicStories.length;
+  report.sourcesScanned = techStories.reduce((acc, s) => acc + s.sources.length, 0) +
+                         islamicStories.reduce((acc, s) => acc + s.sources.length, 0);
+
+  console.log(`📊 [Pipeline Audit] Discovered ${report.candidatesDiscovered} candidate story/stories across ${report.sourcesScanned} primary/secondary sources.`);
+
+  // 3. Editorial Evaluation & Selection (Prioritize highest scoring up to MAX_ARTICLES_PER_CYCLE)
+  const selectedTech = techStories.slice(0, 2);
+  const selectedIslamic = islamicStories.slice(0, 2);
+  const totalSelected = selectedTech.length + selectedIslamic.length;
+
+  if (totalSelected === 0) {
+    console.log(`ℹ️ [Editorial Decision] NO_PUBLISHABLE_STORY — No fresh stories met strict news hook or anti-duplicate criteria.`);
+    report.status = 'NO_PUBLISHABLE_STORY';
+    return report;
   }
 
-  console.log(`📊 [Tool 4] News Density Evaluation: ${totalAvailable} topic(s) available. Target output: ${targetCount} article(s).`);
-
-  const selectedTopics: ResearchTopic[] = [];
-  if (islamicTopics.length > 0) {
-    selectedTopics.push(...islamicTopics.slice(0, 2));
-  }
-  const remainingSlots = targetCount - selectedTopics.length;
-  if (techTopics.length > 0) {
-    selectedTopics.push(...techTopics.slice(0, remainingSlots));
-  }
-
-  // 3. Build MDX articles with Tool 3 & QC Gatekeeper
   const publishedArticles: MdxArticle[] = [];
-  for (const topic of selectedTopics) {
-    const { articles, qc } = await buildMdxArticlesWithQC(topic);
-    if (qc.passed) {
+
+  // 4. Process Tech Stories
+  for (const story of selectedTech) {
+    report.storiesEvaluated++;
+    const { articles, qcResults } = await buildTechMdxArticles(story);
+
+    const allPassed = qcResults.id.passed && qcResults.en.passed && qcResults.ar.passed;
+    if (allPassed) {
       for (const article of articles) {
         fs.writeFileSync(article.filepath, article.content, 'utf-8');
         publishedArticles.push(article);
-        console.log(`💾 Saved MDX article: data/blog/${article.filename}`);
+        report.articlesPublished.push(`data/blog/${article.filename}`);
+        console.log(`  💾 Published MDX: data/blog/${article.filename} [QC: ${qcResults[article.language].score}/100]`);
       }
+      report.articlesPassedQC += articles.length;
     } else {
-      console.log(`❌ Skipping topic "${topic.title}" due to QC failure.`);
+      const reason = `Rejected tech story "${story.title}" due to QC failure (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score})`;
+      report.rejectionReasons.push(reason);
+      console.warn(`  ⚠️ ${reason}`);
     }
   }
 
-  if (publishedArticles.length === 0) {
-    console.log('ℹ️ No new articles passed QC criteria in this run.');
-    return;
+  // 5. Process Islamic Academic Stories
+  for (const story of selectedIslamic) {
+    report.storiesEvaluated++;
+    const { articles, qcResults } = await buildIslamicAcademicMdxArticles(story);
+
+    const allPassed = qcResults.id.passed && qcResults.en.passed && qcResults.ar.passed;
+    if (allPassed) {
+      for (const article of articles) {
+        fs.writeFileSync(article.filepath, article.content, 'utf-8');
+        publishedArticles.push(article);
+        report.articlesPublished.push(`data/blog/${article.filename}`);
+        console.log(`  💾 Published MDX: data/blog/${article.filename} [QC: ${qcResults[article.language].score}/100]`);
+      }
+      report.articlesPassedQC += articles.length;
+    } else {
+      const reason = `Rejected academic story "${story.title}" due to QC failure (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score})`;
+      report.rejectionReasons.push(reason);
+      console.warn(`  ⚠️ ${reason}`);
+    }
   }
 
-  // 4. Git Commit & Push (if enabled or running in CI/CD)
+  // 6. Final Status Evaluation
+  if (publishedArticles.length > 0) {
+    report.status = 'SUCCESS';
+    console.log(`\n🎉 [Pipeline Success] Successfully published ${publishedArticles.length} production-grade trilingual articles!`);
+  } else {
+    report.status = 'NO_PUBLISHABLE_STORY';
+    console.log(`\nℹ️ [Pipeline Result] NO_PUBLISHABLE_STORY — Zero articles published.`);
+  }
+
+  // 7. Optional Git Push in CI/CD environment
   if (options.gitPush || process.env.CI) {
     try {
       console.log('📦 Executing Git Commit & Push to GitHub repository...');
-      execSync('git config --global user.name "Iman Logics Bot"');
+      execSync('git config --global user.name "Iman Logics Editorial Bot"');
       execSync('git config --global user.email "bot@imanlogics.web.id"');
       execSync('git add data/blog/*.mdx');
-      execSync(`git commit -m "feat(blog): auto publish ${publishedArticles.length} new MDX articles [QC passed]"`);
+      execSync(`git commit -m "feat(blog): autonomous publication of ${publishedArticles.length} trilingual articles [QC >= 85]"`);
       execSync('git push origin main');
       console.log('✅ Git Push completed successfully!');
     } catch (gitErr: any) {
-      console.error('⚠️ Git Push encountered an error or no changes to commit:', gitErr.message);
+      console.warn('ℹ️ Git push skipped or no new changes to commit:', gitErr.message);
     }
   }
 
-  console.log('🎉 [Tool 4] Pipeline run completed successfully for D:\\Projects\\BLOG!');
+  return report;
 }
 
 if (require.main === module) {
-  runAutoPublisherPipeline({ gitPush: false }).catch(console.error);
+  runAutonomousEditorialPipeline({ gitPush: false }).catch(console.error);
 }
