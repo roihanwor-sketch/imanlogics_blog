@@ -10,10 +10,6 @@ import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 
-const editUrl = (path) => `${siteMetadata.siteRepo}/blob/main/data/${path}`
-const discussUrl = (path) =>
-  `https://mobile.twitter.com/search?q=${encodeURIComponent(`${siteMetadata.siteUrl}/${path}`)}`
-
 const postDateTemplate: Intl.DateTimeFormatOptions = {
   weekday: 'long',
   year: 'numeric',
@@ -30,7 +26,7 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
-  const { filePath, path, slug, date, title, tags } = content
+  const { path, slug, date, title, tags } = content
   const basePath = path.split('/')[0]
 
   const isRtl = content.language === 'ar' || slug.endsWith('.ar')
@@ -100,23 +96,6 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
             </dl>
             <div className="divide-y divide-gray-200 xl:col-span-3 xl:row-span-2 xl:pb-0 dark:divide-gray-700">
               <div className="prose dark:prose-invert max-w-none pt-10 pb-8">{children}</div>
-              <div className="pt-6 pb-6 text-sm text-gray-700 dark:text-gray-300">
-                <Link href={discussUrl(path)} rel="nofollow">
-                  {isRtl
-                    ? 'ناقش على تويتر'
-                    : articleLang === 'id'
-                      ? 'Diskusikan di Twitter'
-                      : 'Discuss on Twitter'}
-                </Link>
-                {` • `}
-                <Link href={editUrl(filePath)}>
-                  {isRtl
-                    ? 'عرض المصدر على GitHub'
-                    : articleLang === 'id'
-                      ? 'Lihat di GitHub'
-                      : 'View on GitHub'}
-                </Link>
-              </div>
               {siteMetadata.comments && (
                 <div
                   className="pt-6 pb-6 text-center text-gray-700 dark:text-gray-300"
