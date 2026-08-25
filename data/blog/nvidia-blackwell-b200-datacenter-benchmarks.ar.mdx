@@ -1,18 +1,93 @@
 ---
-title: "كيف حققت بنية NVIDIA Blackwell أداء استدلال أعلى بنحو 30 مرة؟ وما الذي يعنيه الرقم فعلاً؟"
+title: 'كيف حققت بنية NVIDIA Blackwell أداء استدلال أعلى بنحو 30 مرة؟ وما الذي يعنيه الرقم فعلاً؟'
 date: '2026-08-25'
-tags: ["nvidia","blackwell","b200","gb200","fp4","gpu","datacenter","benchmark","inference","semiconductor"]
+tags:
+  [
+    'nvidia',
+    'blackwell',
+    'b200',
+    'gb200',
+    'fp4',
+    'gpu',
+    'datacenter',
+    'benchmark',
+    'inference',
+    'semiconductor',
+  ]
 draft: false
-summary: "تحليل معماري شامل لمنظومة NVIDIA Blackwell: التمييز بين معالج B200 الفردي، وشريحة GB200 الفائقة، ونظام الخوادم GB200 NVL72، مع تفكيك آليات حسابات FP4 الدقيقة ومقارنة ادعاءات الإطلاق باختبارات مراكز البيانات المستقلة لعام 2026."
-images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
+summary: 'تحليل معماري شامل لمنظومة NVIDIA Blackwell: التمييز بين معالج B200 الفردي، وشريحة GB200 الفائقة، ونظام الخوادم GB200 NVL72، مع تفكيك آليات حسابات FP4 الدقيقة ومقارنة ادعاءات الإطلاق باختبارات مراكز البيانات المستقلة لعام 2026.'
+images:
+  [
+    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
+    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
+    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
+  ]
 authors: ['default']
 language: 'ar'
 translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
 original_language: 'id'
 articleType: 'Architectural Analysis'
 category: 'tech-ai'
-sources: [{"name":"NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)","url":"https://resources.nvidia.com/en-us-blackwell-architecture","tier":1,"type":"Technical Whitepaper","publishedDate":"2024"},{"name":"SemiAnalysis Hardware & InferenceX Economics Benchmark","url":"https://semianalysis.com/","tier":1,"type":"Independent Benchmark","publishedDate":"2026"},{"name":"Ars Technica Enterprise Compute & Infrastructure","url":"https://arstechnica.com/gadgets/","tier":2,"type":"Journalism","publishedDate":"2026"}]
-imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Unsplash","creator":"Nana Hua","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Nana Hua (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Unsplash","creator":"Alexandre Debiève","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Alexandre Debiève (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Unsplash","creator":"Adi Goldstein","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Unsplash / Foto oleh Adi Goldstein (Unsplash License)"}]
+sources:
+  [
+    {
+      'name': 'NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)',
+      'url': 'https://resources.nvidia.com/en-us-blackwell-architecture',
+      'tier': 1,
+      'type': 'Technical Whitepaper',
+      'publishedDate': '2024',
+    },
+    {
+      'name': 'SemiAnalysis Hardware & InferenceX Economics Benchmark',
+      'url': 'https://semianalysis.com/',
+      'tier': 1,
+      'type': 'Independent Benchmark',
+      'publishedDate': '2026',
+    },
+    {
+      'name': 'Ars Technica Enterprise Compute & Infrastructure',
+      'url': 'https://arstechnica.com/gadgets/',
+      'tier': 2,
+      'type': 'Journalism',
+      'publishedDate': '2026',
+    },
+  ]
+imageCredits:
+  [
+    {
+      'url': 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
+      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
+      'sourceWebsite': 'Unsplash',
+      'creator': 'Nana Hua',
+      'license': 'Unsplash License',
+      'licenseUrl': 'https://unsplash.com/license',
+      'downloadDate': '2026-08-25',
+      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
+      'attributionText': 'Unsplash / Foto oleh Nana Hua (Unsplash License)',
+    },
+    {
+      'url': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
+      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
+      'sourceWebsite': 'Unsplash',
+      'creator': 'Alexandre Debiève',
+      'license': 'Unsplash License',
+      'licenseUrl': 'https://unsplash.com/license',
+      'downloadDate': '2026-08-25',
+      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
+      'attributionText': 'Unsplash / Foto oleh Alexandre Debiève (Unsplash License)',
+    },
+    {
+      'url': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80',
+      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
+      'sourceWebsite': 'Unsplash',
+      'creator': 'Adi Goldstein',
+      'license': 'Unsplash License',
+      'licenseUrl': 'https://unsplash.com/license',
+      'downloadDate': '2026-08-25',
+      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
+      'attributionText': 'Unsplash / Foto oleh Adi Goldstein (Unsplash License)',
+    },
+  ]
 ---
 
 ## ما وراء سيليكون المعالجات التقليدية: لماذا أصبح اقتصاد الاستدلال ساحة الحسم في الذكاء الاصطناعي
@@ -24,7 +99,7 @@ imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6
 في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تشهد هندسة أشباه الموصلات تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
 
 ![وحدة تسريع حوسبة عالية الأداء مع نظام تبريد حراري متطور مخصص لاستدلال الذkاء الاصطناعي في مراكز البيانات](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
-*مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)*
+_مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)_
 
 ---
 
@@ -37,8 +112,7 @@ imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6
 3. **نظام GB200 NVL72: بنية تحتية خادمة مبردة بالسوائل بالكامل تدمج 72 معالج Blackwell و36 معالج Grace في نطاق NVLink موحد، لتعمل كمعالج جبار واحد بقدرة 1.4 إكزاDefault استدلال FP4 وذاكرة مجمعة سعة 30 تيرابايت.**
 
 ![لوحة دارات إلكترونية حديثة تعرض معالجات دقيقة ومسارات نقل بيانات فائقة السرعة](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
-*مصدر الصورة: Unsplash / تصوير Alexandre Debiève (Unsplash License)*
-
+_مصدر الصورة: Unsplash / تصوير Alexandre Debiève (Unsplash License)_
 
 ---
 
@@ -64,12 +138,12 @@ imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6
 
 ### رابعاً: التحقق من الأداء: ادعاءات الإطلاق الرسمية مقابل واقع الاختبارات الميدانية 2026
 
-* **ادعاء الإطلاق الرسمي: أعلنت إنفيديا أن نظام GB200 NVL72 يحقق زيادة في أداء الاستدلال تصل إلى 30 ضعفاً مقارنة بنفس العدد من معالجات H100، مع خفض استهلاك الطاقة والتكلفة بمقدار 25 ضعفاً.**
+- **ادعاء الإطلاق الرسمي: أعلنت إنفيديا أن نظام GB200 NVL72 يحقق زيادة في أداء الاستدلال تصل إلى 30 ضعفاً مقارنة بنفس العدد من معالجات H100، مع خفض استهلاك الطاقة والتكلفة بمقدار 25 ضعفاً.**
 
 #### المؤشرات الموثقة ومصادر القياس المعتمدة
 
-* **المؤشر 1 (Peak Inference Speedup across Full Cluster):** 30 x مقارنة بـ Equal count of 72x H100 SXM5 GPUs (NVIDIA Official Architecture Technical Whitepaper)
-* **المؤشر 2 (Independent Real-World Cost per Million Tokens (Open-Weight Model)):** 0.02 $ / million tokens مقارنة بـ $0.09 / million tokens on H100 SXM (Hopper) (SemiAnalysis InferenceX Hardware Economics Report)
+- **المؤشر 1 (Peak Inference Speedup across Full Cluster):** 30 x مقارنة بـ Equal count of 72x H100 SXM5 GPUs (NVIDIA Official Architecture Technical Whitepaper)
+- **المؤشر 2 (Independent Real-World Cost per Million Tokens (Open-Weight Model)):** 0.02 $ / million tokens مقارنة بـ $0.09 / million tokens on H100 SXM (Hopper) (SemiAnalysis InferenceX Hardware Economics Report)
 
 #### واقع الاختبارات المستقلة في مراكز البيانات
 
@@ -93,6 +167,6 @@ imageCredits: [{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6
 
 ### المصادر الفنية والمراجع الرسمية المعتمدة
 
-- **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — *ورقة فنية بيضاء (المستوى 1، تاريخ النشر: 2024)*
-- **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — *اختبار أداء مستقل (المستوى 1، تاريخ النشر: 2026)*
-- **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — *صحافة استقصائية (المستوى 2، تاريخ النشر: 2026)*
+- **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — _ورقة فنية بيضاء (المستوى 1، تاريخ النشر: 2024)_
+- **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — _اختبار أداء مستقل (المستوى 1، تاريخ النشر: 2026)_
+- **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — _صحافة استقصائية (المستوى 2، تاريخ النشر: 2026)_

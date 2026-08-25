@@ -834,7 +834,7 @@ ${story.islamicReasoningWalkthrough.revelationContinuity.id}
 
 ${story.islamicReasoningWalkthrough.scripturalTransmissionHistory.id}
 
-Dalam **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference}**, Al-Qur'an mengabadikan prinsip ini secara gamblang:
+Dalam **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference.id}**, Al-Qur'an mengabadikan prinsip ini secara gamblang:
 
 > **"${story.islamicReasoningWalkthrough.quranicPerspective.arabicText}"**
 > 
@@ -914,7 +914,7 @@ ${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url
 
 The Qumran library preserves some of the most extraordinary documentary treasures in human history:
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name} (${text.siglum})\n\n*Estimated Date:* ${text.dateEstimate}\n\n${text.description.en}`).join('\n\n')}
+${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name.en}\n\n*Estimated Date:* ${text.dateEstimate.en}\n\n${text.description.en}`).join('\n\n')}
 
 The breadth of these writings demonstrates that the Judean desert caves served as an active nexus of intense scribal preservation and deep religious introspection.
 
@@ -964,7 +964,7 @@ ${story.islamicReasoningWalkthrough.revelationContinuity.en}
 
 ${story.islamicReasoningWalkthrough.scripturalTransmissionHistory.en}
 
-In **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference}**, sacred scripture articulates this foundational principle:
+In **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference.en}**, sacred scripture articulates this foundational principle:
 
 > **"${story.islamicReasoningWalkthrough.quranicPerspective.arabicText}"**
 > 
@@ -1044,7 +1044,7 @@ ${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url
 
 تشتمل مكتبة قمران على نصوص استثنائية في تاريخ التراث الإنساني:
 
-${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name} (${text.siglum})\n\n*التقدير الزمني:* ${text.dateEstimate}\n\n${text.description.ar}`).join('\n\n')}
+${story.archaeologicalDetails.keyTexts.map((text, idx) => `#### ${idx + 1}. ${text.name.ar}\n\n*التقدير الزمني:* ${text.dateEstimate.ar}\n\n${text.description.ar}`).join('\n\n')}
 
 ---
 
@@ -1088,7 +1088,7 @@ ${story.islamicReasoningWalkthrough.revelationContinuity.ar}
 
 ${story.islamicReasoningWalkthrough.scripturalTransmissionHistory.ar}
 
-في **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference}**، يقرر القرآن الكريم هذا المبدأ الكلي:
+في **${story.islamicReasoningWalkthrough.quranicPerspective.surahReference.ar}**، يقرر القرآن الكريم هذا المبدأ الكلي:
 
 > **"${story.islamicReasoningWalkthrough.quranicPerspective.arabicText}"**
 > 

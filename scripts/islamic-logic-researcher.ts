@@ -36,9 +36,9 @@ export interface TraceableHistoricalMetric {
 }
 
 export interface KeyManuscriptText {
-  name: string
+  name: LocalizedText
   siglum: string
-  dateEstimate: string
+  dateEstimate: LocalizedText
   description: LocalizedText
 }
 
@@ -63,7 +63,7 @@ export interface IslamicReasoningWalkthrough {
   revelationContinuity: LocalizedText
   scripturalTransmissionHistory: LocalizedText
   quranicPerspective: {
-    surahReference: string
+    surahReference: LocalizedText
     arabicText: string
     translation: LocalizedText
     exegesis: LocalizedText
@@ -174,9 +174,17 @@ export function getFreshIslamicAcademicCandidates(currentIsoDate: string): Islam
         },
         keyTexts: [
           {
-            name: 'Great Isaiah Scroll (1QIsaᵃ)',
+            name: {
+              id: 'Kitab Yesaya Lengkap (Great Isaiah Scroll)',
+              en: 'Great Isaiah Scroll (1QIsaᵃ)',
+              ar: 'مخطوطة سفر إشعياء الكبرى (1QIsaᵃ)',
+            },
             siglum: '1QIsaᵃ',
-            dateEstimate: 'Sekitar 125 SM',
+            dateEstimate: {
+              id: 'Sekitar 125 SM',
+              en: 'c. 125 BCE',
+              ar: 'حوالي 125 ق.م',
+            },
             description: {
               id: 'Satu-satunya naskah utuh berukuran panjang 7.34 meter yang memuat 66 pasal Kitab Yesaya lengkap. Naskah ini bertarikh sekitar seribu tahun lebih tua daripada Kodeks Leningrad (1008 M).',
               en: 'A virtually complete 7.34-meter parchment scroll containing all 66 chapters of Isaiah, dating approximately one millennium earlier than the standard medieval Leningrad Codex.',
@@ -184,9 +192,17 @@ export function getFreshIslamicAcademicCandidates(currentIsoDate: string): Islam
             },
           },
           {
-            name: 'Community Rule (1QS / Serekh ha-Yahad)',
+            name: {
+              id: 'Piagam Komunitas (Community Rule / 1QS)',
+              en: 'Community Rule (1QS / Serekh ha-Yahad)',
+              ar: 'ميثاق الجماعة (1QS / Serekh ha-Yahad)',
+            },
             siglum: '1QS',
-            dateEstimate: 'Sekitar 100–75 SM',
+            dateEstimate: {
+              id: 'Sekitar 100–75 SM',
+              en: 'c. 100–75 BCE',
+              ar: 'حوالي 100–75 ق.م',
+            },
             description: {
               id: 'Piagam tata tertib komunitas yang mengatur disiplin ibadah, kepemilikan harta bersama, kesucian ritual air, dan penolakan keras terhadap kultus paganisme Romawi.',
               en: 'The constitutional charter governing communal discipline, shared property, ritual water purifications, and fierce resistance against Hellenistic-Roman pagan syncretism.',
@@ -194,9 +210,17 @@ export function getFreshIslamicAcademicCandidates(currentIsoDate: string): Islam
             },
           },
           {
-            name: 'Temple Scroll (11QT) & Copper Scroll (3Q15)',
+            name: {
+              id: 'Gulungan Bait Suci (11QT) & Gulungan Tembaga (3Q15)',
+              en: 'Temple Scroll (11QT) & Copper Scroll (3Q15)',
+              ar: 'لفافة الهيكل (11QT) واللفافة النحاسية (3Q15)',
+            },
             siglum: '11QT & 3Q15',
-            dateEstimate: 'Abad ke-1 SM – Abad ke-1 M',
+            dateEstimate: {
+              id: 'Abad ke-1 SM – Abad ke-1 M',
+              en: '1st century BCE – 1st century CE',
+              ar: 'القرن الأول ق.م – القرن الأول م',
+            },
             description: {
               id: 'Temple Scroll memuat regulasi hukum ibadah Bait Suci, sedangkan Copper Scroll adalah naskah unik dari lempengan tembaga yang memuat daftar 64 lokasi persembunyian harta emas dan perak.',
               en: 'The Temple Scroll details elaborate architectural and ritual legislation, while the enigmatic Copper Scroll records 64 hidden caches of gold and silver treasures.',
@@ -243,10 +267,14 @@ export function getFreshIslamicAcademicCandidates(currentIsoDate: string): Islam
         scripturalTransmissionHistory: {
           id: "Realitas Transmisi Manusiawi: Khazanah Islam membedakan antara firman wahyu murni dan catatan penyalinan manusiawi (bima istuhfidzu min kitabillah). Fakta adanya variasi ejaan dan catatan redaksional di Qumran selaras dengan penjelasan Al-Qur'an bahwa kitab-kitab terdahulu diamanahkan pemeliharaannya kepada para ulama dan rahib mereka.",
           en: "Human Scribal Transmission: Classical Islamic theology explicitly delineates between pristine divine revelation and historical human copyist transmission. The textual fluidity observed at Qumran harmonizes with the Qur'anic insight that earlier scriptures were entrusted to human scribal custodianship.",
-          ar: 'طبيعة التدوين البشري: يفرق المنظور الإسلامي بين الوحي الإلهي المُنزل وتاريخ التدوين البشري؛ حيث يتطابق التنوع النصي في قمرan مع التقرير القرآني بأن الكتب السابقة استُحفظ عليها الأحبار والنساخ.',
+          ar: 'طبيعة التدوين البشري: يفرق المنظور الإسلامي بين الوحي الإلهي المُنزل وتاريخ التدوين البشري؛ حيث يتطابق التنوع النصي في قمران مع التقرير القرآني بأن الكتب السابقة استُحفظ عليها الأحبار والنساخ.',
         },
         quranicPerspective: {
-          surahReference: 'QS. Al-Baqarah [2]: 136',
+          surahReference: {
+            id: 'QS. Al-Baqarah [2]: 136',
+            en: "Qur'an 2:136 (Surah Al-Baqarah)",
+            ar: 'سورة البقرة [2]: 136',
+          },
           arabicText:
             'قُولُوا آمَنَّا بِاللَّهِ وَمَا أُنزِلَ إِلَيْنَا وَمَا أُنزِلَ إِلَىٰ إِبْرَاهِيمَ وَإِسْمَاعِيلَ وَإِسْحَاقَ وَيَعْقُوبَ وَالْأَسْبَاطِ وَمَا أُوتِيَ مُوسَىٰ وَعِيسَىٰ وَمَا أُوتِيَ النَّبِيُّونَ مِن رَّبِّهِمْ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّنْهُمْ وَنَحْنُ لَهُ مُسْلِمُونَ',
           translation: {
