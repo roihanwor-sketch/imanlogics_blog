@@ -67,46 +67,59 @@
 | **[`scripts/islamic-logic-researcher.ts`](scripts/islamic-logic-researcher.ts)** | **Islamic Academic & Storytelling Engine:** Meneliti temuan arkeologi naskah kuno (Birmingham, Dead Sea Scrolls), penanggalan ilmiah, dan kajian rasionalitas wahyu dengan gaya narasi memikat yang ramah bagi non-Muslim, skeptis, dan Muslim awam. |
 | **[`scripts/image-researcher.ts`](scripts/image-researcher.ts)** | **Image Intelligence Module:** Menemukan 2–4 gambar beresolusi tinggi per artikel dengan verifikasi lisensi legal (Unsplash, Wikimedia CC-BY, Public Domain), atribusi fotografer lengkap, dan alt-text trilingual. |
 | **[`scripts/article-builder-qc.ts`](scripts/article-builder-qc.ts)** | **Editorial MDX Builder & QC Gatekeeper:** Menghasilkan artikel trilingual terstruktur (Piramida Terbalik), menerapkan *Zero-Filler Policy*, dan menguji mutu artikel (skor minimal 85/100). |
-| **[`scripts/scheduler-daemon.ts`](scripts/scheduler-daemon.ts)** | **Autonomous Scheduler Daemon:** Menjalankan pipeline otomatis setiap pukul **05:00** dan **17:00** waktu lokal PC dengan deteksi zona waktu Windows dinamis dan proteksi anti-duplikasi proses (*singleton lock*). |
+| **[`scripts/scheduler-daemon.ts`](scripts/scheduler-daemon.ts)** | **Autonomous Scheduler Daemon:** Menjalankan pipeline riset web otonom setiap **3 jam** (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00) dengan deteksi zona waktu dinamis, proteksi anti-duplikasi (*singleton lock*), dan diseminasi WhatsApp teragregasi 12 jam pada **05:00** dan **17:00** WIB. |
 | **[`scripts/wa-notifier.ts`](scripts/wa-notifier.ts)** | **WhatsApp Dispatcher Bridge:** Terhubung ke engine `D:\KULIAH\AGENT\src\wa_dispatcher.py` untuk mengirimkan laporan operasional dan tautan live artikel ke **085335329341** menggunakan enkripsi transport Base64. |
-| **[`scripts/tests/pipeline.test.ts`](scripts/tests/pipeline.test.ts)** | **Automated Test Suite:** Pengujian unit dan integrasi untuk seluruh modul pipeline (Recency, Lisensi Gambar, Multidimensional QC, Zero-Filler, dan Storytelling Architecture). |
+| **[`scripts/tests/pipeline.test.ts`](scripts/tests/pipeline.test.ts)** | **Automated Test Suite:** Pengujian unit dan integrasi untuk seluruh modul pipeline (3-Hour Timer, WA Slot Gating, 75 Media Pools, Epistemological Matrix, Multidimensional QC, Zero-Filler, dan Storytelling Architecture). |
 
 ---
 
-## 🚀 Universal Start Trigger ("Jalankan")
+## 🚀 Standarisasi Universal Trigger
 
-Sistem telah distandarisasi pada [`.agents/AGENTS.md`](.agents/AGENTS.md). Cukup berikan perintah:
-
-> **"jalankan"** *(atau "jalankan otomasi", "nyalakan server dan CMS")*
+### 1. Eksekusi Otomasi Konten & Pipeline Otonom ("Jalankan")
+Cukup berikan perintah:
+> **"jalankan"** *(atau "jalankan sekarang", "jalankan otomasi", "jalankan pipeline")*
 
 Sistem Antigravity akan secara otomatis:
+1. Mengaktifkan **ImanLogics MCP Server & Autonomous Scheduler Daemon** di latar belakang.
+2. Mengeksekusi pipeline riset 3-lapis, verifikasi bukti primer/sekunder, generasi MDX trilingual (ID/EN/AR), pengujian QC 100-poin, dan auto-push Git langsung ke GitHub origin main.
+3. Mengagregasi laporan operasional 12 jam dan mendiseminasikannya ke WhatsApp pribadi Anda pada pukul **05:00** dan **17:00** WIB.
+4. *(Tanpa menyalakan server lokal dev/CMS, karena artikel langsung terbit via GitHub Pages CI/CD).*
+
+### 2. Menyalakan Server Lokal ("Nyalakan Server")
+Jika Anda ingin melakukan preview lokal atau login ke CMS:
+> **"nyalakan server"** *(atau "jalankan kedua server", "nyalakan dev server dan CMS")*
+
+Sistem akan:
 1. Membersihkan cache `.next` dan menyalakan **Next.js Dev Server** di `http://localhost:3000`.
 2. Menyalakan **Decap CMS Proxy Server** di `http://localhost:8081` (Admin UI di `http://localhost:3000/admin`).
-3. Mengaktifkan **Autonomous Scheduler Daemon** di latar belakang.
-4. Mengeksekusi pipeline riset, verifikasi, generasi MDX trilingual, pengujian QC, dan auto-push Git ke GitHub.
-5. Mengirimkan notifikasi ringkasan lengkap ke WhatsApp pribadi Anda.
 
 ---
 
 ## 💻 Panduan Perintah CLI (NPM Scripts)
 
 ```bash
-# 1. Jalankan development server lokal
+# 1. Jalankan development server lokal (Preview)
 npm run dev
 
-# 2. Jalankan Decap CMS proxy lokal
+# 2. Jalankan Decap CMS proxy lokal (Admin)
 npm run cms:proxy
 
 # 3. Jalankan pipeline publikasi otonom 1x siklus
 npm run auto:publish
 
-# 4. Jalankan daemon penjadwal (05:00 & 17:00 lokal)
+# 4. Jalankan daemon penjadwal otonom (Riset setiap 3 jam, WA 05:00 & 17:00)
 npm run scheduler
 
-# 5. Jalankan automated test suite (24 assertions)
+# 5. Jalankan ImanLogics MCP Server (Stdio transport)
+npm run mcp:server
+
+# 6. Jalankan automated test suite (34 unit assertions)
 npm run test:pipeline
 
-# 6. Kompilasi build produksi Next.js
+# 7. Jalankan editorial dry-run test suite (9 skenario audit)
+npm run test:dryrun
+
+# 8. Kompilasi build produksi Next.js
 npm run build
 ```
 

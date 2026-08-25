@@ -8,6 +8,7 @@
     "cms:proxy": "npx decap-server",
     "auto:publish": "npx tsx scripts/auto-publisher-cron.ts",
     "scheduler": "npx tsx scripts/scheduler-daemon.ts",
+    "mcp:server": "npx tsx lib/mcp/mcp-server.ts",
     "test:pipeline": "npx tsx scripts/tests/pipeline.test.ts",
     "test:dryrun": "npx tsx scripts/tests/editorial-dryrun.ts",
     "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs",
@@ -18,6 +19,7 @@
   },
   "dependencies": {
     "@headlessui/react": "2.2.9",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@next/bundle-analyzer": "15.5.12",
     "@next/third-parties": "^16.2.10",
     "@tailwindcss/forms": "^0.5.11",

@@ -1,0 +1,131 @@
+{
+  "lastUpdated": "2026-08-25T12:59:54.847Z",
+  "totalCyclesRun": 4,
+  "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-25T12:59:54.833Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/tsmc-2nm-gaafet-nanosheet-semiconductor-advance.mdx",
+        "data/blog/tsmc-2nm-gaafet-nanosheet-semiconductor-advance.en.mdx",
+        "data/blog/tsmc-2nm-gaafet-nanosheet-semiconductor-advance.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "TSMC Memulai Uji Produksi Node 2nm (N2): Transisi GAAFET Nanosheet dan Implikasinya terhadap Efisiensi Chip AI Masa Depan",
+          "slug": "tsmc-2nm-gaafet-nanosheet-semiconductor-advance",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS"
+    },
+    {
+      "cycleTimestamp": "2026-08-25T12:59:22.584Z",
+      "sourcesScanned": 7,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/quran-cosmic-expansion-astrophysics-study.mdx",
+        "data/blog/quran-cosmic-expansion-astrophysics-study.en.mdx",
+        "data/blog/quran-cosmic-expansion-astrophysics-study.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Ekspansi Alam Semesta dan Kosmologi Al-Qur'an: Analisis Semantik \"Musi'un\" dan Batasan Sains Modern",
+          "slug": "quran-cosmic-expansion-astrophysics-study",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [
+        "Rejected tech story \"TSMC Memulai Uji Produksi Node 2nm (N2): Transisi GAAFET Nanosheet dan Implikasinya terhadap Efisiensi Chip AI Masa Depan\" due to QC failure (ID: 100, EN: 0, AR: 0)"
+      ],
+      "status": "SUCCESS"
+    },
+    {
+      "cycleTimestamp": "2026-08-25T12:46:30.218Z",
+      "sourcesScanned": 5,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 6,
+      "articlesPublished": [
+        "data/blog/nvidia-blackwell-fp4-architecture-teardown.mdx",
+        "data/blog/nvidia-blackwell-fp4-architecture-teardown.en.mdx",
+        "data/blog/nvidia-blackwell-fp4-architecture-teardown.ar.mdx",
+        "data/blog/jesus-isa-prayer-submission-tawhid-study.mdx",
+        "data/blog/jesus-isa-prayer-submission-tawhid-study.en.mdx",
+        "data/blog/jesus-isa-prayer-submission-tawhid-study.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Mengapa NVIDIA Blackwell Bisa Mencapai 30x Performa Inferensi? Membongkar B200, FP4, dan GB200 NVL72",
+          "slug": "nvidia-blackwell-fp4-architecture-teardown",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        },
+        {
+          "title": "Bagaimana Yesus Berdoa? Menelaah Praktik Sujud dan Makna Teologis \"Muslim\" dalam Tradisi Kenabian",
+          "slug": "jesus-isa-prayer-submission-tawhid-study",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "7ce63ad"
+    },
+    {
+      "cycleTimestamp": "2026-08-25T10:17:18.771Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/qumran-dead-sea-scrolls-monotheism-study.mdx",
+        "data/blog/qumran-dead-sea-scrolls-monotheism-study.en.mdx",
+        "data/blog/qumran-dead-sea-scrolls-monotheism-study.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Apa yang Sebenarnya Diungkap Gulungan Laut Mati tentang Agama Yahudi Sebelum Yesus?",
+          "slug": "qumran-dead-sea-scrolls-monotheism-study",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "6356bc8"
+    }
+  ]
+}
