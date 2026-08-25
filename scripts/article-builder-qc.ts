@@ -81,6 +81,63 @@ const BANNED_APOLOGETIC_LEAP_PATTERNS = [
   /tidak ada keraguan lagi bahwa para ahli sepakat dengan/i,
 ]
 
+export const BANNED_ARABIC_LEAK_PATTERNS = [
+  {
+    pattern:
+      /\b(sekitar|abad ke|yang|dengan|pada|adalah|yaitu|sebagai|terhadap|menurut|antara|sumber visual|terbit|foto oleh)\b/i,
+    reason: 'Indonesian word leakage detected in Arabic article',
+  },
+  {
+    pattern: /\bQS\.\s+[A-Za-z-]+\b/,
+    reason: 'Indonesian/English Qur\'an citation format (QS.) in Arabic text; use "سورة ..."',
+  },
+  {
+    pattern:
+      /\b(Photo by|Visual Credit|Visual Source|Estimated Date|c\.\s*\d+\s*BCE|1st century|2nd century|Published:)\b/i,
+    reason: 'English template boilerplate leakage detected in Arabic article',
+  },
+  {
+    pattern: /[\u0600-\u06FF]{2,}[a-z]{2,}/,
+    reason: 'Corrupted mixed Arabic-Latin word (e.g. "قمرan") detected in Arabic article',
+  },
+]
+
+export const BANNED_ENGLISH_LEAK_PATTERNS = [
+  {
+    pattern:
+      /\b(sekitar|abad ke|yang|dengan|pada|adalah|yaitu|sebagai|terhadap|menurut|antara|sumber visual|terbit|foto oleh)\b/i,
+    reason: 'Indonesian word leakage detected in English article',
+  },
+  {
+    pattern: /\bQS\.\s+[A-Za-z-]+\b/,
+    reason: 'Indonesian Qur\'an citation format (QS.) in English text; use "Qur\'an ..."',
+  },
+  {
+    pattern: /\b(مصدر الصورة|التقدير الزمني|المستوى|تاريخ النشر)\b/,
+    reason: 'Arabic template boilerplate leakage detected in English article',
+  },
+]
+
+export const BANNED_INDONESIAN_LEAK_PATTERNS = [
+  {
+    pattern: /\b(Visual Credit|Visual Source|Estimated Date|Published:)\b/i,
+    reason: 'English template boilerplate leakage detected in Indonesian article',
+  },
+  {
+    pattern: /\b(مصدر الصورة|التقدير الزمني|المستوى|تاريخ النشر)\b/,
+    reason: 'Arabic template boilerplate leakage detected in Indonesian article',
+  },
+]
+
+export function extractCleanProseForAudit(rawMdx: string): string {
+  let body = rawMdx.replace(/^---[\s\S]*?---\n*/, '')
+  body = body.replace(/```[\s\S]*?```/g, '')
+  body = body.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+  body = body.replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+  body = body.replace(/https?:\/\/\S+/g, '')
+  return body
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -168,6 +225,41 @@ export function runHumanLevelEditorialQC(article: MdxArticle): HumanEditorialSco
         hardFailTriggered = true
         hardFailReason = `Intellectual Honesty Gate Failed: Uncalibrated leap detected (${pattern.toString()}). Material evidence must be delineated from theological interpretation.`
         break
+      }
+    }
+  }
+
+  // 3. HARD-FAIL CHECK: Monolingual Purity & Language Leakage Gatekeeper
+  if (!hardFailTriggered) {
+    const lang = article.language || article.frontmatter.language || 'id'
+    const prose = extractCleanProseForAudit(content)
+
+    if (lang === 'ar' || article.filename?.endsWith('.ar.mdx')) {
+      for (const rule of BANNED_ARABIC_LEAK_PATTERNS) {
+        const match = prose.match(rule.pattern)
+        if (match) {
+          hardFailTriggered = true
+          hardFailReason = `Language Purity Gate Failed (Arabic): ${rule.reason} -> "${match[0]}"`
+          break
+        }
+      }
+    } else if (lang === 'en' || article.filename?.endsWith('.en.mdx')) {
+      for (const rule of BANNED_ENGLISH_LEAK_PATTERNS) {
+        const match = prose.match(rule.pattern)
+        if (match) {
+          hardFailTriggered = true
+          hardFailReason = `Language Purity Gate Failed (English): ${rule.reason} -> "${match[0]}"`
+          break
+        }
+      }
+    } else {
+      for (const rule of BANNED_INDONESIAN_LEAK_PATTERNS) {
+        const match = prose.match(rule.pattern)
+        if (match) {
+          hardFailTriggered = true
+          hardFailReason = `Language Purity Gate Failed (Indonesian): ${rule.reason} -> "${match[0]}"`
+          break
+        }
       }
     }
   }

@@ -141,9 +141,49 @@ Di era digital yang semakin berkembang, teknologi terus berkembang pesat. Mari k
     academicArticles[1].content.includes('Desert Cliffs'),
     'EN article contains "Desert Cliffs" investigative hook'
   )
+  // --- TEST 6: Monolingual Purity & Cross-Language Leakage Protection ---
+  console.log('\n📌 Test 6: Language Purity Gatekeeper')
+  const leakedArticle: MdxArticle = {
+    filename: 'leaked-arabic-test.ar.mdx',
+    filepath: 'data/blog/leaked-arabic-test.ar.mdx',
+    language: 'ar',
+    frontmatter: {
+      title: 'مقال متسرب',
+      date: '2026-08-25',
+      tags: ['history'],
+      draft: false,
+      summary: 'ملخص.',
+      images: ['https://images.unsplash.com/photo-1518770660439-4636190af475'],
+      authors: ['default'],
+      language: 'ar',
+      translation_group: 'tg-leak',
+      original_language: 'id',
+      articleType: 'Analysis',
+      category: 'islamic-logic',
+      sources: [
+        { name: 'Source 1', url: 'https://example.com', tier: 1 },
+        { name: 'Source 2', url: 'https://example2.com', tier: 2 },
+      ],
+      imageCredits: [
+        {
+          url: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+          source: 'Unsplash',
+          creator: 'Author',
+          license: 'Unsplash License',
+          licenseUrl: 'https://unsplash.com/license',
+          downloadDate: '2026-08-25',
+          articleAssociation: 'tg-leak',
+        },
+      ],
+    },
+    content: `## أسرار المخطوطات\n*التقدير الزمني:* Sekitar 125 SM\n### سؤال يستحق التأمل\nسؤال للتفكر.\n### الحدود المعرفية\nحدود واضحة.`,
+  }
+
+  const leakQc = runMultidimensionalQC(leakedArticle)
+  assert(!leakQc.passed, 'QC correctly rejected Arabic article containing Indonesian words (Sekitar 125 SM)')
   assert(
-    academicArticles[2].content.includes('كهوف وادي قمران'),
-    'AR article contains Arabic investigative hook'
+    leakQc.hardFailReason?.includes('Language Purity Gate Failed') === true,
+    'QC hard-fail reason properly identifies Language Purity violation'
   )
 
   console.log('\n========================================================')

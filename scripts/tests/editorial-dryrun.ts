@@ -24,11 +24,11 @@ import { getFreshIslamicAcademicCandidates } from '../islamic-logic-researcher'
 
 async function runFullEditorialSuite() {
   console.log('\n===============================================================')
-  console.log('🏛️  STARTING COMPREHENSIVE 8-SCENARIO EDITORIAL AUDIT')
+  console.log('🏛️  STARTING COMPREHENSIVE 9-SCENARIO EDITORIAL AUDIT')
   console.log('===============================================================\n')
 
   let passedTests = 0
-  const totalTests = 8
+  const totalTests = 9
 
   // -------------------------------------------------------------
   // TEST A: Fresh Breaking News (Event <= 48h)
@@ -343,6 +343,64 @@ async function runFullEditorialSuite() {
     passedTests++
   } else {
     console.error('  ❌ TEST H FAILED: Generic filler bypassed QC.')
+  }
+
+  // -------------------------------------------------------------
+  // TEST I: Multilingual Purity & Language Leakage Gate (ID / EN / AR)
+  // -------------------------------------------------------------
+  console.log('📌 TEST I: Multilingual Purity & Language Leakage Gate')
+  const leakedArabicArticle: MdxArticle = {
+    filename: 'leaked-arabic.ar.mdx',
+    filepath: 'data/blog/leaked-arabic.ar.mdx',
+    language: 'ar',
+    frontmatter: {
+      title: 'مقال متسرب',
+      date: '2026-08-25',
+      tags: ['history'],
+      draft: false,
+      summary: 'ملخص.',
+      images: ['/static/images/editorial/test/figure-1.jpg'],
+      authors: ['default'],
+      language: 'ar',
+      translation_group: 'tg-leak',
+      original_language: 'id',
+      articleType: 'Analysis',
+      category: 'islamic-logic',
+      sources: [
+        { name: 'Source 1', url: 'https://s1.com', tier: 1 },
+        { name: 'Source 2', url: 'https://s2.com', tier: 2 },
+      ],
+      imageCredits: [
+        {
+          url: 'https://example.com/img.jpg',
+          localPath: '/static/images/editorial/test/figure-1.jpg',
+          sourceWebsite: 'Unsplash',
+          creator: 'Creator',
+          license: 'Unsplash License',
+          licenseUrl: 'https://unsplash.com/license',
+          downloadDate: '2026-08-25',
+          articleAssociation: 'tg-leak',
+          attributionText: 'Unsplash / Creator',
+        },
+      ],
+    },
+    content: `## أسرار المخطوطات\nفي عام 1947 تم اكتشاف المخطوطات.\n*التقدير الزمني:* Sekitar 125 SM\n### سؤال يستحق التأمل\nما الذي نتعلمه؟\n### الحدود المعرفية\nما يثبته الكشف وما لا يدعيه`,
+  }
+
+  const leakQc = runHumanLevelEditorialQC(leakedArabicArticle)
+  console.log(`  ├─ Decision: ${leakQc.editorialDecision} (Hard-Fail Reason: ${leakQc.hardFailReason})`)
+
+  if (
+    leakQc.hardFailTriggered &&
+    leakQc.editorialDecision === 'REJECT_HARD_FAIL' &&
+    leakQc.hardFailReason?.includes('Language Purity Gate Failed')
+  ) {
+    console.log(
+      '  ✅ TEST I PASSED: Language leakage (Indonesian in Arabic) was intercepted and rejected.\n'
+    )
+    passedTests++
+  } else {
+    console.error('  ❌ TEST I FAILED: Language leakage was not caught by QC gate.')
   }
 
   console.log('===============================================================')
