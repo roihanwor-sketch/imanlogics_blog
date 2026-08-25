@@ -74,7 +74,15 @@ async function runTestSuite() {
         { name: 'Source 1', url: 'https://example.com', tier: 1 },
         { name: 'Source 2', url: 'https://example2.com', tier: 2 },
       ],
-      imageCredits: [{ author: 'Author', license: 'Unsplash License', source: 'Unsplash', url: 'https://unsplash.com' }],
+      imageCredits: [{
+        url: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+        source: 'Unsplash',
+        creator: 'Author',
+        license: 'Unsplash License',
+        licenseUrl: 'https://unsplash.com/license',
+        downloadDate: '2026-08-25',
+        articleAssociation: 'tg-dirty',
+      }],
     },
     content: `---
 title: "Artikel dengan Filler"

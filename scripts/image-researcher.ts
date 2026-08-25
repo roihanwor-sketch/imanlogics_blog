@@ -9,7 +9,14 @@ export interface SafeImage {
   source: string;
   sourceUrl: string;
   author: string;
-  license: 'Unsplash License' | 'Wikimedia CC-BY-SA 4.0' | 'Public Domain' | 'Creative Commons Zero (CC0)';
+  license:
+    | 'Unsplash License'
+    | 'Wikimedia CC-BY-SA 4.0'
+    | 'Creative Commons CC-BY-SA 4.0'
+    | 'Creative Commons CC-BY-SA 3.0'
+    | 'Public Domain'
+    | 'Public Domain / Open Access'
+    | 'Creative Commons Zero (CC0)';
   licenseUrl: string;
   altText: {
     id: string;
