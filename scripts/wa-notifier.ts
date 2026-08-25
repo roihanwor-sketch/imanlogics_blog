@@ -2,9 +2,17 @@ import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 
+export interface PublishedStorySummary {
+  title: string;
+  slug: string;
+  category: string;
+  languages: string[];
+}
+
 export interface NotificationPayload {
   status: 'SUCCESS' | 'NO_PUBLISHABLE_STORY' | 'PARTIAL_SUCCESS' | 'WARNING' | 'ERROR';
   articlesPublished: string[];
+  publishedStories?: PublishedStorySummary[];
   techArticlesCount: number;
   islamicArticlesCount: number;
   totalTrilingualArticles: number;
@@ -17,6 +25,7 @@ export interface NotificationPayload {
 const AGENT_KULIAH_DIR = 'D:\\KULIAH\\AGENT';
 const WA_DISPATCHER_PATH = path.join(AGENT_KULIAH_DIR, 'src', 'wa_dispatcher.py');
 const TARGET_PHONE_NUMBER = '6285335329341';
+const BLOG_BASE_URL = 'https://blog.imanlogics.web.id';
 
 /**
  * Detects active dynamic system timezone and formatted time
@@ -53,41 +62,72 @@ export function getLocalSystemTimeInfo() {
 }
 
 /**
- * Formats WhatsApp notification report text
+ * Formats WhatsApp notification report text with clean Markdown and direct online links
  */
 export function formatWhatsAppReport(payload: NotificationPayload): string {
   const tz = getLocalSystemTimeInfo();
   const statusEmoji = payload.status === 'SUCCESS' ? '🟢' : (payload.status === 'NO_PUBLISHABLE_STORY' ? '🟡' : '🔴');
 
-  let report = `*📊 [IMAN LOGICS BLOG — AUTONOMOUS EDITORIAL REPORT]*\n`;
-  report += `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-  report += `📅 *Waktu Lokal PC:* ${tz.formattedDate}, ${tz.formattedTime} (${tz.timeZone} / ${tz.offsetStr})\n`;
-  report += `⚙️ *Status Sistem:* ${statusEmoji} ${payload.status}\n`;
-  report += `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+  const lines: string[] = [];
 
-  if (payload.status === 'SUCCESS') {
-    report += `📰 *Publikasi Konten Baru:* Terbit ${payload.totalTrilingualArticles} artikel (ID, EN, AR)\n`;
-    report += `  ├ 💻 Tech & AI News: ${payload.techArticlesCount} topik\n`;
-    report += `  └ 📜 Islamic Logic & History: ${payload.islamicArticlesCount} topik\n`;
-    report += `📊 *Rata-rata Skor QC:* ${payload.qcAverageScore}/100 (PASSED)\n`;
-    report += `🚀 *Git Sync GitHub:* ${payload.gitPushStatus}\n`;
+  lines.push(`*📊 [IMAN LOGICS BLOG — AUTONOMOUS REPORT]*`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`📅 *Waktu Lokal PC:* ${tz.formattedDate}, ${tz.formattedTime}`);
+  lines.push(`🌐 *Zona Waktu:* ${tz.timeZone} (${tz.offsetStr})`);
+  lines.push(`⚙️ *Status Sistem:* ${statusEmoji} ${payload.status}`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(``);
+
+  if (payload.status === 'SUCCESS' || (payload.publishedStories && payload.publishedStories.length > 0)) {
+    lines.push(`📰 *ARTIKEL BARU DITERBITKAN:*`);
+    lines.push(`Total ${payload.totalTrilingualArticles} versi artikel (ID, EN, AR) lolos QC ${payload.qcAverageScore}/100:`);
+    lines.push(``);
+
+    const stories = payload.publishedStories || [];
+    const techStories = stories.filter(s => s.category === 'tech-ai');
+    const islamicStories = stories.filter(s => s.category === 'islamic-logic');
+
+    if (techStories.length > 0) {
+      lines.push(`💻 *Tech & AI Intelligence:*`);
+      techStories.forEach((s, idx) => {
+        lines.push(`*${idx + 1}. ${s.title}*`);
+        lines.push(`  🇮🇩 ID: ${BLOG_BASE_URL}/blog/${s.slug}`);
+        lines.push(`  🇬🇧 EN: ${BLOG_BASE_URL}/blog/${s.slug}.en`);
+        lines.push(`  🇸🇦 AR: ${BLOG_BASE_URL}/blog/${s.slug}.ar`);
+        lines.push(``);
+      });
+    }
+
+    if (islamicStories.length > 0) {
+      lines.push(`📜 *Islamic Logic & Academic:*`);
+      islamicStories.forEach((s, idx) => {
+        lines.push(`*${idx + 1}. ${s.title}*`);
+        lines.push(`  🇮🇩 ID: ${BLOG_BASE_URL}/blog/${s.slug}`);
+        lines.push(`  🇬🇧 EN: ${BLOG_BASE_URL}/blog/${s.slug}.en`);
+        lines.push(`  🇸🇦 AR: ${BLOG_BASE_URL}/blog/${s.slug}.ar`);
+        lines.push(``);
+      });
+    }
+
+    lines.push(`🚀 *Status Git Sync:* ${payload.gitPushStatus}`);
   } else if (payload.status === 'NO_PUBLISHABLE_STORY') {
-    report += `ℹ️ *Laporan Editorial:* Tidak ada berita baru yang memenuhi standar news hook / lolos anti-duplicate pada siklus ini. Sistem tidak membuat artikel filler.\n`;
-    report += `🛡️ *Standar Mutu:* Terjaga (0 artikel sampah diterbitkan).\n`;
+    lines.push(`ℹ️ *Status Konten:* Tidak ada berita baru yang memenuhi kriteria news hook / lolos anti-duplicate pada siklus ini.`);
+    lines.push(`🛡️ *Standar Mutu:* 0 artikel sampah/filler diterbitkan.`);
   } else {
-    report += `⚠️ *Catatan Gangguan:* ${payload.errorMessage || 'Terdeteksi peringatan pada pipeline'}\n`;
+    lines.push(`⚠️ *Catatan Kendala:* ${payload.errorMessage || 'Terjadi peringatan pada alur otomasi'}`);
   }
 
-  report += `\n⏰ *Siklus Otomasi Berikutnya:* ${payload.nextCycleTime}\n`;
-  report += `🌐 *Live Blog:* https://blog.imanlogics.web.id\n`;
-  report += `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-  report += `_Laporan otomatis ditenagai oleh Antigravity Editorial Agent._`;
+  lines.push(``);
+  lines.push(`⏰ *Siklus Otomasi Berikutnya:* ${payload.nextCycleTime}`);
+  lines.push(`🌐 *Website Utama:* ${BLOG_BASE_URL}`);
+  lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  lines.push(`_Laporan otomatis ditenagai oleh Antigravity Autonomous Engine._`);
 
-  return report;
+  return lines.join('\n');
 }
 
 /**
- * Dispatches WhatsApp notification via existing D:\KULIAH\AGENT integration
+ * Dispatches WhatsApp notification via existing D:\KULIAH\AGENT integration using Base64 transport
  */
 export async function sendWhatsAppNotification(
   payload: NotificationPayload,
@@ -104,8 +144,9 @@ export async function sendWhatsAppNotification(
     return false;
   }
 
-  // Construct Python script invocation that imports and runs send_whatsapp_message from D:\KULIAH\AGENT
-  const pythonCmd = `python -c "import sys, asyncio; sys.path.insert(0, r'${path.join(AGENT_KULIAH_DIR, 'src')}'); from wa_dispatcher import send_whatsapp_message; asyncio.run(send_whatsapp_message(sys.argv[1], sys.argv[2]))" "${phoneNumber}" "${messageText.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
+  // Use Base64 encoding to preserve exact newlines, formatting, bolding, and emojis without escaping issues
+  const base64Msg = Buffer.from(messageText, 'utf-8').toString('base64');
+  const pythonCmd = `python -c "import sys, base64, asyncio; sys.path.insert(0, r'${path.join(AGENT_KULIAH_DIR, 'src')}'); from wa_dispatcher import send_whatsapp_message; msg = base64.b64decode(sys.argv[2]).decode('utf-8'); asyncio.run(send_whatsapp_message(sys.argv[1], msg))" "${phoneNumber}" "${base64Msg}"`;
 
   return new Promise((resolve) => {
     exec(pythonCmd, { cwd: AGENT_KULIAH_DIR }, (error, stdout, stderr) => {
@@ -114,7 +155,7 @@ export async function sendWhatsAppNotification(
         if (stderr) console.error(stderr);
         resolve(false);
       } else {
-        console.log(`✅ [WhatsApp Success] Notification dispatched to ${phoneNumber}`);
+        console.log(`✅ [WhatsApp Success] Notification dispatched cleanly to ${phoneNumber}`);
         if (stdout) console.log(stdout.trim());
         resolve(true);
       }

@@ -111,8 +111,9 @@ export async function startSchedulerDaemon(runImmediately = true) {
       const payload: NotificationPayload = {
         status: report.status,
         articlesPublished: report.articlesPublished,
-        techArticlesCount: report.articlesPublished.filter(a => !a.includes('quran') && !a.includes('qumran')).length / 3,
-        islamicArticlesCount: report.articlesPublished.filter(a => a.includes('quran') || a.includes('qumran')).length / 3,
+        publishedStories: report.publishedStoryDetails,
+        techArticlesCount: report.publishedStoryDetails.filter(s => s.category === 'tech-ai').length,
+        islamicArticlesCount: report.publishedStoryDetails.filter(s => s.category === 'islamic-logic').length,
         totalTrilingualArticles: report.articlesPublished.length,
         qcAverageScore: 100,
         gitPushStatus: report.status === 'SUCCESS' ? '✅ Ter-push ke branch main' : 'ℹ️ Tidak ada commit baru',

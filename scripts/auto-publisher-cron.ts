@@ -5,6 +5,13 @@ import { researchTechNewsIntelligence, TechNewsStory } from './tech-researcher';
 import { researchIslamicAcademicIntelligence, IslamicAcademicStory } from './islamic-logic-researcher';
 import { buildTechMdxArticles, buildIslamicAcademicMdxArticles, MdxArticle } from './article-builder-qc';
 
+export interface PublishedStoryMeta {
+  title: string;
+  slug: string;
+  category: 'tech-ai' | 'islamic-logic';
+  languages: ('id' | 'en' | 'ar')[];
+}
+
 export interface AuditCycleReport {
   cycleTimestamp: string;
   sourcesScanned: number;
@@ -13,6 +20,7 @@ export interface AuditCycleReport {
   storiesEvaluated: number;
   articlesPassedQC: number;
   articlesPublished: string[];
+  publishedStoryDetails: PublishedStoryMeta[];
   rejectionReasons: string[];
   status: 'SUCCESS' | 'NO_PUBLISHABLE_STORY' | 'PARTIAL_SUCCESS';
 }
@@ -37,6 +45,7 @@ export async function runAutonomousEditorialPipeline(options: { gitPush?: boolea
     storiesEvaluated: 0,
     articlesPassedQC: 0,
     articlesPublished: [],
+    publishedStoryDetails: [],
     rejectionReasons: [],
     status: 'NO_PUBLISHABLE_STORY',
   };
@@ -78,6 +87,12 @@ export async function runAutonomousEditorialPipeline(options: { gitPush?: boolea
         report.articlesPublished.push(`data/blog/${article.filename}`);
         console.log(`  💾 Published MDX: data/blog/${article.filename} [QC: ${qcResults[article.language].score}/100]`);
       }
+      report.publishedStoryDetails.push({
+        title: story.titles.id,
+        slug: story.id,
+        category: 'tech-ai',
+        languages: ['id', 'en', 'ar'],
+      });
       report.articlesPassedQC += articles.length;
     } else {
       const reason = `Rejected tech story "${story.title}" due to QC failure (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score})`;
@@ -99,6 +114,12 @@ export async function runAutonomousEditorialPipeline(options: { gitPush?: boolea
         report.articlesPublished.push(`data/blog/${article.filename}`);
         console.log(`  💾 Published MDX: data/blog/${article.filename} [QC: ${qcResults[article.language].score}/100]`);
       }
+      report.publishedStoryDetails.push({
+        title: story.titles.id,
+        slug: story.id,
+        category: 'islamic-logic',
+        languages: ['id', 'en', 'ar'],
+      });
       report.articlesPassedQC += articles.length;
     } else {
       const reason = `Rejected academic story "${story.title}" due to QC failure (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score})`;
