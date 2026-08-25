@@ -138,10 +138,12 @@ export function formatWhatsAppReport(payload: NotificationPayload): string {
 
 /**
  * Dispatches WhatsApp notification via existing D:\KULIAH\AGENT integration using Base64 transport
+ * Includes automatic retry with backoff to prevent ProcessSingleton collision with D:\KULIAH\AGENT tasks.
  */
 export async function sendWhatsAppNotification(
   payload: NotificationPayload,
-  phoneNumber = TARGET_PHONE_NUMBER
+  phoneNumber = TARGET_PHONE_NUMBER,
+  maxRetries = 3
 ): Promise<boolean> {
   const messageText = formatWhatsAppReport(payload)
   console.log(`\n📱 [WhatsApp Dispatcher] Preparing notification for ${phoneNumber}...`)
@@ -160,20 +162,35 @@ export async function sendWhatsAppNotification(
   const base64Msg = Buffer.from(messageText, 'utf-8').toString('base64')
   const pythonCmd = `python -c "import sys, base64, asyncio; sys.path.insert(0, r'${path.join(AGENT_KULIAH_DIR, 'src')}'); from wa_dispatcher import send_whatsapp_message; msg = base64.b64decode(sys.argv[2]).decode('utf-8'); asyncio.run(send_whatsapp_message(sys.argv[1], msg))" "${phoneNumber}" "${base64Msg}"`
 
-  return new Promise((resolve) => {
-    exec(pythonCmd, { cwd: AGENT_KULIAH_DIR }, (error, stdout, stderr) => {
-      if (error) {
-        console.error(
-          `❌ [WhatsApp Error] Failed to dispatch via D:\\KULIAH\\AGENT:`,
-          error.message
-        )
-        if (stderr) console.error(stderr)
-        resolve(false)
-      } else {
-        console.log(`✅ [WhatsApp Success] Notification dispatched cleanly to ${phoneNumber}`)
-        if (stdout) console.log(stdout.trim())
-        resolve(true)
-      }
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const success = await new Promise<boolean>((resolve) => {
+      exec(pythonCmd, { cwd: AGENT_KULIAH_DIR }, (error, stdout, stderr) => {
+        const outStr = (stdout || '') + (stderr || '')
+        if (outStr.includes('Failed to create a ProcessSingleton') || outStr.includes('being used by another process')) {
+          console.warn(`⏳ [WhatsApp Queue] Profile in use by D:\\KULIAH\\AGENT (Attempt ${attempt}/${maxRetries}). Waiting before retry...`)
+          resolve(false)
+          return
+        }
+
+        if (error) {
+          console.error(`❌ [WhatsApp Error] Dispatch attempt ${attempt} failed:`, error.message)
+          if (stderr) console.error(stderr)
+          resolve(false)
+        } else {
+          console.log(`✅ [WhatsApp Success] Notification dispatched cleanly to ${phoneNumber}`)
+          if (stdout) console.log(stdout.trim())
+          resolve(true)
+        }
+      })
     })
-  })
+
+    if (success) return true
+
+    if (attempt < maxRetries) {
+      // Wait 8 seconds before retrying to allow D:\KULIAH\AGENT to release the browser lock
+      await new Promise((r) => setTimeout(r, 8000))
+    }
+  }
+
+  return false
 }
