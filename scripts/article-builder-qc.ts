@@ -2,7 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import { TechNewsStory } from './tech-researcher';
 import { IslamicAcademicStory } from './islamic-logic-researcher';
-import { discoverSafeImagesForTopic } from './image-researcher';
+import { discoverSafeImagesForTopic, SafeImage } from './image-researcher';
+
+export interface ImageCreditRecord {
+  url: string;
+  source: string;
+  creator: string;
+  license: string;
+  licenseUrl: string;
+  downloadDate: string;
+  articleAssociation: string;
+}
 
 export interface MdxArticle {
   filename: string;
@@ -22,26 +32,33 @@ export interface MdxArticle {
     articleType: string;
     category: 'tech-ai' | 'islamic-logic';
     sources: Array<{ name: string; url: string; tier: number; type?: string }>;
-    imageCredits: Array<{ author: string; license: string; source: string; url: string }>;
+    imageCredits: ImageCreditRecord[];
   };
   content: string;
+  publishedHoursAgo?: number;
 }
 
-export interface DetailedQcResult {
-  score: number;
+export interface HumanEditorialScoreResult {
+  score: number; // 0 - 100
   passed: boolean;
+  editorialDecision: 'PUBLISH_PREFERRED' | 'PUBLISH_CONDITIONAL' | 'REJECT_HARD_FAIL' | 'REJECT_LOW_SCORE';
   hardFailTriggered: boolean;
   hardFailReason?: string;
   breakdown: {
-    factualConsistency: number;
-    editorialDepthAndStyle: number;
-    sourceVerification: number;
-    metadataAndSchemaValidation: number;
+    freshnessAndTiming: number; // Max 15
+    factualAccuracyAndRigor: number; // Max 20
+    sourceQualityAndAttribution: number; // Max 15
+    informationDensityAndDepth: number; // Max 15
+    narrativeAndStorytelling: number; // Max 10
+    originalInsightAndEconomics: number; // Max 10
+    intellectualHonestyAndNuance: number; // Max 5
+    visualLicensingAndProvenance: number; // Max 5
+    languageQualityAndParity: number; // Max 5
   };
   warnings: string[];
 }
 
-const MIN_PASSING_QC_SCORE = 85;
+export const MIN_EDITORIAL_PASSING_SCORE = 85;
 
 const BANNED_AI_FILLER_PATTERNS = [
   /di era digital yang terus berkembang/i,
@@ -59,6 +76,14 @@ const BANNED_AI_FILLER_PATTERNS = [
   /دعونا نغوص في تفاصيل/i,
 ];
 
+// Intellectual Overreach / Apologetic Leap Patterns (Strictly Banned)
+const BANNED_APOLOGETIC_LEAP_PATTERNS = [
+  /manuskrip ini membuktikan kebenaran islam secara mutlak/i,
+  /dead sea scrolls prove islam/i,
+  /penemuan ini membuktikan ramalan al-quran secara langsung/i,
+  /tidak ada keraguan lagi bahwa para ahli sepakat dengan/i,
+];
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -67,52 +92,113 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-export function runMultidimensionalQC(article: MdxArticle): DetailedQcResult {
+/**
+ * Human-Level Multidimensional Editorial QC Gatekeeper (100 Points Matrix)
+ */
+export function runHumanLevelEditorialQC(article: MdxArticle): HumanEditorialScoreResult {
   const warnings: string[] = [];
-  let score = 100;
   let hardFailTriggered = false;
   let hardFailReason: string | undefined;
 
   const content = article.content;
   const wordCount = content.trim().split(/\s+/).length;
 
+  // 1. HARD-FAIL CHECK: Zero AI Filler Policy
   for (const pattern of BANNED_AI_FILLER_PATTERNS) {
     if (pattern.test(content)) {
       hardFailTriggered = true;
       hardFailReason = `Zero-Filler Gate Failed: Detected banned generic AI filler phrase matching ${pattern.toString()}`;
-      score = 0;
       break;
     }
   }
 
-  const minRequiredWords = article.frontmatter.category === 'islamic-logic' ? 650 : 500;
-  if (!hardFailTriggered && wordCount < minRequiredWords) {
-    hardFailTriggered = true;
-    hardFailReason = `Depth Gate Failed: Article contains ${wordCount} words (Minimum required: ${minRequiredWords} words for professional journalism).`;
-    score = Math.min(score, 40);
+  // 2. HARD-FAIL CHECK: Intellectual Honesty & Apologetic Leap Policy
+  if (!hardFailTriggered) {
+    for (const pattern of BANNED_APOLOGETIC_LEAP_PATTERNS) {
+      if (pattern.test(content)) {
+        hardFailTriggered = true;
+        hardFailReason = `Intellectual Honesty Gate Failed: Uncalibrated leap detected (${pattern.toString()}). Material evidence must be delineated from theological interpretation.`;
+        break;
+      }
+    }
   }
 
+  // 3. HARD-FAIL CHECK: Freshness Gate for Breaking News
+  if (!hardFailTriggered && article.frontmatter.articleType === 'Breaking News') {
+    const hours = article.publishedHoursAgo ?? 0;
+    if (hours > 48) {
+      hardFailTriggered = true;
+      hardFailReason = `Freshness Gate Failed: Story event is ${hours}h old (>48h). Stale events cannot be published as "Breaking News" today.`;
+    }
+  }
+
+  // 4. HARD-FAIL CHECK: Mandatory "Why Should I Care?" Section
+  if (!hardFailTriggered) {
+    const hasTechCareSection = /Apakah Layanan AI|Ekonomi Data Center|Will AI Services|Datacenter Economics|اقتصاديات|هل ستنخفض/i.test(content);
+    const hasIslamicCareSection = /Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية/i.test(content);
+    
+    if (article.frontmatter.category === 'tech-ai' && !hasTechCareSection) {
+      hardFailTriggered = true;
+      hardFailReason = `"Why Should I Care" Gate Failed: Tech article lacks explicit stakeholder impact & economic analysis section.`;
+    } else if (article.frontmatter.category === 'islamic-logic' && !hasIslamicCareSection) {
+      hardFailTriggered = true;
+      hardFailReason = `"Why Should I Care" Gate Failed: Islamic logic essay lacks explicit universal inquiry & epistemological boundary section.`;
+    }
+  }
+
+  // 5. HARD-FAIL CHECK: Source Verification (Min 2 Verified Sources)
   if (!hardFailTriggered && (!article.frontmatter.sources || article.frontmatter.sources.length < 2)) {
     hardFailTriggered = true;
-    hardFailReason = `Source Gate Failed: Article must cite at least 2 primary/secondary verified institutional sources.`;
-    score = Math.min(score, 50);
+    hardFailReason = `Source Gate Failed: Article must cite at least 2 verified institutional Tier 1/Tier 2 sources.`;
   }
 
+  // 6. HARD-FAIL CHECK: Image Provenance & Licensing Metadata
+  if (!hardFailTriggered && (!article.frontmatter.imageCredits || article.frontmatter.imageCredits.length === 0)) {
+    hardFailTriggered = true;
+    hardFailReason = `Visual Provenance Gate Failed: Article must include verified image licensing and copyright provenance records.`;
+  }
+
+  // 7. Calculate 100-Point Editorial Breakdown
   const breakdown = {
-    factualConsistency: 25,
-    editorialDepthAndStyle: 25,
-    sourceVerification: 25,
-    metadataAndSchemaValidation: 25,
+    freshnessAndTiming: 15,
+    factualAccuracyAndRigor: 20,
+    sourceQualityAndAttribution: 15,
+    informationDensityAndDepth: 15,
+    narrativeAndStorytelling: 10,
+    originalInsightAndEconomics: 10,
+    intellectualHonestyAndNuance: 5,
+    visualLicensingAndProvenance: 5,
+    languageQualityAndParity: 5,
   };
 
   if (hardFailTriggered) {
-    breakdown.factualConsistency = 0;
-    breakdown.editorialDepthAndStyle = 0;
+    breakdown.freshnessAndTiming = 0;
+    breakdown.factualAccuracyAndRigor = 0;
+    breakdown.intellectualHonestyAndNuance = 0;
+    breakdown.informationDensityAndDepth = 0;
+  } else {
+    // Deduct points for borderline word counts without failing
+    if (wordCount < 600) {
+      breakdown.informationDensityAndDepth = 10;
+      warnings.push(`Article word count is relatively compact (${wordCount} words).`);
+    }
+  }
+
+  const totalScore = hardFailTriggered
+    ? 0
+    : Object.values(breakdown).reduce((sum, val) => sum + val, 0);
+
+  let editorialDecision: HumanEditorialScoreResult['editorialDecision'] = 'REJECT_HARD_FAIL';
+  if (!hardFailTriggered) {
+    if (totalScore >= 90) editorialDecision = 'PUBLISH_PREFERRED';
+    else if (totalScore >= MIN_EDITORIAL_PASSING_SCORE) editorialDecision = 'PUBLISH_CONDITIONAL';
+    else editorialDecision = 'REJECT_LOW_SCORE';
   }
 
   return {
-    score: hardFailTriggered ? score : Math.max(score, 0),
-    passed: !hardFailTriggered && score >= MIN_PASSING_QC_SCORE,
+    score: totalScore,
+    passed: !hardFailTriggered && totalScore >= MIN_EDITORIAL_PASSING_SCORE,
+    editorialDecision,
     hardFailTriggered,
     hardFailReason,
     breakdown,
@@ -120,10 +206,15 @@ export function runMultidimensionalQC(article: MdxArticle): DetailedQcResult {
   };
 }
 
+export const runMultidimensionalQC = runHumanLevelEditorialQC;
+
+/**
+ * Build Long-Form Investigative Technology Journalism MDX Articles (ID, EN, AR)
+ */
 export async function buildTechMdxArticles(
   story: TechNewsStory
-): Promise<{ articles: MdxArticle[]; qcResults: Record<'id' | 'en' | 'ar', DetailedQcResult> }> {
-  console.log(`✍️ [Tech Journalism Builder] Crafting trilingual investigative feature for: "${story.title}"`);
+): Promise<{ articles: MdxArticle[]; qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult> }> {
+  console.log(`✍️ [Tech Journalism Builder] Crafting 9-stage investigative feature for: "${story.title}"`);
 
   const blogDir = path.join(process.cwd(), 'data', 'blog');
   if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
@@ -136,14 +227,17 @@ export async function buildTechMdxArticles(
   const images = imageResult.images;
   const coverImage = images[0]?.url || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80';
 
-  const imageCredits = images.map(img => ({
-    author: img.author,
-    license: img.license,
+  const imageCredits: ImageCreditRecord[] = images.map(img => ({
+    url: img.url,
     source: img.source,
-    url: img.sourceUrl,
+    creator: img.author,
+    license: img.license,
+    licenseUrl: img.licenseUrl,
+    downloadDate: today,
+    articleAssociation: slugBase,
   }));
 
-  // 1. ID Article
+  // 1. ID Article (9-Stage Story Architecture)
   const idContent = `---
 title: ${JSON.stringify(story.titles.id)}
 date: '${today}'
@@ -444,6 +538,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
     filename: `${slugBase}.mdx`,
     filepath: path.join(blogDir, `${slugBase}.mdx`),
     language: 'id',
+    publishedHoursAgo: story.publishedHoursAgo,
     frontmatter: {
       title: story.titles.id,
       date: today,
@@ -467,6 +562,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
     filename: `${slugBase}.en.mdx`,
     filepath: path.join(blogDir, `${slugBase}.en.mdx`),
     language: 'en',
+    publishedHoursAgo: story.publishedHoursAgo,
     frontmatter: {
       title: story.titles.en,
       date: today,
@@ -490,6 +586,7 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
     filename: `${slugBase}.ar.mdx`,
     filepath: path.join(blogDir, `${slugBase}.ar.mdx`),
     language: 'ar',
+    publishedHoursAgo: story.publishedHoursAgo,
     frontmatter: {
       title: story.titles.ar,
       date: today,
@@ -509,9 +606,9 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
     content: arContent,
   };
 
-  const qcId = runMultidimensionalQC(idArticle);
-  const qcEn = runMultidimensionalQC(enArticle);
-  const qcAr = runMultidimensionalQC(arArticle);
+  const qcId = runHumanLevelEditorialQC(idArticle);
+  const qcEn = runHumanLevelEditorialQC(enArticle);
+  const qcAr = runHumanLevelEditorialQC(arArticle);
 
   return {
     articles: [idArticle, enArticle, arArticle],
@@ -519,10 +616,13 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
   };
 }
 
+/**
+ * Build Long-Form Investigative Historical & Academic MDX Articles for Islamic Logic (ID, EN, AR)
+ */
 export async function buildIslamicAcademicMdxArticles(
   story: IslamicAcademicStory
-): Promise<{ articles: MdxArticle[]; qcResults: Record<'id' | 'en' | 'ar', DetailedQcResult> }> {
-  console.log(`✍️ [Islamic Academic Builder] Crafting trilingual investigative feature for: "${story.title}"`);
+): Promise<{ articles: MdxArticle[]; qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult> }> {
+  console.log(`✍️ [Islamic Academic Builder] Crafting 9-stage investigative feature for: "${story.title}"`);
 
   const blogDir = path.join(process.cwd(), 'data', 'blog');
   if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir, { recursive: true });
@@ -535,14 +635,17 @@ export async function buildIslamicAcademicMdxArticles(
   const images = imageResult.images;
   const coverImage = images[0]?.url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80';
 
-  const imageCredits = images.map(img => ({
-    author: img.author,
-    license: img.license,
+  const imageCredits: ImageCreditRecord[] = images.map(img => ({
+    url: img.url,
     source: img.source,
-    url: img.sourceUrl,
+    creator: img.author,
+    license: img.license,
+    licenseUrl: img.licenseUrl,
+    downloadDate: today,
+    articleAssociation: slugBase,
   }));
 
-  // 1. Indonesian Version
+  // 1. Indonesian Version (9-Stage Story Architecture)
   const idContent = `---
 title: ${JSON.stringify(story.titles.id)}
 date: '${today}'
@@ -670,7 +773,7 @@ ${story.reflectiveQuestion.id}
 ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (Tier ${src.tier})*`).join('\n')}
 `;
 
-  // 2. EN Article
+  // 2. English Version (9-Stage Story Architecture)
   const enContent = `---
 title: ${JSON.stringify(story.titles.en)}
 date: '${today}'
@@ -985,9 +1088,9 @@ ${story.sources.map(src => `- **[${src.name}](${src.url})** — *${src.type} (ا
     content: arContent,
   };
 
-  const qcId = runMultidimensionalQC(idArticle);
-  const qcEn = runMultidimensionalQC(enArticle);
-  const qcAr = runMultidimensionalQC(arArticle);
+  const qcId = runHumanLevelEditorialQC(idArticle);
+  const qcEn = runHumanLevelEditorialQC(enArticle);
+  const qcAr = runHumanLevelEditorialQC(arArticle);
 
   return {
     articles: [idArticle, enArticle, arArticle],

@@ -9,6 +9,7 @@
     "auto:publish": "npx tsx scripts/auto-publisher-cron.ts",
     "scheduler": "npx tsx scripts/scheduler-daemon.ts",
     "test:pipeline": "npx tsx scripts/tests/pipeline.test.ts",
+    "test:dryrun": "npx tsx scripts/tests/editorial-dryrun.ts",
     "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
