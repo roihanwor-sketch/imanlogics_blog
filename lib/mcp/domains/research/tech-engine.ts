@@ -42,12 +42,15 @@ export interface TechNewsStory {
   title: string
   titles: LocalizedText
   classification: ArticleClassification
-  editorialAngle: EditorialAngle
-  publishedAt: string
+  editorialAngle?: EditorialAngle
+  publishedAt?: string
+  eventDate?: string
   publishedHoursAgo: number
-  recencyScore: number
-  primarySources: SourceCitation[]
-  secondarySources: SourceCitation[]
+  recencyScore?: number
+  primarySources?: SourceCitation[]
+  secondarySources?: SourceCitation[]
+  primarySourceUrl?: string
+  primarySourceTier?: number
   sources: SourceCitation[]
   keywords: string[]
   metrics: TraceableMetric[]
@@ -495,7 +498,10 @@ export class TechResearchEngine {
         title:
           'TSMC Memulai Uji Produksi Node 2nm (N2): Transisi GAAFET Nanosheet dan Implikasinya terhadap Efisiensi Chip AI Masa Depan',
         eventDate: todayStr,
+        publishedAt: `${todayStr}T09:00:00.000Z`,
         publishedHoursAgo: 3,
+        recencyScore: 25,
+        editorialAngle: 'Hardware Engineering Breakdown',
         primarySourceUrl: 'https://pr.tsmc.com/english/news/3120',
         primarySourceTier: 1,
         titles: {
@@ -540,10 +546,8 @@ export class TechResearchEngine {
         citationChain: {
           layer1Primary:
             'TSMC Technology Symposium Proceedings (N2 Process Specification Sheet & Transistor Metrics)',
-          layer2Journalism:
-            'AnandTech & Jagat Review Hardware Deep Dives on Nanosheet Scaling',
-          layer3Discovery:
-            'Semiconductor Engineering Forums & IEEE Silicon Roadmap Discussions',
+          layer2Journalism: 'AnandTech & Jagat Review Hardware Deep Dives on Nanosheet Scaling',
+          layer3Discovery: 'Semiconductor Engineering Forums & IEEE Silicon Roadmap Discussions',
           crossVerificationNotes:
             'Data kepadatan transistor (1.15x scaling) dan penghematan daya (25-30% reduction pada frekuensi identik) diverifikasi silang antara whitepaper pabrikan dan paper akademik IEEE.',
         },
@@ -570,7 +574,11 @@ export class TechResearchEngine {
         },
         metrics: [
           {
-            label: { id: 'Efisiensi Daya vs Node N3E', en: 'Power Efficiency vs N3E', ar: 'توفير استهلاك الطاقة مقارنة مع N3E' },
+            label: {
+              id: 'Efisiensi Daya vs Node N3E',
+              en: 'Power Efficiency vs N3E',
+              ar: 'توفير استهلاك الطاقة مقارنة مع N3E',
+            },
             value: '25% - 30% Penghematan Daya',
             baselineComparison: {
               id: 'Konsumsi daya berkurang 25-30% pada frekuensi clock identik vs N3E',
@@ -581,7 +589,11 @@ export class TechResearchEngine {
             independentVerificationUrl: 'https://pr.tsmc.com',
           },
           {
-            label: { id: 'Peningkatan Densitas Transistor', en: 'Transistor Logic Density Gain', ar: 'زيادة الكثافة المنطقية للترانزستورات' },
+            label: {
+              id: 'Peningkatan Densitas Transistor',
+              en: 'Transistor Logic Density Gain',
+              ar: 'زيادة الكثافة المنطقية للترانزستورات',
+            },
             value: '1.15x Densitas Chip',
             baselineComparison: {
               id: 'Kepadatan logika meningkat 15% dibandingkan proses 3nm generasi sebelumnya',
@@ -609,7 +621,8 @@ export class TechResearchEngine {
             ar: 'دعم شبكة توصيل الطاقة الخلفية (BSPDN) لفصل مسارات الطاقة عن مسارات إشارات البيانات.',
           },
           fp4PrecisionDetails: {
-            theoreticalThroughput: 'Hingga 3.5x efisiensi TOPS/Watt untuk blok akselerator tensor on-die',
+            theoreticalThroughput:
+              'Hingga 3.5x efisiensi TOPS/Watt untuk blok akselerator tensor on-die',
             quantizationTradeoffs: {
               id: 'Mengizinkan tegangan ambang (threshold voltage) yang lebih rendah tanpa mengorbankan stabilitas sirkuit logika.',
               en: 'Allows lower operating threshold voltages without compromising logic cell switching stability.',

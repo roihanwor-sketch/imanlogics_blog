@@ -13,29 +13,34 @@ export interface SourceCitation {
 }
 
 export interface CitationChainRecord {
-  secondarySource: {
-    outletId: string
+  secondarySource?: {
+    outletId?: string
     outletName: string
     articleUrl: string
     quotedClaim: string
   }
-  primaryEvidence: {
-    sourceType:
+  primaryEvidence?: {
+    sourceType?:
       | 'whitepaper'
       | 'research-paper'
       | 'official-newsroom'
       | 'standards-body'
       | 'benchmark-lab'
       | 'archive'
+      | string
     title: string
     url: string
     provenanceDetails: string
   }
-  crossCheckVerification: {
+  crossCheckVerification?: {
     independentSource: string
     confirmed: boolean
     notes: string
   }
+  layer1Primary?: string
+  layer2Journalism?: string
+  layer3Discovery?: string
+  crossVerificationNotes?: string
 }
 
 export interface LocalizedText {

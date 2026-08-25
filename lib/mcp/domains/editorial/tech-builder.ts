@@ -11,7 +11,9 @@ export class TechArticleBuilder {
   static async buildTrilingualArticles(story: TechNewsStory): Promise<MdxArticle[]> {
     const slugBase = ProseCleaner.slugify(story.id)
     const translationGroup = `tg-${slugBase}`
-    const today = (story as any).publishedAt?.split('T')[0] || story.eventDate || new Date().toISOString().split('T')[0]
+    const today = story.publishedAt
+      ? story.publishedAt.split('T')[0]
+      : story.eventDate || new Date().toISOString().split('T')[0]
     const blogDir = MCP_CONFIG.blogDataDir
 
     const imageResult = await AssetDownloader.discoverAndDownloadSafeImages(

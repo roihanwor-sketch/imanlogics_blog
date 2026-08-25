@@ -664,8 +664,8 @@ export class IslamicResearchEngine {
           ar: 'تصف سورة الذاريات [51]: 47 خلق السماء وتختم بعبارة "وإنا لموسعون". كيف يقرأ علماء اللغة وتاريخ العلوم هذه الآية دون الوقوع في التفسير الإعجازي المتكلف؟',
         },
         universalQuestion: {
-          id: 'Apakah Al-Qur\'an adalah buku teks astrofisika, ataukah kitab tanda-tanda (ayat) yang membimbing akal manusia untuk merenungi keagungan penciptaan?',
-          en: 'Is the Qur\'an a textbook of theoretical astrophysics, or a book of existential signs (ayat) guiding human reason to contemplate the cosmos?',
+          id: "Apakah Al-Qur'an adalah buku teks astrofisika, ataukah kitab tanda-tanda (ayat) yang membimbing akal manusia untuk merenungi keagungan penciptaan?",
+          en: "Is the Qur'an a textbook of theoretical astrophysics, or a book of existential signs (ayat) guiding human reason to contemplate the cosmos?",
           ar: 'هل القرآن كتاب فيزياء فلكية، أم كتاب آيات ودلائل يهدي العقل البشري للتفكر في عظمة الخلق؟',
         },
         editorialAngle: 'Academic In-Depth Essay',
@@ -676,23 +676,27 @@ export class IslamicResearchEngine {
             ar: 'يثبت نموذج Lambda-CDM الكوني المعاصر تمدد نسيج الزمكان المستمر منذ الانفجار العظيم قبل نحو 13.8 مليار سنة.',
           },
           caveAndManuscriptCount: {
-            id: 'Kamus bahasa Arab klasik tertua (Kitab al-\'Ayn karya Al-Khalil bin Ahmad, Lisan al-\'Arab karya Ibnu Manzhur) mendokumentasikan bahwa akar kata "w-s-\'" bermakna perluasan, kelapangan daya, dan peluasan ruang.',
-            en: 'Classical Arabic lexicons (Kitab al-\'Ayn, Lisan al-\'Arab) establish that root "w-s-\'" denotes spatial expansion and vast creative potency.',
+            id: "Kamus bahasa Arab klasik tertua (Kitab al-'Ayn karya Al-Khalil bin Ahmad, Lisan al-'Arab karya Ibnu Manzhur) mendokumentasikan bahwa akar kata \"w-s-'\" bermakna perluasan, kelapangan daya, dan peluasan ruang.",
+            en: "Classical Arabic lexicons (Kitab al-'Ayn, Lisan al-'Arab) establish that root \"w-s-'\" denotes spatial expansion and vast creative potency.",
             ar: 'توثق معاجم اللغة الكبرى (كتاب العين ولسان العرب) أن الجذر "وسع" يفيد السعة المكانية والبسط والقدرة الفائقة.',
           },
           radiocarbonAndPaleographyDating: {
-            id: 'Naskah Al-Qur\'an abad ke-1 Hijriyah (Manuskrip Birmingham dan Sana\'a) membuktikan keaslian lafal teks Surah Adz-Dzariyat tanpa perubahan ortografi makna.',
-            en: '7th-century Qur\'anic folios (Birmingham, Sana\'a) confirm the absolute textual stability of Surah Adh-Dhariyat 51:47.',
+            id: "Naskah Al-Qur'an abad ke-1 Hijriyah (Manuskrip Birmingham dan Sana'a) membuktikan keaslian lafal teks Surah Adz-Dzariyat tanpa perubahan ortografi makna.",
+            en: "7th-century Qur'anic folios (Birmingham, Sana'a) confirm the absolute textual stability of Surah Adh-Dhariyat 51:47.",
             ar: 'تؤكد رقائق المصاحف المبكرة في برمنغهام وصنعاء الثبات النصي التام لآية سورة الذاريات.',
           },
           keyTexts: [
             {
               siglum: 'QS-51-47',
-              name: { id: 'Surah Adz-Dzariyat: 47', en: 'Surah Adh-Dhariyat: 47', ar: 'سورة الذاريات: 47' },
+              name: {
+                id: 'Surah Adz-Dzariyat: 47',
+                en: 'Surah Adh-Dhariyat: 47',
+                ar: 'سورة الذاريات: 47',
+              },
               dateEstimate: { id: 'Wahyu Makkiyah', en: 'Meccan Revelation', ar: 'مكية' },
               description: {
                 id: 'Menyatakan pembangunan langit dengan kekuasaan dan keadaan "musi\'un" (meluaskan / berkuasa meluaskan).',
-                en: 'States the divine construction of the heavens with power and continuous expansion (musi\'un).',
+                en: "States the divine construction of the heavens with power and continuous expansion (musi'un).",
                 ar: 'تقرر بناء السماء بقوة وإنا لموسعون في القدرة والمكان.',
               },
             },
@@ -710,13 +714,13 @@ export class IslamicResearchEngine {
             ar: 'المقاربة التوفيقية: يرى بعض الباحثين المعاصرين أن الآية تمثل إعجازاً علمياً صريحاً سبق كشوفات العصر الحديث.',
           },
           alternativeTheories: {
-            id: 'Kritik Akademik Independen: Ahli studi Islam (seperti Nidhal Guessoum, Ziauddin Sardar) menekankan bahaya menautkan teks suci pada teori sains yang terus berkembang, menegaskan Al-Qur\'an menggunakan bahasa sastra puitis yang kaya.',
+            id: "Kritik Akademik Independen: Ahli studi Islam (seperti Nidhal Guessoum, Ziauddin Sardar) menekankan bahaya menautkan teks suci pada teori sains yang terus berkembang, menegaskan Al-Qur'an menggunakan bahasa sastra puitis yang kaya.",
             en: 'Critical Academic Consensus: Scholars (Nidhal Guessoum, Ziauddin Sardar) caution against strict concordism, emphasizing the poetic and theological depth of the text.',
             ar: 'النقد الأكاديمي الرصين: يحذر علماء مسلمون (مثل نضال قسوم) من الإفراط التوفيقي ويركزون على البعد المعرفي والجمالي للنص.',
           },
           scholarlyConsensusOrDispute: {
-            id: 'Konsensus ilmiah yang berimbang memandang keajaiban Al-Qur\'an terletak pada ketepatan bahasanya yang tidak pernah bertentangan dengan realitas alam semesta.',
-            en: 'Balanced intellectual consensus maintains that the profound beauty of the Qur\'an lies in its harmony with cosmic reality without needing pseudo-scientific forcing.',
+            id: "Konsensus ilmiah yang berimbang memandang keajaiban Al-Qur'an terletak pada ketepatan bahasanya yang tidak pernah bertentangan dengan realitas alam semesta.",
+            en: "Balanced intellectual consensus maintains that the profound beauty of the Qur'an lies in its harmony with cosmic reality without needing pseudo-scientific forcing.",
             ar: 'يجمع التحقيق المتزن على أن بهاء القرآن يتجلى في انسجامه مع نواميس الكون دون تكلف ليّ النصوص.',
           },
         },
@@ -727,8 +731,8 @@ export class IslamicResearchEngine {
             ar: 'تفسر النظريات المادية نشأة الكون بتقلبات كمومية عشوائية؛ بينما يقرر التوحيد أن بدء الخلق فعل إرادي لله الحكيم الخبير.',
           },
           messianicExpectationsVsPropheticLineage: {
-            id: 'Penciptaan alam semesta dalam Al-Qur\'an adalah panggung tanda-tanda (Ayat) bagi manusia berakal untuk bertauhid.',
-            en: 'Cosmic creation in the Qur\'an serves as a cosmic theater of signs (Ayat) inviting intellectual reflection.',
+            id: "Penciptaan alam semesta dalam Al-Qur'an adalah panggung tanda-tanda (Ayat) bagi manusia berakal untuk bertauhid.",
+            en: "Cosmic creation in the Qur'an serves as a cosmic theater of signs (Ayat) inviting intellectual reflection.",
             ar: 'يمثل الخلق الكوني في القرآن مسرحاً للآيات الكبرى يدعو أولي الألباب للإيمان.',
           },
           halakhicLegalismVsShariaFiqh: {
@@ -739,8 +743,8 @@ export class IslamicResearchEngine {
         },
         islamicReasoningWalkthrough: {
           revelationContinuity: {
-            id: 'Al-Qur\'an tidak pernah mengajarkan mitologi kosmologis geosentris kaku, melainkan menggunakan metafora yang selaras dengan akal dan observasi.',
-            en: 'The Qur\'an avoids ancient geocentric mythologies, utilizing expansive expressions congruent with empirical observation.',
+            id: "Al-Qur'an tidak pernah mengajarkan mitologi kosmologis geosentris kaku, melainkan menggunakan metafora yang selaras dengan akal dan observasi.",
+            en: "The Qur'an avoids ancient geocentric mythologies, utilizing expansive expressions congruent with empirical observation.",
             ar: 'تسامى البيان القرآني عن الخرافات الكونية القديمة، مخاطباً الإنسان بلغة تتطابق مع مشاهدات العقل الرشيد.',
           },
           scripturalTransmissionHistory: {
@@ -749,7 +753,11 @@ export class IslamicResearchEngine {
             ar: 'يثبت التحقيق اللغوي أن صيغة اسم الفاعل "موسعون" تفيد السعة والقدرة والتجدد.',
           },
           quranicPerspective: {
-            surahReference: { id: 'QS. Adz-Dzariyat [51]: 47', en: 'Surah Adh-Dhariyat [51]: 47', ar: 'سورة الذاريات [51]: 47' },
+            surahReference: {
+              id: 'QS. Adz-Dzariyat [51]: 47',
+              en: 'Surah Adh-Dhariyat [51]: 47',
+              ar: 'سورة الذاريات [51]: 47',
+            },
             arabicText: 'وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ',
             translation: {
               id: 'Dan langit itu Kami bangun dengan kekuasaan (Kami) dan sesungguhnya Kami benar-benar meluaskannya.',
@@ -769,8 +777,8 @@ export class IslamicResearchEngine {
           },
         },
         whatThisDoesAndDoesntProve: {
-          id: 'APA YANG TERBUKTI: Bahasa Al-Qur\'an luar biasa presisi dan kompatibel dengan fenomena kosmologis modern. APA YANG TIDAK BOLEH DIKLAIM: Al-Qur\'an bukan rumus matematika fisika atau pembenaran bagi klaim pseudosains yang serampangan.',
-          en: 'WHAT IT PROVES: The remarkable semantic precision of Qur\'anic phrasing and its harmony with cosmic realities. WHAT MUST NOT BE CLAIMED: The Qur\'an is not a mathematical treatise of quantum gravity.',
+          id: "APA YANG TERBUKTI: Bahasa Al-Qur'an luar biasa presisi dan kompatibel dengan fenomena kosmologis modern. APA YANG TIDAK BOLEH DIKLAIM: Al-Qur'an bukan rumus matematika fisika atau pembenaran bagi klaim pseudosains yang serampangan.",
+          en: "WHAT IT PROVES: The remarkable semantic precision of Qur'anic phrasing and its harmony with cosmic realities. WHAT MUST NOT BE CLAIMED: The Qur'an is not a mathematical treatise of quantum gravity.",
           ar: 'ما يثبته البحث: الدقة اللغوية الاستثنائية للبيان القرآني وتناغمه مع نواميس الكون. ما لا يجوز ادعاؤه: تحويل القرآن إلى معادلات فيزيائية متغيرة.',
         },
         reflectiveQuestion: {
@@ -780,10 +788,16 @@ export class IslamicResearchEngine {
         },
         metrics: [
           {
-            label: { id: 'Konstanta Laju Ekspansi Hubble', en: 'Hubble Constant Expansion Rate', ar: 'ثابت هابل لتمدد الكون' },
+            label: {
+              id: 'Konstanta Laju Ekspansi Hubble',
+              en: 'Hubble Constant Expansion Rate',
+              ar: 'ثابت هابل لتمدد الكون',
+            },
             value: '~70 km/s/Mpc',
-            primarySourceCitation: 'Planck Collaboration 2018 Cosmological Parameters (Astronomy & Astrophysics)',
-            independentVerificationUrl: 'https://www.aanda.org/articles/aa/full_html/2020/09/aa33880-18/aa33880-18.html',
+            primarySourceCitation:
+              'Planck Collaboration 2018 Cosmological Parameters (Astronomy & Astrophysics)',
+            independentVerificationUrl:
+              'https://www.aanda.org/articles/aa/full_html/2020/09/aa33880-18/aa33880-18.html',
           },
         ],
         epistemologicalMatrix: [
@@ -794,7 +808,14 @@ export class IslamicResearchEngine {
               en: 'Redshift spectroscopy empirically confirms that metric space is expanding continuously.',
               ar: 'تثبت أرصاد الانزياح نحو الأحمر تمدد نسيج الزمكان الكوني بشكل مستمر.',
             },
-            sources: [{ name: 'NASA Hubble & James Webb Science Data', url: 'https://science.nasa.gov/mission/hubble/', tier: 1, type: 'standards-body' }],
+            sources: [
+              {
+                name: 'NASA Hubble & James Webb Science Data',
+                url: 'https://science.nasa.gov/mission/hubble/',
+                tier: 1,
+                type: 'standards-body',
+              },
+            ],
             confidenceLevel: 'High',
           },
           {
@@ -804,7 +825,14 @@ export class IslamicResearchEngine {
               en: 'The phrase "wa inna la-musi\'un" (QS. 51:47) is interpreted by commentators as signifying vast creative potency and cosmic expanse.',
               ar: 'تفيد عبارة "وإنا لموسعون" في التفسير كمال القدرة الإلهية وسعة آفاق الخلق.',
             },
-            sources: [{ name: 'Tafsir Al-Razi (Mafatih al-Ghaib)', url: 'https://quran.ksu.edu.sa', tier: 1, type: 'academic-book' }],
+            sources: [
+              {
+                name: 'Tafsir Al-Razi (Mafatih al-Ghaib)',
+                url: 'https://quran.ksu.edu.sa',
+                tier: 1,
+                type: 'academic-book',
+              },
+            ],
             confidenceLevel: 'High',
           },
           {
@@ -814,7 +842,14 @@ export class IslamicResearchEngine {
               en: 'Some secular philologists argue "musi\'un" in 7th-century context denoted broad capability or wealth rather than modern metric cosmic expansion.',
               ar: 'يرى بعض اللغويين أن لفظ "موسعون" كان يفيد في السياق القديم الغنى والقدرة الواسعة وليس التمدد الفيزيائي بالمعنى المعاصر.',
             },
-            sources: [{ name: 'Brill Encyclopaedia of the Qur\'an', url: 'https://referenceworks.brillonline.com', tier: 1, type: 'academic-book' }],
+            sources: [
+              {
+                name: "Brill Encyclopaedia of the Qur'an",
+                url: 'https://referenceworks.brillonline.com',
+                tier: 1,
+                type: 'academic-book',
+              },
+            ],
             confidenceLevel: 'Moderate',
           },
           {
@@ -824,7 +859,14 @@ export class IslamicResearchEngine {
               en: 'The ultimate cosmic fate (Big Freeze, Crunch, or Rip) remains an open theoretical hypothesis in modern cosmology.',
               ar: 'المصير النهائي لتمدد الكون (الانجماد أو الانسحاق العظيم) لا يزال فرضية نظرية قيد البحث العلمي.',
             },
-            sources: [{ name: 'Nature Astronomy Reviews', url: 'https://www.nature.com/natastron/', tier: 1, type: 'research-paper' }],
+            sources: [
+              {
+                name: 'Nature Astronomy Reviews',
+                url: 'https://www.nature.com/natastron/',
+                tier: 1,
+                type: 'research-paper',
+              },
+            ],
             confidenceLevel: 'Debated',
           },
         ],
@@ -836,7 +878,7 @@ export class IslamicResearchEngine {
             type: 'research-paper',
           },
           {
-            name: 'Nidhal Guessoum, Islam\'s Quantum Question: Reconciling Muslim Tradition and Modern Science (I.B. Tauris)',
+            name: "Nidhal Guessoum, Islam's Quantum Question: Reconciling Muslim Tradition and Modern Science (I.B. Tauris)",
             url: 'https://www.bloomsbury.com',
             tier: 1,
             type: 'academic-book',
