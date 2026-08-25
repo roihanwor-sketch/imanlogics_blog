@@ -37,51 +37,19 @@ async function runTestSuite() {
   assert(!!imageResult.images[0].altText.ar, 'Image includes Arabic alt text');
 
   // --- TEST 3: Multidimensional QC Gatekeeper (Passing Case) ---
+  // --- TEST 3: Multidimensional QC Gatekeeper (Passing Case) ---
   console.log('\n📌 Test 3: Multidimensional QC Gatekeeper');
-  const sampleStory: TechNewsStory = {
-    id: 'test-silicon-breakthrough',
-    title: 'Test Silicon Milestone',
-    titles: {
-      id: 'Pengujian Inovasi Semikonduktor 2nm: Peningkatan Efisiensi Energi',
-      en: '2nm Semiconductor Milestone Testing: Energy Efficiency Breakthrough',
-      ar: 'اختبار قفزة أشباه الموصلات بدقة 2 نانومتر: كفاءة استثنائية في الطاقة',
-    },
-    eventDate: '2026-08-25',
-    publishedHoursAgo: 5,
-    recencyScore: 25,
-    sourceQualityScore: 25,
-    overallScore: 95,
-    category: 'tech-ai',
-    editorialAngle: 'Technical Deep Dive',
-    isRumor: false,
-    newsHook: 'Pengumuman resmi tape-out chip 2nm komersial pertama.',
-    summary: {
-      id: 'Uji coba fabrikasi semikonduktor 2nm berhasil meningkatkan performa komputasi NPU hingga 40%.',
-      en: 'The 2nm semiconductor tape-out successfully achieved a 40% increase in NPU compute throughput.',
-      ar: 'حققت اختبارات تصنيع أشباه الموصلات بدقة 2 نانومتر زيادة بنسبة 40% في أداء معالجة الذكاء الاصطناعي.',
-    },
-    keyFacts: {
-      id: ['Fabrikasi GAA (Gate-All-Around) memangkas kebocoran arus listrik.', 'Kepadatan transistor meningkat 1.5 kali lipat.'],
-      en: ['Gate-All-Around (GAA) architecture cuts current leakage.', 'Transistor density increased by 1.5x.'],
-      ar: ['بنية البوابات الشاملة (GAA) تحد من تسريب التيار الكهربائي.', 'زيادة كثافة الترانزستور بمقدار 1.5 ضعف.'],
-    },
-    technicalDeepDive: {
-      id: 'Teknologi nanosheet memungkinkan kontrol arus yang lebih presisi pada tegangan sub-volt.',
-      en: 'Nanosheet technology enables precise electrostatic control at sub-volt operating levels.',
-      ar: 'تتيح تقنية الصفائح النانوية تحكماً إلكتروستاتيكياً فائق الدقة عند مستويات جهد منخفضة.',
-    },
-    sources: [
-      { name: 'IEEE Solid-State Circuits Society', url: 'https://sscs.ieee.org', tier: 1, type: 'Academic Paper' },
-      { name: 'Ars Technica Science & Hardware', url: 'https://arstechnica.com', tier: 2, type: 'Journalism' },
-    ],
-    keywords: ['semiconductor', 'chip', '2nm', 'hardware', 'transistor'],
-  };
+  const { getFreshTechNewsCandidates } = await import('../tech-researcher');
+  const sampleStory = getFreshTechNewsCandidates('2026-08-25')[0];
 
   const { articles, qcResults } = await buildTechMdxArticles(sampleStory);
   assert(articles.length === 3, 'Generated 3 localized language versions (ID, EN, AR)');
   assert(qcResults.id.passed, `Indonesian article passed QC (Score: ${qcResults.id.score}/100)`);
   assert(qcResults.en.passed, `English article passed QC (Score: ${qcResults.en.score}/100)`);
   assert(qcResults.ar.passed, `Arabic article passed QC (Score: ${qcResults.ar.score}/100)`);
+  assert(articles[0].content.includes('Dekonstruksi Hardware'), 'ID article contains "Dekonstruksi Hardware" section');
+  assert(articles[1].content.includes('Hardware Deconstruction'), 'EN article contains "Hardware Deconstruction" section');
+  assert(articles[2].content.includes('التفكيك المعماري للعتاد'), 'AR article contains Arabic hardware section');
 
   // --- TEST 4: Anti-Hallucination & Zero-Filler Hard-Fail Protection ---
   console.log('\n📌 Test 4: Zero-Filler Hard-Fail Gatekeeper');
@@ -133,10 +101,10 @@ Di era digital yang semakin berkembang, teknologi terus berkembang pesat. Mari k
   const { articles: academicArticles, qcResults: academicQc } = await buildIslamicAcademicMdxArticles(firstStory);
   assert(academicArticles.length === 3, 'Generated 3 localized storytelling articles (ID, EN, AR)');
   assert(academicQc.id.passed, `ID Storytelling article passed QC (Score: ${academicQc.id.score}/100)`);
-  assert(academicArticles[0].content.includes('Pertanyaan Awal'), 'ID article contains "Pertanyaan Awal" section');
+  assert(academicArticles[0].content.includes('Gurun Yudea'), 'ID article contains "Gurun Yudea" investigative hook');
   assert(academicArticles[0].content.includes('Batasan Intelektual'), 'ID article contains "Batasan Intelektual" section');
-  assert(academicArticles[1].content.includes('The Core Question'), 'EN article contains "The Core Question" section');
-  assert(academicArticles[2].content.includes('السؤال الجوهري'), 'AR article contains Arabic core question section');
+  assert(academicArticles[1].content.includes('Desert Cliffs'), 'EN article contains "Desert Cliffs" investigative hook');
+  assert(academicArticles[2].content.includes('كهوف وادي قمران'), 'AR article contains Arabic investigative hook');
 
   console.log('\n========================================================');
   console.log(`📊 Test Results: ${passedTests} Passed, ${failedTests} Failed.`);
