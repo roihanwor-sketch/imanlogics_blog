@@ -5,6 +5,8 @@
   "scripts": {
     "start": "next dev",
     "dev": "cross-env INIT_CWD=$PWD next dev",
+    "cms:proxy": "npx decap-server",
+    "auto:publish": "npx tsx scripts/auto-publisher-cron.ts",
     "build": "cross-env INIT_CWD=$PWD next build && cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
@@ -57,6 +59,7 @@
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "cross-env": "^10.1.0",
+    "decap-server": "^3.10.0",
     "eslint": "^9.18.0",
     "eslint-config-next": "15.5.12",
     "eslint-config-prettier": "^10.1.8",
@@ -66,6 +69,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "tsx": "^4.23.12",
     "typescript": "^5.9.3"
   },
   "lint-staged": {
