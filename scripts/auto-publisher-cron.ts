@@ -13,5 +13,5 @@ export async function runAutonomousEditorialPipeline(
 }
 
 if (require.main === module) {
-  runAutonomousEditorialPipeline({ gitPush: false }).catch(console.error)
+  runAutonomousEditorialPipeline({ gitPush: true }).catch(console.error)
 }
