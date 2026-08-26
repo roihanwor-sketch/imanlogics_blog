@@ -1,55 +1,92 @@
 ---
-title: "How NVIDIA's Blackwell Architecture Reaches 30x Inference Performance—and What the Number Really Means"
+title: >-
+  How NVIDIA's Blackwell Architecture Reaches 30x Inference Performance—and What
+  the Number Really Means
 date: '2026-08-25'
 tags:
-  [
-    'nvidia',
-    'blackwell',
-    'b200',
-    'gb200',
-    'fp4',
-    'gpu',
-    'datacenter',
-    'benchmark',
-    'inference',
-    'semiconductor',
-  ]
+  - nvidia
+  - blackwell
+  - b200
+  - gb200
+  - fp4
+  - gpu
+  - datacenter
+  - benchmark
+  - inference
+  - semiconductor
 draft: false
-summary: 'Deconstructing the architectural reality of NVIDIA Blackwell: clarifying the distinction between the standalone B200 GPU, the GB200 Superchip, and the rack-scale GB200 NVL72, analyzing the mathematical mechanics of FP4 micro-tensor scaling, and contrasting 30x launch claims against independent 2026 inference benchmarks.'
-images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
-authors: ['default']
-language: 'en'
-translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
-original_language: 'id'
-articleType: 'Architectural Analysis'
-category: 'tech-ai'
+summary: >-
+  Deconstructing the architectural reality of NVIDIA Blackwell: clarifying the
+  distinction between the standalone B200 GPU, the GB200 Superchip, and the
+  rack-scale GB200 NVL72, analyzing the mathematical mechanics of FP4
+  micro-tensor scaling, and contrasting 30x launch claims against independent
+  2026 inference benchmarks.
+images:
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg
+authors:
+  - default
+language: en
+translation_group: tg-nvidia-blackwell-b200-datacenter-benchmarks
+original_language: id
+articleType: Architectural Analysis
+category: tech-ai
 sources:
-  [
-    {
-      'name': 'NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)',
-      'url': 'https://resources.nvidia.com/en-us-blackwell-architecture',
-      'tier': 1,
-      'type': 'Technical Whitepaper',
-      'publishedDate': '2024',
-    },
-    {
-      'name': 'SemiAnalysis Hardware & InferenceX Economics Benchmark',
-      'url': 'https://semianalysis.com/',
-      'tier': 1,
-      'type': 'Independent Benchmark',
-      'publishedDate': '2026',
-    },
-    {
-      'name': 'Ars Technica Enterprise Compute & Infrastructure',
-      'url': 'https://arstechnica.com/gadgets/',
-      'tier': 2,
-      'type': 'Journalism',
-      'publishedDate': '2026',
-    },
-  ]
-imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/0/07/Intel_810_Chipset_Digon3.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"“Jonathan Zander (Digon3)”","license":"CC BY-SA 3.0","licenseUrl":"http://creativecommons.org/licenses/by-sa/3.0/","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/f/ff/IGP_Vienne_blanc.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/e/ea/IGP_Loiret_ros%C3%A9.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"}]
+  - name: >-
+      NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200
+      NVL72)
+    url: 'https://resources.nvidia.com/en-us-blackwell-architecture'
+    tier: 1
+    type: Technical Whitepaper
+    publishedDate: '2024'
+  - name: SemiAnalysis Hardware & InferenceX Economics Benchmark
+    url: 'https://semianalysis.com/'
+    tier: 1
+    type: Independent Benchmark
+    publishedDate: '2026'
+  - name: Ars Technica Enterprise Compute & Infrastructure
+    url: 'https://arstechnica.com/gadgets/'
+    tier: 2
+    type: Journalism
+    publishedDate: '2026'
+imageCredits:
+  - url: >-
+      https://upload.wikimedia.org/wikipedia/commons/0/07/Intel_810_Chipset_Digon3.JPG
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg
+    sourceWebsite: Wikimedia Commons
+    creator: “Jonathan Zander (Digon3)”
+    license: CC BY-SA 3.0
+    licenseUrl: 'http://creativecommons.org/licenses/by-sa/3.0/'
+    downloadDate: '2026-08-26'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)
+  - url: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/IGP_Vienne_blanc.JPG'
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg
+    sourceWebsite: Wikimedia Commons
+    creator: Marianne Casamance
+    license: CC BY-SA 4.0
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0'
+    downloadDate: '2026-08-26'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)
+  - url: >-
+      https://upload.wikimedia.org/wikipedia/commons/e/ea/IGP_Loiret_ros%C3%A9.JPG
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg
+    sourceWebsite: Wikimedia Commons
+    creator: Marianne Casamance
+    license: CC BY-SA 4.0
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0'
+    downloadDate: '2026-08-26'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)
 ---
-
 ## Beyond Monolithic Silicon: Why Inference Economics is the Decisive AI Frontier
 
 There is a foundational reason why NVIDIA is no longer merely enlarging conventional monolithic GPU dies. As frontier artificial intelligence models scale from tens of billions to trillions of parameters, the decisive engineering battleground is no longer raw single-chip FLOPs, but the unforgiving physics and economics of inference: total power dissipation, memory bandwidth saturation, and the actual dollar cost to generate a million tokens.
@@ -58,6 +95,8 @@ There is a foundational reason why NVIDIA is no longer merely enlarging conventi
 
 ![Datacenter Server GPU Processor Silicon Die](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
 *Visual source: Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)*
+
+
 
 Where does the 30x inference performance multiplier actually originate, and why does this headline claim represent a full liquid-cooled rack rather than a standalone GPU die?
 
@@ -81,7 +120,9 @@ _Visual Source: Unsplash / Photo by Alexandre Debiève (Unsplash License)_
 
 
 
-![Datacenter Server GPU Processor Silicon Die (Comparative View)](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
+
+
+![Datacenter Server GPU Processor Silicon Die (Comparative Detail)](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
 *Visual source: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)*
 
 ### II. Why Dual-Die? Overcoming the Photolithographic Reticle Limit

@@ -1,7 +1,63 @@
 {
-  "lastUpdated": "2026-08-26T02:58:38.008Z",
-  "totalCyclesRun": 38,
+  "lastUpdated": "2026-08-26T03:00:13.473Z",
+  "totalCyclesRun": 42,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T02:59:50.728Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [
+        "Tech story \"Dinamika Rekayasa Flagship Modern: Menelisik Konvergensi Optika Lensa, NPU Komputasional, dan Material Foldable dalam Penghargaan EISA\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (Gate 5 FAILED: Local image directory does not exist on physical disk: D:\\Projects\\BLOG\\public\\static\\images\\editorial\\xiaomi-wins-eisa-smartphone-award-honor-oppo-)."
+      ],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
+    {
+      "cycleTimestamp": "2026-08-26T02:59:29.502Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [
+        "Tech story \"Evolusi Fotografi Komputasional dan Rekayasa Lipat: Bedah Teknologi di Balik Penghargaan EISA Awards\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (Gate 5 FAILED: Local image directory does not exist on physical disk: D:\\Projects\\BLOG\\public\\static\\images\\editorial\\xiaomi-wins-eisa-smartphone-award-honor-oppo-)."
+      ],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
+    {
+      "cycleTimestamp": "2026-08-26T02:59:05.080Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [
+        "Tech story \"Evolusi Fotografi Komputasional dan Edge AI: Membedah Dominasi Arsitektur Perangkat Bergerak pada Penghargaan EISA\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (Gate 5 FAILED: Local image directory does not exist on physical disk: D:\\Projects\\BLOG\\public\\static\\images\\editorial\\xiaomi-wins-eisa-smartphone-award-honor-oppo-)."
+      ],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
+    {
+      "cycleTimestamp": "2026-08-26T02:58:39.326Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [
+        "Tech story \"Dinamika Penghargaan EISA: Konvergensi Sensor Optik Satu Inci, Akselerasi AI Pada Perangkat, dan Arsitektur Komputasi Ponsel Pintar Flagship\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (Gate 5 FAILED: Local image directory does not exist on physical disk: D:\\Projects\\BLOG\\public\\static\\images\\editorial\\xiaomi-wins-eisa-smartphone-award-honor-oppo-)."
+      ],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
     {
       "cycleTimestamp": "2026-08-26T02:58:17.351Z",
       "sourcesScanned": 2,

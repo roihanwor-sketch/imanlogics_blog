@@ -1,55 +1,90 @@
 ---
-title: 'كيف حققت بنية NVIDIA Blackwell أداء استدلال أعلى بنحو 30 مرة؟ وما الذي يعنيه الرقم فعلاً؟'
+title: >-
+  كيف حققت بنية NVIDIA Blackwell أداء استدلال أعلى بنحو 30 مرة؟ وما الذي يعنيه
+  الرقم فعلاً؟
 date: '2026-08-25'
 tags:
-  [
-    'nvidia',
-    'blackwell',
-    'b200',
-    'gb200',
-    'fp4',
-    'gpu',
-    'datacenter',
-    'benchmark',
-    'inference',
-    'semiconductor',
-  ]
+  - nvidia
+  - blackwell
+  - b200
+  - gb200
+  - fp4
+  - gpu
+  - datacenter
+  - benchmark
+  - inference
+  - semiconductor
 draft: false
-summary: 'تحليل معماري شامل لمنظومة NVIDIA Blackwell: التمييز بين معالج B200 الفردي، وشريحة GB200 الفائقة، ونظام الخوادم GB200 NVL72، مع تفكيك آليات حسابات FP4 الدقيقة ومقارنة ادعاءات الإطلاق باختبارات مراكز البيانات المستقلة لعام 2026.'
-images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
-authors: ['default']
-language: 'ar'
-translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
-original_language: 'id'
-articleType: 'Architectural Analysis'
-category: 'tech-ai'
+summary: >-
+  تحليل معماري شامل لمنظومة NVIDIA Blackwell: التمييز بين معالج B200 الفردي،
+  وشريحة GB200 الفائقة، ونظام الخوادم GB200 NVL72، مع تفكيك آليات حسابات FP4
+  الدقيقة ومقارنة ادعاءات الإطلاق باختبارات مراكز البيانات المستقلة لعام 2026.
+images:
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg
+authors:
+  - default
+language: ar
+translation_group: tg-nvidia-blackwell-b200-datacenter-benchmarks
+original_language: id
+articleType: Architectural Analysis
+category: tech-ai
 sources:
-  [
-    {
-      'name': 'NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)',
-      'url': 'https://resources.nvidia.com/en-us-blackwell-architecture',
-      'tier': 1,
-      'type': 'Technical Whitepaper',
-      'publishedDate': '2024',
-    },
-    {
-      'name': 'SemiAnalysis Hardware & InferenceX Economics Benchmark',
-      'url': 'https://semianalysis.com/',
-      'tier': 1,
-      'type': 'Independent Benchmark',
-      'publishedDate': '2026',
-    },
-    {
-      'name': 'Ars Technica Enterprise Compute & Infrastructure',
-      'url': 'https://arstechnica.com/gadgets/',
-      'tier': 2,
-      'type': 'Journalism',
-      'publishedDate': '2026',
-    },
-  ]
-imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/0/07/Intel_810_Chipset_Digon3.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"“Jonathan Zander (Digon3)”","license":"CC BY-SA 3.0","licenseUrl":"http://creativecommons.org/licenses/by-sa/3.0/","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/f/ff/IGP_Vienne_blanc.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/e/ea/IGP_Loiret_ros%C3%A9.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"}]
+  - name: >-
+      NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200
+      NVL72)
+    url: 'https://resources.nvidia.com/en-us-blackwell-architecture'
+    tier: 1
+    type: Technical Whitepaper
+    publishedDate: '2024'
+  - name: SemiAnalysis Hardware & InferenceX Economics Benchmark
+    url: 'https://semianalysis.com/'
+    tier: 1
+    type: Independent Benchmark
+    publishedDate: '2026'
+  - name: Ars Technica Enterprise Compute & Infrastructure
+    url: 'https://arstechnica.com/gadgets/'
+    tier: 2
+    type: Journalism
+    publishedDate: '2026'
+imageCredits:
+  - url: >-
+      https://upload.wikimedia.org/wikipedia/commons/0/07/Intel_810_Chipset_Digon3.JPG
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg
+    sourceWebsite: Wikimedia Commons
+    creator: “Jonathan Zander (Digon3)”
+    license: CC BY-SA 3.0
+    licenseUrl: 'http://creativecommons.org/licenses/by-sa/3.0/'
+    downloadDate: '2026-08-26'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)
+  - url: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/IGP_Vienne_blanc.JPG'
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg
+    sourceWebsite: Wikimedia Commons
+    creator: Marianne Casamance
+    license: CC BY-SA 4.0
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0'
+    downloadDate: '2026-08-26'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)
+  - url: >-
+      https://upload.wikimedia.org/wikipedia/commons/e/ea/IGP_Loiret_ros%C3%A9.JPG
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg
+    sourceWebsite: Wikimedia Commons
+    creator: Marianne Casamance
+    license: CC BY-SA 4.0
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0'
+    downloadDate: '2026-08-26'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)
 ---
-
 ## ما وراء سيليكون المعالجات التقليدية: لماذا أصبح اقتصاد الاستدلال ساحة الحسم في الذكاء الاصطناعي
 
 ثمة سبب جوهري وراء توقف إنفيديا عن مجرد زيادة مساحة رقاقات السيليكون التقليدية؛ فعندما تتوسع نماذج الذكاء الاصطناعي من عشرات المليارات إلى تريليونات المعاملات، لم يعد التحدي الهندسي مقتصراً على سرعة المعالجة الخام للرقاقة الفردية، بل تحول كلياً نحو اقتصاديات الاستدلال: كفاءة الطاقة المستهلكة، وسرعة نقل البيانات عبر الذاكرة، والتكلفة الفعلية لتوليد كل مليون رمز.
@@ -59,6 +94,8 @@ imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/0/07/Intel
 ![شريحة سيليكون معالج الرسوميات لخوادم مراكز البيانات](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
 *المصدر البصري: Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)*
 
+
+
 من أين جاء رقم مضاعفة أداء الاستدلال 30 مرة تحديداً؟ ولماذا يمثل هذا الادعاء منظومة خوادم مبردة بالكامل وليس معالجاً فردياً؟
 
 في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تشهد هندسة أشباه الموصلات تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
@@ -66,6 +103,11 @@ imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/0/07/Intel
 _مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)_
 
 ---
+
+
+
+![شريحة سيليكون معالج الرسوميات لخوادم مراكز البيانات (تفاصيل مقارنة)](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
+*المصدر البصري: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)*
 
 ### أولاً: التفكيك المعماري للعتاد: التمييز بين B200 وGB200 وGB200 NVL72
 
