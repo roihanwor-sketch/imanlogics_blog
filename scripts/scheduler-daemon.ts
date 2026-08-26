@@ -4,6 +4,7 @@ import { ReportFormatter } from '../lib/mcp/domains/notification/report-formatte
 import { WhatsAppService } from '../lib/mcp/domains/notification/wa-service'
 import { NotificationPayload } from '../lib/mcp/core/types'
 import { Logger } from '../lib/mcp/core/logger'
+import { AntigravitySessionDetector } from '../lib/mcp/core/session-detector'
 
 export function getNext3HourScheduleSlot(): {
   nextTargetDate: Date
@@ -99,7 +100,11 @@ export async function startSchedulerDaemon(runImmediately = true) {
     const nextTimeStr = `${nextWASlot.targetLabel} — ${nextWASlot.nextTargetDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`
 
     try {
-      Logger.info('Scheduler', 'Executing Autonomous 3-Hour Editorial Pipeline...')
+      const modeInfo = AntigravitySessionDetector.getDynamicExecutionMode()
+      Logger.info(
+        'Scheduler',
+        `Executing Autonomous 3-Hour Editorial Pipeline [Active Mode: ${modeInfo.mode}]...`
+      )
       const report = await EditorialOrchestrator.runEditorialPipeline({ gitPush: true })
 
       // Check if current time is within the designated WhatsApp reporting slot (05:00 / 17:00) or manual trigger
