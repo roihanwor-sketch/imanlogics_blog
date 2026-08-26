@@ -6,7 +6,7 @@
     "start": "next dev",
     "dev": "cross-env INIT_CWD=$PWD next dev",
     "cms:proxy": "npx decap-server",
-    "auto:publish": "npx tsx scripts/auto-publisher-cron.ts",
+    "auto:publish": "npx tsx scripts/scheduler-daemon.ts",
     "scheduler": "npx tsx scripts/scheduler-daemon.ts",
     "mcp:server": "npx tsx lib/mcp/mcp-server.ts",
     "test:pipeline": "npx tsx scripts/tests/pipeline.test.ts",

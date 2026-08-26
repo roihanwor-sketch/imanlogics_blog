@@ -1,7 +1,48 @@
 {
-  "lastUpdated": "2026-08-26T00:00:13.519Z",
-  "totalCyclesRun": 13,
+  "lastUpdated": "2026-08-26T00:38:04.447Z",
+  "totalCyclesRun": 14,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T00:37:28.405Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 6,
+      "articlesPublished": [
+        "data/blog/apple-s-latest-mac-mini-runs-on-a-new-m6-chip.mdx",
+        "data/blog/apple-s-latest-mac-mini-runs-on-a-new-m6-chip.en.mdx",
+        "data/blog/apple-s-latest-mac-mini-runs-on-a-new-m6-chip.ar.mdx",
+        "data/blog/rationality-sharia-riba-global-debt-cycles-economics.mdx",
+        "data/blog/rationality-sharia-riba-global-debt-cycles-economics.en.mdx",
+        "data/blog/rationality-sharia-riba-global-debt-cycles-economics.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Arsitektur Apple Silicon M6 pada Mac Mini: Pematangan Node 2nm, Efisiensi Unified Memory, dan Demokratisasi Komputasi AI Edge",
+          "slug": "apple-s-latest-mac-mini-runs-on-a-new-m6-chip",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        },
+        {
+          "title": "Rasionalitas Pelarangan Riba: Analisis Ekonomi Makro terhadap Siklus Utang Global, Ketimpangan Sistemik, dan Keadilan Transaksi",
+          "slug": "rationality-sharia-riba-global-debt-cycles-economics",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "e435b94"
+    },
     {
       "cycleTimestamp": "2026-08-26T00:00:00.012Z",
       "sourcesScanned": 4,

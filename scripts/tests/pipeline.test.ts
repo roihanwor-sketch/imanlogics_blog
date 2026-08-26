@@ -1,16 +1,19 @@
-import { calculateRecencyScore } from '../../scripts/tech-researcher'
-import { discoverSafeImagesForTopic } from '../../scripts/image-researcher'
-import {
-  buildTechMdxArticles,
-  buildIslamicAcademicMdxArticles,
-  runHumanLevelEditorialQC,
-  MdxArticle,
-} from '../../scripts/article-builder-qc'
 import { TechResearchEngine } from '../../lib/mcp/domains/research/tech-engine'
 import { IslamicResearchEngine } from '../../lib/mcp/domains/research/islamic-engine'
+import { AssetDownloader } from '../../lib/mcp/domains/media/asset-downloader'
+import { TechArticleBuilder } from '../../lib/mcp/domains/editorial/tech-builder'
+import { IslamicArticleBuilder } from '../../lib/mcp/domains/editorial/islamic-builder'
+import { EditorialQCEngine } from '../../lib/mcp/domains/qc/qc-engine'
+import { MdxArticle } from '../../lib/mcp/core/types'
 import { MEDIA_SOURCE_POOLS, PRIMARY_SOURCE_LAYERS } from '../../lib/mcp/config/media-pool'
 import { WhatsAppService } from '../../lib/mcp/domains/notification/wa-service'
 import { getNext3HourScheduleSlot, getNextWAScheduleSlot } from '../../scripts/scheduler-daemon'
+
+const calculateRecencyScore = TechResearchEngine.calculateRecencyScore
+const buildTechMdxArticles = TechArticleBuilder.buildTrilingualArticles.bind(TechArticleBuilder)
+const buildIslamicAcademicMdxArticles =
+  IslamicArticleBuilder.buildTrilingualArticles.bind(IslamicArticleBuilder)
+const runHumanLevelEditorialQC = EditorialQCEngine.evaluateArticle.bind(EditorialQCEngine)
 
 async function runPipelineTests() {
   console.log('\n🧪 ========================================================')
@@ -141,7 +144,12 @@ async function runPipelineTests() {
   // -------------------------------------------------------------
   console.log('\n📌 Test 5: Multilingual Article Build & QC Evaluation')
   if (shariaStory) {
-    const { articles, qcResults } = await buildIslamicAcademicMdxArticles(shariaStory)
+    const articles = await IslamicArticleBuilder.buildTrilingualArticles(shariaStory)
+    const qcResults = {
+      id: EditorialQCEngine.evaluateArticle(articles[0]),
+      en: EditorialQCEngine.evaluateArticle(articles[1]),
+      ar: EditorialQCEngine.evaluateArticle(articles[2]),
+    }
     assert(articles.length === 3, 'Generated 3 localized language versions (ID, EN, AR)')
     assert(qcResults.id.passed, `Indonesian article passed QC (Score: ${qcResults.id.score}/100)`)
     assert(qcResults.en.passed, `English article passed QC (Score: ${qcResults.en.score}/100)`)

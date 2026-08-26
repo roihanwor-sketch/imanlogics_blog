@@ -13,14 +13,41 @@
 
 import fs from 'fs'
 import path from 'path'
+import { TechResearchEngine, TechNewsStory } from '../../lib/mcp/domains/research/tech-engine'
 import {
-  runHumanLevelEditorialQC,
-  buildTechMdxArticles,
-  buildIslamicAcademicMdxArticles,
-  MdxArticle,
-} from '../article-builder-qc'
-import { getFreshTechNewsCandidates } from '../tech-researcher'
-import { getFreshIslamicAcademicCandidates } from '../islamic-logic-researcher'
+  IslamicResearchEngine,
+  IslamicAcademicStory,
+} from '../../lib/mcp/domains/research/islamic-engine'
+import { TechArticleBuilder } from '../../lib/mcp/domains/editorial/tech-builder'
+import { IslamicArticleBuilder } from '../../lib/mcp/domains/editorial/islamic-builder'
+import { EditorialQCEngine } from '../../lib/mcp/domains/qc/qc-engine'
+import { MdxArticle } from '../../lib/mcp/core/types'
+
+const getFreshTechNewsCandidates =
+  TechResearchEngine.getFreshTechNewsCandidates.bind(TechResearchEngine)
+const getFreshIslamicAcademicCandidates =
+  IslamicResearchEngine.getFreshIslamicAcademicCandidates.bind(IslamicResearchEngine)
+const runHumanLevelEditorialQC = EditorialQCEngine.evaluateArticle.bind(EditorialQCEngine)
+
+async function buildTechMdxArticles(story: TechNewsStory) {
+  const articles = await TechArticleBuilder.buildTrilingualArticles(story)
+  const qcResults = {
+    id: EditorialQCEngine.evaluateArticle(articles[0]),
+    en: EditorialQCEngine.evaluateArticle(articles[1]),
+    ar: EditorialQCEngine.evaluateArticle(articles[2]),
+  }
+  return { articles, qcResults }
+}
+
+async function buildIslamicAcademicMdxArticles(story: IslamicAcademicStory) {
+  const articles = await IslamicArticleBuilder.buildTrilingualArticles(story)
+  const qcResults = {
+    id: EditorialQCEngine.evaluateArticle(articles[0]),
+    en: EditorialQCEngine.evaluateArticle(articles[1]),
+    ar: EditorialQCEngine.evaluateArticle(articles[2]),
+  }
+  return { articles, qcResults }
+}
 
 async function runFullEditorialSuite() {
   console.log('\n===============================================================')
