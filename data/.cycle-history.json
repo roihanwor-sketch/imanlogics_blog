@@ -1,7 +1,48 @@
 {
-  "lastUpdated": "2026-08-25T22:34:53.047Z",
-  "totalCyclesRun": 11,
+  "lastUpdated": "2026-08-25T23:49:17.337Z",
+  "totalCyclesRun": 12,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-25T23:49:05.092Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 6,
+      "articlesPublished": [
+        "data/blog/linux-7-0-mk2-released-for-multi-kernel-linux.mdx",
+        "data/blog/linux-7-0-mk2-released-for-multi-kernel-linux.en.mdx",
+        "data/blog/linux-7-0-mk2-released-for-multi-kernel-linux.ar.mdx",
+        "data/blog/six-months-into-the-iran-war-the-search-for-a.mdx",
+        "data/blog/six-months-into-the-iran-war-the-search-for-a.en.mdx",
+        "data/blog/six-months-into-the-iran-war-the-search-for-a.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Inovasi Rilis Kernel Linux Generasi Baru: Analisis Arsitektur Multi-Kernel, Manajemen Latensi, dan Efisiensi Komputasi",
+          "slug": "linux-7-0-mk2-released-for-multi-kernel-linux",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        },
+        {
+          "title": "Etika Resolusi Konflik dan Keadilan Kemanusiaan: Perspektif Fiqh Peradaban terhadap Hak Asasi dan Perdamaian Global",
+          "slug": "six-months-into-the-iran-war-the-search-for-a",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "a0240f5"
+    },
     {
       "cycleTimestamp": "2026-08-25T22:34:44.638Z",
       "sourcesScanned": 4,
