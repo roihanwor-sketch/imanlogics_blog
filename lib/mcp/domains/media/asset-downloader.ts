@@ -240,6 +240,12 @@ export class AssetDownloader {
           articleSlug,
           fileName
         )
+        const cleanTitle = (candidate.title || '')
+          .replace(/^File:/, '')
+          .replace(/\.[^/.]+$/, '')
+          .trim()
+        const cleanShortDesc = cleanTitle.length > 80 ? cleanTitle.slice(0, 80) : cleanTitle
+
         if (downloadRes.success) {
           selectedImages.push({
             url: candidate.url,
@@ -250,9 +256,9 @@ export class AssetDownloader {
             license: candidate.license,
             licenseUrl: candidate.licenseUrl,
             altText: {
-              id: `${candidate.title} terkait ${idTitle}`,
-              en: `${candidate.title} for ${enTitle}`,
-              ar: `${candidate.title} لـ ${arTitle}`,
+              id: `Dokumentasi visual ${cleanShortDesc} terkait ${idTitle}`,
+              en: `Visual documentation of ${cleanShortDesc} for ${enTitle}`,
+              ar: `توثيق بصري لـ ${cleanShortDesc} متعلق بـ ${arTitle}`,
             },
             tags: keywords,
           })
@@ -286,12 +292,22 @@ export class AssetDownloader {
     )
 
     if (entityMatches && entityMatches.length > 0) {
-      for (const entity of entityMatches.slice(0, 2)) {
-        queries.push(entity.trim())
+      for (const rawEntity of entityMatches.slice(0, 2)) {
+        const entity = rawEntity.trim()
         if (category === 'tech-ai') {
-          queries.push(`${entity.trim()} device hardware`)
+          if (/intel|amd|nvidia|qualcomm|apple|snapdragon/i.test(entity)) {
+            queries.push(`${entity} processor die`)
+            queries.push(`${entity} silicon chip`)
+            queries.push(`${entity} microprocessor hardware`)
+          } else if (/xperia|galaxy|iphone|pixel|oneplus|poco/i.test(entity)) {
+            queries.push(`${entity} smartphone device`)
+            queries.push(`${entity} mobile phone`)
+          } else {
+            queries.push(`${entity} hardware`)
+          }
         } else {
-          queries.push(`${entity.trim()} manuscript folio`)
+          queries.push(`${entity} manuscript folio`)
+          queries.push(`${entity} ancient history`)
         }
       }
     }

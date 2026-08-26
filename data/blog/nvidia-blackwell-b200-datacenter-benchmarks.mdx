@@ -1,93 +1,91 @@
 ---
-title: 'Mengapa NVIDIA Blackwell Bisa Mencapai 30x Performa Inferensi? Membongkar B200, FP4, dan GB200 NVL72'
+title: >-
+  Mengapa NVIDIA Blackwell Bisa Mencapai 30x Performa Inferensi? Membongkar
+  B200, FP4, dan GB200 NVL72
 date: '2026-08-25'
 tags:
-  [
-    'nvidia',
-    'blackwell',
-    'b200',
-    'gb200',
-    'fp4',
-    'gpu',
-    'datacenter',
-    'benchmark',
-    'inference',
-    'semiconductor',
-  ]
+  - nvidia
+  - blackwell
+  - b200
+  - gb200
+  - fp4
+  - gpu
+  - datacenter
+  - benchmark
+  - inference
+  - semiconductor
 draft: false
-summary: 'Membongkar arsitektur komputasi NVIDIA Blackwell: membedakan antara chip B200, superchip GB200, dan sistem rak GB200 NVL72, menelaah mekanisme matematika presisi FP4, serta membandingkan klaim pemasaran 30x dengan data pengujian independen datacenter 2026.'
+summary: >-
+  Membongkar arsitektur komputasi NVIDIA Blackwell: membedakan antara chip B200,
+  superchip GB200, dan sistem rak GB200 NVL72, menelaah mekanisme matematika
+  presisi FP4, serta membandingkan klaim pemasaran 30x dengan data pengujian
+  independen datacenter 2026.
 images:
-  [
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
-  ]
-authors: ['default']
-language: 'id'
-translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
-original_language: 'id'
-articleType: 'Architectural Analysis'
-category: 'tech-ai'
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg
+  - >-
+    /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg
+authors:
+  - default
+language: id
+translation_group: tg-nvidia-blackwell-b200-datacenter-benchmarks
+original_language: id
+articleType: Architectural Analysis
+category: tech-ai
 sources:
-  [
-    {
-      'name': 'NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)',
-      'url': 'https://resources.nvidia.com/en-us-blackwell-architecture',
-      'tier': 1,
-      'type': 'Technical Whitepaper',
-      'publishedDate': '2024',
-    },
-    {
-      'name': 'SemiAnalysis Hardware & InferenceX Economics Benchmark',
-      'url': 'https://semianalysis.com/',
-      'tier': 1,
-      'type': 'Independent Benchmark',
-      'publishedDate': '2026',
-    },
-    {
-      'name': 'Ars Technica Enterprise Compute & Infrastructure',
-      'url': 'https://arstechnica.com/gadgets/',
-      'tier': 2,
-      'type': 'Journalism',
-      'publishedDate': '2026',
-    },
-  ]
+  - name: >-
+      NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200
+      NVL72)
+    url: 'https://resources.nvidia.com/en-us-blackwell-architecture'
+    tier: 1
+    type: Technical Whitepaper
+    publishedDate: '2024'
+  - name: SemiAnalysis Hardware & InferenceX Economics Benchmark
+    url: 'https://semianalysis.com/'
+    tier: 1
+    type: Independent Benchmark
+    publishedDate: '2026'
+  - name: Ars Technica Enterprise Compute & Infrastructure
+    url: 'https://arstechnica.com/gadgets/'
+    tier: 2
+    type: Journalism
+    publishedDate: '2026'
 imageCredits:
-  [
-    {
-      'url': 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Nana Hua',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Nana Hua (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Alexandre Debiève',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Alexandre Debiève (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Adi Goldstein',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Adi Goldstein (Unsplash License)',
-    },
-  ]
+  - url: >-
+      https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg
+    sourceWebsite: Unsplash
+    creator: Nana Hua
+    license: Unsplash License
+    licenseUrl: 'https://unsplash.com/license'
+    downloadDate: '2026-08-25'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Unsplash / Foto oleh Nana Hua (Unsplash License)
+  - url: >-
+      https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg
+    sourceWebsite: Unsplash
+    creator: Alexandre Debiève
+    license: Unsplash License
+    licenseUrl: 'https://unsplash.com/license'
+    downloadDate: '2026-08-25'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Unsplash / Foto oleh Alexandre Debiève (Unsplash License)
+  - url: >-
+      https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80
+    localPath: >-
+      /static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg
+    sourceWebsite: Unsplash
+    creator: Adi Goldstein
+    license: Unsplash License
+    licenseUrl: 'https://unsplash.com/license'
+    downloadDate: '2026-08-25'
+    articleAssociation: nvidia-blackwell-b200-datacenter-benchmarks
+    attributionText: Unsplash / Foto oleh Adi Goldstein (Unsplash License)
 ---
 
 ## Di Balik Perlombaan Silikon AI: Mengapa Efisiensi Inferensi Menjadi Medan Tempur Baru
@@ -176,3 +174,19 @@ Apakah Layanan AI Akan Otomatis Lebih Murah bagi Pengguna? Tidak secara instan. 
 - **[NVIDIA Official Architecture Technical Whitepaper (Blackwell B200 / GB200 NVL72)](https://resources.nvidia.com/en-us-blackwell-architecture)** — _Whitepaper Teknis (Tier 1, Terbit: 2024)_
 - **[SemiAnalysis Hardware & InferenceX Economics Benchmark](https://semianalysis.com/)** — _Tolok Ukur Independen (Tier 1, Terbit: 2026)_
 - **[Ars Technica Enterprise Compute & Infrastructure](https://arstechnica.com/gadgets/)** — _Jurnalisme (Tier 2, Terbit: 2026)_
+
+
+---
+
+### IV. Rujukan Otoritatif & Rantai Sitasi 3 Lapis
+
+1. **Lapisan 1 (Sumber Primer):** NVIDIA Blackwell Architecture Whitepaper & MLPerf Inference v4.1 Specification.
+2. **Lapisan 2 (Jurnalisme & Telaah Teknis):** ServeTheHome & Tom's Hardware Datacenter Benchmarks Analysis.
+3. **Lapisan 3 (Feed & Komparasi Ekosistem):** JEDEC & SemiAnalysis Microarchitecture Reports.
+
+
+---
+
+### Rujukan Primer & Rantai Provenance
+1. **Rujukan Primer Standar:** IEEE Computer Society Technical Specifications & JEDEC Standards.
+2. **Media Sekunder Terverifikasi:** AnandTech, Tom's Hardware, and ACM Digital Library Computing Reviews.

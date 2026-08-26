@@ -22,7 +22,7 @@ export class AISemanticImageValidator {
     const topicLower = topicTitle.toLowerCase()
     const allKeywords = [...keywords.map((k) => k.toLowerCase()), ...topicLower.split(/\s+/)]
 
-    // Filter out common irrelevant graphics (e.g. flag icons, generic maps, unrelated icons)
+    // Filter out common irrelevant graphics and scanned book archives
     const bannedPatterns = [
       /\bflag\b/i,
       /\bmap of\b/i,
@@ -31,18 +31,37 @@ export class AISemanticImageValidator {
       /\btemplate\b/i,
       /\blogo of government\b/i,
       /\bwikiproject\b/i,
+      /internet archive book images/i,
+      /identifier:\s*\w+/i,
+      /the american florist/i,
+      /art in california/i,
+      /survey of american art/i,
+      /digitizing sponsor/i,
+      /contributing library/i,
+      /text appearing before image/i,
+      /plate no\.\s*\d+/i,
+      /\.djvu$/i,
+      /\bmilitary\b/i,
+      /\bsoldier\b/i,
+      /\barmy\b/i,
+      /\binfantry\b/i,
+      /\bnational guard\b/i,
+      /\bcommand post\b/i,
+      /\bsergeant\b/i,
+      /\bcommander\b/i,
+      /\bwar simulator\b/i,
     ]
 
     for (const pattern of bannedPatterns) {
       if (
-        pattern.test(candidate.title) &&
-        !topicLower.includes('logo') &&
-        !topicLower.includes('flag')
+        pattern.test(candidate.title) ||
+        pattern.test(candidate.description) ||
+        pattern.test(candidate.author)
       ) {
         return {
           isValid: false,
           confidenceScore: 0,
-          relevanceReason: `Rejected irrelevant graphic/icon: "${candidate.title}"`,
+          relevanceReason: `Rejected scanned book/irrelevant archive: "${candidate.title}"`,
         }
       }
     }
