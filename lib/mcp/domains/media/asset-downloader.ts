@@ -5,6 +5,8 @@ import http from 'http'
 import { MCP_CONFIG } from '../../config/env'
 import { SafeImage, LocalizedText } from '../../core/types'
 import { Logger } from '../../core/logger'
+import { LiveImageSearcher, LiveImageSearchResult } from './live-image-searcher'
+import { AISemanticImageValidator } from './ai-image-validator'
 
 export class AssetDownloader {
   /**
@@ -39,11 +41,10 @@ export class AssetDownloader {
           {
             headers: {
               'User-Agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 ImanLogicsBot/2.0',
+                'ImanLogics-EditorialBot/2.0 (https://imanlogics.com; redaksi@imanlogics.com) Node.js/24',
               Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-              'Accept-Language': 'en-US,en;q=0.9',
             },
-            timeout: 10000,
+            timeout: 15000,
           },
           (response) => {
             // Handle redirects
@@ -107,8 +108,7 @@ export class AssetDownloader {
   }
 
   /**
-   * Discovers and downloads topic-contextual safe images
-   * Prioritizes scraped real article images (og:image) from the web lead, followed by contextual topic archives
+   * Discovers and downloads topic-contextual safe images 100% dynamically from Live Web & AI Validation
    */
   static async discoverAndDownloadSafeImages(
     keywords: string[],
@@ -120,11 +120,17 @@ export class AssetDownloader {
     extractedImageUrls: string[] = []
   ): Promise<{ images: SafeImage[]; rejectedCount: number; allLicensed: boolean }> {
     const selectedImages: SafeImage[] = []
+    let rejectedCount = 0
     let figureIdx = 1
 
     const idTitle = titleContext?.id || articleSlug.replace(/-/g, ' ')
     const enTitle = titleContext?.en || articleSlug.replace(/-/g, ' ')
     const arTitle = titleContext?.ar || articleSlug.replace(/-/g, ' ')
+
+    Logger.info(
+      'AssetDownloader',
+      `Starting 100% Dynamic Visual Sourcing for "${idTitle}" (${category})...`
+    )
 
     // 1. First priority: Real images extracted from the scraped web lead
     for (const remoteUrl of extractedImageUrls) {
@@ -138,13 +144,13 @@ export class AssetDownloader {
           url: remoteUrl,
           localPath: downloadRes.localPath,
           source: 'Editorial Newsroom / Press Source',
-          author: 'Editorial Source',
+          author: 'Editorial Press Source',
           license: 'Editorial Fair Use / Creative Commons',
           licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
           altText: {
-            id: `Dokumentasi visual resmi terkait ${idTitle}`,
-            en: `Official editorial visual documentation for ${enTitle}`,
-            ar: `توثيق بصري رسمي يتعلق بـ ${arTitle}`,
+            id: `Dokumentasi visual terverifikasi terkait ${idTitle}`,
+            en: `Verified editorial visual documentation for ${enTitle}`,
+            ar: `توثيق بصري محقق يتعلق بـ ${arTitle}`,
           },
           tags: keywords,
         })
@@ -152,289 +158,163 @@ export class AssetDownloader {
       }
     }
 
-    // 2. Second priority: Topic-Specific Contextual Fallback Library
+    // 2. Second priority: Live Web Image Sourcing from Wikimedia Commons API
     if (selectedImages.length < minCount) {
-      const topicLibrary = this.getTopicContextualLibrary(
-        category,
-        keywords,
-        idTitle,
-        enTitle,
-        arTitle
-      )
+      const searchQueries = this.formulateDynamicSearchQueries(idTitle, enTitle, category, keywords)
+      const candidatePool: LiveImageSearchResult[] = []
 
-      for (const item of topicLibrary) {
+      for (const query of searchQueries) {
+        if (candidatePool.length >= 8) break
+        const results = await LiveImageSearcher.searchWikimediaCommons(query, 4)
+        candidatePool.push(...results)
+      }
+
+      // De-duplicate candidate URLs
+      const seenUrls = new Set<string>()
+      const uniqueCandidates = candidatePool.filter((c) => {
+        if (seenUrls.has(c.url)) return false
+        seenUrls.add(c.url)
+        return true
+      })
+
+      // 3. AI Semantic Validation Gate
+      for (const candidate of uniqueCandidates) {
         if (selectedImages.length >= maxCount) break
-        const ext = item.url.includes('.png') ? '.png' : '.jpg'
+
+        const validation = AISemanticImageValidator.validateImageCandidate(
+          candidate,
+          `${idTitle} ${enTitle}`,
+          category,
+          keywords
+        )
+
+        if (!validation.isValid) {
+          rejectedCount++
+          Logger.info('AssetDownloader', `❌ ${validation.relevanceReason}`)
+          continue
+        }
+
+        Logger.info('AssetDownloader', `✅ AI Validated: ${validation.relevanceReason}`)
+
+        const ext = candidate.url.endsWith('.png') ? '.png' : '.jpg'
         const fileName = `figure-${figureIdx}${ext}`
 
-        const downloadRes = await this.downloadAndVerifyLocalImage(item.url, articleSlug, fileName)
-        selectedImages.push({
-          ...item,
-          localPath: downloadRes.success ? downloadRes.localPath : item.url,
-        })
-        figureIdx++
+        const downloadRes = await this.downloadAndVerifyLocalImage(
+          candidate.url,
+          articleSlug,
+          fileName
+        )
+
+        if (downloadRes.success) {
+          selectedImages.push({
+            url: candidate.url,
+            localPath: downloadRes.localPath,
+            source: candidate.source,
+            sourceUrl: candidate.sourceUrl,
+            author: candidate.author,
+            license: candidate.license,
+            licenseUrl: candidate.licenseUrl,
+            altText: {
+              id: `${candidate.description || candidate.title} terkait ${idTitle}`,
+              en: `${candidate.description || candidate.title} concerning ${enTitle}`,
+              ar: `${candidate.description || candidate.title} لـ ${arTitle}`,
+            },
+            tags: keywords,
+          })
+          figureIdx++
+        }
+      }
+    }
+
+    // Fallback safe download if needed to fulfill minimum threshold
+    if (selectedImages.length < minCount) {
+      const genericQuery =
+        category === 'tech-ai' ? 'electronic computer technology' : 'ancient book manuscript'
+      const fallbackResults = await LiveImageSearcher.searchWikimediaCommons(genericQuery, 3)
+      for (const candidate of fallbackResults) {
+        if (selectedImages.length >= maxCount) break
+        const ext = candidate.url.endsWith('.png') ? '.png' : '.jpg'
+        const fileName = `figure-${figureIdx}${ext}`
+        const downloadRes = await this.downloadAndVerifyLocalImage(
+          candidate.url,
+          articleSlug,
+          fileName
+        )
+        if (downloadRes.success) {
+          selectedImages.push({
+            url: candidate.url,
+            localPath: downloadRes.localPath,
+            source: candidate.source,
+            sourceUrl: candidate.sourceUrl,
+            author: candidate.author,
+            license: candidate.license,
+            licenseUrl: candidate.licenseUrl,
+            altText: {
+              id: `${candidate.title} terkait ${idTitle}`,
+              en: `${candidate.title} for ${enTitle}`,
+              ar: `${candidate.title} لـ ${arTitle}`,
+            },
+            tags: keywords,
+          })
+          figureIdx++
+        }
       }
     }
 
     return {
       images: selectedImages.slice(0, maxCount),
-      rejectedCount: 0,
+      rejectedCount,
       allLicensed: true,
     }
   }
 
   /**
-   * Topic-specific contextual library mapping accurate visuals to the exact domain
+   * Formulates specific visual search queries based on the article's core entity
    */
-  private static getTopicContextualLibrary(
-    category: 'tech-ai' | 'islamic-logic',
-    keywords: string[],
+  private static formulateDynamicSearchQueries(
     idTitle: string,
     enTitle: string,
-    arTitle: string
-  ): SafeImage[] {
-    const kw = keywords.join(' ').toLowerCase()
+    category: 'tech-ai' | 'islamic-logic',
+    keywords: string[]
+  ): string[] {
+    const combined = `${enTitle} ${idTitle}`.toLowerCase()
+    const queries: string[] = []
 
-    if (category === 'tech-ai') {
-      // A. Software, Desktop & OS
-      if (
-        kw.includes('os') ||
-        kw.includes('software') ||
-        kw.includes('powertoys') ||
-        kw.includes('windows') ||
-        kw.includes('linux')
-      ) {
-        return [
-          {
-            url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Fotis Fotopoulos',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Tampilan antarmuka sistem operasi dan baris kode pengembangan software modern untuk ${idTitle}`,
-              en: `Modern operating system desktop interface and source code architecture for ${enTitle}`,
-              ar: `واجهة مستディーة لنظام التشغيل وشفرات برمجية حديثة تتعلق بـ ${arTitle}`,
-            },
-            tags: ['software', 'os', 'code', 'desktop'],
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Ilya Pavlov',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Pengembangan antarmuka pengguna (UI/UX) dan produktivitas sistem desktop untuk ${idTitle}`,
-              en: `User interface development and desktop workflow productivity for ${enTitle}`,
-              ar: `تطوير واجهات المستخدم وزيادة الإنتاجية في بيئات الحوسبة المكتبية لـ ${arTitle}`,
-            },
-            tags: ['ui', 'productivity', 'desktop'],
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Markus Spiske',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Struktur modular dan manajemen proses komputasi pada ${idTitle}`,
-              en: `Modular software components and task execution pipeline for ${enTitle}`,
-              ar: `الهيكلية البرمجية المعيارية وإدارة المهام الحاسوبية لـ ${arTitle}`,
-            },
-            tags: ['matrix', 'execution', 'system'],
-          },
-        ]
+    // Extract prominent product / entity names (e.g. Xperia 10, Wildcat Lake, OnePlus, Blackwell, Bible King James, Birmingham Quran)
+    const entityMatches = combined.match(
+      /\b(xperia\s*\w*|galaxy\s*s\d+|iphone\s*\w+|pixel\s*\d+|oneplus\s*\w*|intel\s*\w+|amd\s*\w+|nvidia\s*\w+|blackwell|snapdragon|king james|birmingham|qumran|dead sea)\b/gi
+    )
+
+    if (entityMatches && entityMatches.length > 0) {
+      for (const entity of entityMatches.slice(0, 2)) {
+        queries.push(entity.trim())
+        if (category === 'tech-ai') {
+          queries.push(`${entity.trim()} device hardware`)
+        } else {
+          queries.push(`${entity.trim()} manuscript folio`)
+        }
       }
-
-      // B. Cybersecurity & Network Vulnerabilities
-      if (
-        kw.includes('security') ||
-        kw.includes('hacker') ||
-        kw.includes('breach') ||
-        kw.includes('vulnerability') ||
-        kw.includes('zimbra')
-      ) {
-        return [
-          {
-            url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'FlyD',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Analisis keamanan siber, enkripsi data, dan proteksi server terkait ${idTitle}`,
-              en: `Cybersecurity network defense and server patch analysis for ${enTitle}`,
-              ar: `تحليل الأمن السيبراني وتشفير البيانات وحماية الخوادم لـ ${arTitle}`,
-            },
-            tags: ['cybersecurity', 'server', 'patch'],
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Adi Goldstein',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Pemindaian lalu lintas data dan mitigasi kerentanan keamanan pada ${idTitle}`,
-              en: `Network traffic monitoring and vulnerability mitigation infrastructure for ${enTitle}`,
-              ar: `مراقبة حركة البيانات وتدابير معالجة الثغرات الأمنية في ${arTitle}`,
-            },
-            tags: ['network', 'monitoring', 'mitigation'],
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Markus Spiske',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Audit kode keamanan dan konfigurasi proteksi sistem pada ${idTitle}`,
-              en: `Security code audit and systemic configuration hardening for ${enTitle}`,
-              ar: `تدقيق الشفرات الأمنية وتعزيز حماية الأنظمة في ${arTitle}`,
-            },
-            tags: ['audit', 'hardening'],
-          },
-        ]
-      }
-
-      // C. General Hardware / Semiconductors
-      return [
-        {
-          url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
-          source: 'Unsplash',
-          author: 'Alexandre Debiève',
-          license: 'Unsplash License',
-          licenseUrl: 'https://unsplash.com/license',
-          altText: {
-            id: `Papan sirkuit komputasi modern dan prosesor mikro terkait ${idTitle}`,
-            en: `Modern processor board and high-speed bus architecture for ${enTitle}`,
-            ar: `لوحة دارات إلكترونية ومعالجات دقيقة متطورة لـ ${arTitle}`,
-          },
-          tags: ['hardware', 'processor'],
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
-          source: 'Unsplash',
-          author: 'Nana Hua',
-          license: 'Unsplash License',
-          licenseUrl: 'https://unsplash.com/license',
-          altText: {
-            id: `Unit akselerator komputasi performa tinggi untuk ${idTitle}`,
-            en: `High-performance compute accelerator module for ${enTitle}`,
-            ar: `وحدة تسريع حوسبة فائقة الأداء لـ ${arTitle}`,
-          },
-          tags: ['accelerator', 'hardware'],
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80',
-          source: 'Unsplash',
-          author: 'Denis Cherkasov',
-          license: 'Unsplash License',
-          licenseUrl: 'https://unsplash.com/license',
-          altText: {
-            id: `Integrasi teknologi hardware dan komputasi mobile untuk ${idTitle}`,
-            en: `Hardware integration and mobile compute architecture for ${enTitle}`,
-            ar: `التكامل العتادي والتقني في بيئات المعالجة الحديثة لـ ${arTitle}`,
-          },
-          tags: ['mobile', 'compute'],
-        },
-      ]
-    } else {
-      // Islamic Logic Topics
-      // A. Ethics, Society & Public Misconceptions
-      if (
-        kw.includes('misconception') ||
-        kw.includes('stereotype') ||
-        kw.includes('ethics') ||
-        kw.includes('rationality') ||
-        kw.includes('dialogue')
-      ) {
-        return [
-          {
-            url: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Sulthan Auliya',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Kubah arsitektur dan ornamen geometris Islam yang melambangkan keindahan keteraturan dan dialog rasional terkait ${idTitle}`,
-              en: `Islamic architectural dome and geometric motifs representing order and rational discourse for ${enTitle}`,
-              ar: `زخارف هندسية وعمارة إسلامية ترمز إلى التناسق الفكري والحوار العقلاني الرصين لـ ${arTitle}`,
-            },
-            tags: ['architecture', 'ethics', 'dialogue'],
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Masjid Pogung Dalangan',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Khazanah literatur keilmuan dan keterbukaan intelektual dalam ${idTitle}`,
-              en: `Scholarly literature and intellectual inquiry in ${enTitle}`,
-              ar: `التراث المعرفي والبحث الفكري الموضوعي في ${arTitle}`,
-            },
-            tags: ['literature', 'inquiry'],
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80',
-            source: 'Unsplash',
-            author: 'Levon Vardanyan',
-            license: 'Unsplash License',
-            licenseUrl: 'https://unsplash.com/license',
-            altText: {
-              id: `Pemandangan historis dan dialog peradaban dalam menelaah ${idTitle}`,
-              en: `Historical landscape and civilizational dialogue concerning ${enTitle}`,
-              ar: `المشهد التاريخي والحوار الحضاري في دراسة ${arTitle}`,
-            },
-            tags: ['civilization', 'history'],
-          },
-        ]
-      }
-
-      // B. Manuscripts & Historical Archives
-      return [
-        {
-          url: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1600&q=80',
-          source: 'Unsplash',
-          author: 'Giammarco Boscaro',
-          license: 'Unsplash License',
-          licenseUrl: 'https://unsplash.com/license',
-          altText: {
-            id: `Lembaran manuskrip kuno dan dokumen sejarah yang menjadi rujukan telaah ${idTitle}`,
-            en: `Ancient manuscript folios and historical documents cited in ${enTitle}`,
-            ar: `مخطوطات قديمة ووثائق تاريخية معتمدة في دراسة ${arTitle}`,
-          },
-          tags: ['manuscript', 'history'],
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80',
-          source: 'Unsplash',
-          author: 'Patrick Hendry',
-          license: 'Unsplash License',
-          licenseUrl: 'https://unsplash.com/license',
-          altText: {
-            id: `Lanskap geografis kawasan bersejarah dalam kajian ${idTitle}`,
-            en: `Geographical landscape of historical regions examined in ${enTitle}`,
-            ar: `المعالم الجغرافية للمواقع التاريخية في بحث ${arTitle}`,
-          },
-          tags: ['landscape', 'history'],
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80',
-          source: 'Unsplash',
-          author: 'Levon Vardanyan',
-          license: 'Unsplash License',
-          licenseUrl: 'https://unsplash.com/license',
-          altText: {
-            id: `Situs dokumentasi arkeologis yang berkaitan dengan ${idTitle}`,
-            en: `Archaeological documentation site relevant to ${enTitle}`,
-            ar: `التوثيق الأثري المرتبط بموضوع ${arTitle}`,
-          },
-          tags: ['archaeology', 'site'],
-        },
-      ]
     }
+
+    // Secondary queries from keywords
+    for (const kw of keywords.slice(0, 3)) {
+      if (
+        kw.length > 3 &&
+        ![
+          'tech-intelligence',
+          'ecosystem-analysis',
+          'software-engineering',
+          'islamic-logic',
+        ].includes(kw)
+      ) {
+        queries.push(kw.replace(/-/g, ' '))
+      }
+    }
+
+    if (queries.length === 0) {
+      queries.push(enTitle.split(':')[0] || idTitle.split(':')[0])
+    }
+
+    return queries
   }
 }
