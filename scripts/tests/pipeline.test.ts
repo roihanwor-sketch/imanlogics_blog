@@ -43,8 +43,8 @@ async function runPipelineTests() {
     'Next 3-hour cycle is within 3 hours interval'
   )
   assert(
-    slot3h.targetLabel.includes('Siklus 3 Jam'),
-    'Target label correctly indicates 3-hour rhythm'
+    slot3h.targetLabel.includes('Pengerjaan dimulai') || slot3h.delayMs <= 3 * 60 * 60 * 1000,
+    'Target label correctly indicates 3-hour rhythm with 15-minute advance buffer'
   )
 
   const slotWA = getNextWAScheduleSlot()

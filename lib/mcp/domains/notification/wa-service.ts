@@ -13,8 +13,10 @@ export class WhatsAppService {
   static isWhatsAppReportingSlot(now = new Date()): boolean {
     const hours = now.getHours()
     const minutes = now.getMinutes()
-    // Trigger window: hour 5 or 17 with minutes <= 30
-    return (hours === 5 || hours === 17) && minutes <= 30
+    // Window persiapan & pengiriman: 04:45-05:30 WIB dan 16:45-17:30 WIB
+    const isMorningWindow = (hours === 4 && minutes >= 45) || (hours === 5 && minutes <= 30)
+    const isEveningWindow = (hours === 16 && minutes >= 45) || (hours === 17 && minutes <= 30)
+    return isMorningWindow || isEveningWindow
   }
 
   /**

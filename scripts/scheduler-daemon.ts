@@ -6,8 +6,11 @@ import { NotificationPayload } from '../lib/mcp/core/types'
 import { Logger } from '../lib/mcp/core/logger'
 import { AntigravitySessionDetector } from '../lib/mcp/core/session-detector'
 
+export const ADVANCE_PREPARATION_BUFFER_MS = 15 * 60 * 1000 // 15 menit sebelum jam target
+
 export function getNext3HourScheduleSlot(): {
   nextTargetDate: Date
+  advanceTriggerDate: Date
   delayMs: number
   targetLabel: string
 } {
@@ -15,22 +18,34 @@ export function getNext3HourScheduleSlot(): {
   const intervalMs = 3 * 60 * 60 * 1000 // 3 hours in ms
   const nextTargetTime = Math.ceil((now.getTime() + 1000) / intervalMs) * intervalMs
   const nextTarget = new Date(nextTargetTime)
+  const advanceTriggerTime = nextTargetTime - ADVANCE_PREPARATION_BUFFER_MS
+
+  let delayMs = advanceTriggerTime - now.getTime()
+  if (delayMs <= 0) {
+    // Current time is within the 15-minute preparation window!
+    delayMs = 1000
+  }
 
   const timeStr = nextTarget.toLocaleTimeString('id-ID', {
     hour: '2-digit',
     minute: '2-digit',
   })
+  const advanceStr = new Date(advanceTriggerTime).toLocaleTimeString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 
-  const delayMs = Math.max(nextTarget.getTime() - now.getTime(), 1000)
   return {
     nextTargetDate: nextTarget,
+    advanceTriggerDate: new Date(advanceTriggerTime),
     delayMs,
-    targetLabel: `${timeStr} (Siklus 3 Jam)`,
+    targetLabel: `${timeStr} (Pengerjaan dimulai ${advanceStr})`,
   }
 }
 
 export function getNextWAScheduleSlot(): {
   nextTargetDate: Date
+  advanceTriggerDate: Date
   delayMs: number
   targetLabel: string
 } {
@@ -57,8 +72,18 @@ export function getNextWAScheduleSlot(): {
     targetLabel = '05:00 (Besok Pagi)'
   }
 
-  const delayMs = nextTarget.getTime() - now.getTime()
-  return { nextTargetDate: nextTarget, delayMs, targetLabel }
+  const advanceTriggerTime = nextTarget.getTime() - ADVANCE_PREPARATION_BUFFER_MS
+  let delayMs = advanceTriggerTime - now.getTime()
+  if (delayMs <= 0) {
+    delayMs = 1000
+  }
+
+  return {
+    nextTargetDate: nextTarget,
+    advanceTriggerDate: new Date(advanceTriggerTime),
+    delayMs,
+    targetLabel,
+  }
 }
 
 export async function startSchedulerDaemon(runImmediately = true) {
