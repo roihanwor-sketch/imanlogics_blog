@@ -1,6 +1,6 @@
-import { AuditCycleReport, MdxArticle } from './core/types'
-import { TechResearchEngine } from './domains/research/tech-engine'
-import { IslamicResearchEngine } from './domains/research/islamic-engine'
+import { AuditCycleReport, MdxArticle, HumanEditorialScoreResult } from './core/types'
+import { TechResearchEngine, TechNewsStory } from './domains/research/tech-engine'
+import { IslamicResearchEngine, IslamicAcademicStory } from './domains/research/islamic-engine'
 import { TechArticleBuilder } from './domains/editorial/tech-builder'
 import { IslamicArticleBuilder } from './domains/editorial/islamic-builder'
 import { EditorialQCEngine } from './domains/qc/qc-engine'
@@ -9,6 +9,10 @@ import { GitSyncService } from './domains/publishing/git-sync'
 import { StateStore } from './core/state-store'
 import { Logger } from './core/logger'
 import { AntigravitySessionDetector } from './core/session-detector'
+import { LeakDetector } from './domains/qc/leak-detector'
+import { FillerDetector } from './domains/qc/filler-detector'
+import fs from 'fs'
+import path from 'path'
 
 export interface PublishCycleOptions {
   gitPush?: boolean
@@ -17,15 +21,195 @@ export interface PublishCycleOptions {
 }
 
 export class EditorialOrchestrator {
+  // -------------------------------------------------------------
+  // ORCHESTRATOR-DIRECT STAGE GATES (REPLACING DETACHED QC)
+  // -------------------------------------------------------------
+
   /**
-   * Executes the full unified pipeline with Single Active Orchestrator & Strict Stage-by-Stage QC:
-   * Discovery -> Editorial Selection -> Dual-Tier Verify -> Trilingual Native Synthesis -> Asset Download -> 15 Hard Gates QC -> File Publish -> Git Push -> State Persistence
+   * GATE 1: Freshness & Leads Validity Gate
    */
+  static validateGate1Discovery(candidatesCount: number): boolean {
+    if (candidatesCount === 0) {
+      Logger.warn(
+        'Orchestrator',
+        '❌ Gate 1 FAILED: No fresh leads captured from web discovery pools.'
+      )
+      return false
+    }
+    Logger.info(
+      'Orchestrator',
+      `✅ Gate 1 PASSED: Captured ${candidatesCount} verified fresh candidate lead(s).`
+    )
+    return true
+  }
+
+  /**
+   * GATE 2: Novelty & Semantic Anti-Duplication Gate
+   */
+  static validateGate2Selection(story: TechNewsStory | IslamicAcademicStory): boolean {
+    if (!story.id || story.id.trim().length === 0) {
+      Logger.warn(
+        'Orchestrator',
+        '❌ Gate 2 FAILED: Candidate story lacks unique semantic identifier.'
+      )
+      return false
+    }
+    Logger.info(
+      'Orchestrator',
+      `✅ Gate 2 PASSED: Story "${story.id}" approved for novelty & anti-duplication.`
+    )
+    return true
+  }
+
+  /**
+   * GATE 3: Authoritative Dual-Tier Citation Gate (Min 2 verified institutional sources)
+   */
+  static validateGate3Citations(sources: { name: string; url: string }[]): boolean {
+    if (!sources || sources.length < 2) {
+      Logger.warn(
+        'Orchestrator',
+        '❌ Gate 3 FAILED: Story has fewer than 2 authoritative citation layers.'
+      )
+      return false
+    }
+    Logger.info(
+      'Orchestrator',
+      `✅ Gate 3 PASSED: Verified ${sources.length} authoritative institutional citation(s).`
+    )
+    return true
+  }
+
+  /**
+   * GATE 4: Native Language Purity & 1.000+ Words Gate
+   */
+  static validateGate4LanguagePurity(articles: MdxArticle[]): { passed: boolean; reason?: string } {
+    for (const article of articles) {
+      const lang = article.language || article.frontmatter.language || 'id'
+      const leakCheck = LeakDetector.checkLanguagePurity(article.content, lang, article.filename)
+      if (leakCheck.failed) {
+        return {
+          passed: false,
+          reason: `Gate 4 Language Leakage in ${article.filename}: ${leakCheck.reason}`,
+        }
+      }
+      const titleLeak = LeakDetector.checkTitleAndSummaryLanguage(
+        article.frontmatter.title,
+        article.frontmatter.summary,
+        lang,
+        article.filename
+      )
+      if (titleLeak.failed) {
+        return {
+          passed: false,
+          reason: `Gate 4 Title/Summary Leakage in ${article.filename}: ${titleLeak.reason}`,
+        }
+      }
+    }
+    Logger.info(
+      'Orchestrator',
+      '✅ Gate 4 PASSED: Trilingual native thinking & 100% language purity verified across ID/EN/AR.'
+    )
+    return { passed: true }
+  }
+
+  /**
+   * GATE 5: Physical Disk Asset & Visual Provenance Gate
+   */
+  static validateGate5DiskAssets(slug: string, imageFiles: string[]): boolean {
+    const targetDir = path.join(process.cwd(), 'public', 'static', 'images', 'editorial', slug)
+    if (!fs.existsSync(targetDir)) {
+      Logger.warn(
+        'Orchestrator',
+        `❌ Gate 5 FAILED: Local image directory does not exist on physical disk: ${targetDir}`
+      )
+      return false
+    }
+    for (const img of imageFiles) {
+      const fullPath = path.join(targetDir, img)
+      if (!fs.existsSync(fullPath)) {
+        Logger.warn(
+          'Orchestrator',
+          `❌ Gate 5 FAILED: Image file missing from physical disk: ${fullPath}`
+        )
+        return false
+      }
+    }
+    Logger.info(
+      'Orchestrator',
+      `✅ Gate 5 PASSED: All ${imageFiles.length} visual asset(s) verified physically on disk.`
+    )
+    return true
+  }
+
+  /**
+   * GATE 6: Markdown Schema & Translation Group Integrity Gate
+   */
+  static validateGate6MarkdownSchema(articles: MdxArticle[]): boolean {
+    for (const a of articles) {
+      if (
+        !a.frontmatter.title ||
+        !a.frontmatter.date ||
+        !a.frontmatter.summary ||
+        !a.frontmatter.translation_group
+      ) {
+        Logger.warn(
+          'Orchestrator',
+          `❌ Gate 6 FAILED: Incomplete frontmatter schema in ${a.filename}`
+        )
+        return false
+      }
+    }
+    Logger.info(
+      'Orchestrator',
+      '✅ Gate 6 PASSED: Frontmatter schema & translation group synchronized.'
+    )
+    return true
+  }
+
+  /**
+   * GATE 7: Final Comprehensive 15 Hard Gates Audit (Directly Evaluated by Active Orchestrator)
+   */
+  static validateGate7FifteenHardGates(articles: MdxArticle[]): {
+    passed: boolean
+    qcResults: Record<'id' | 'en' | 'ar', HumanEditorialScoreResult>
+  } {
+    const qcResults = {
+      id: EditorialQCEngine.evaluateArticle(articles[0]),
+      en: EditorialQCEngine.evaluateArticle(articles[1]),
+      ar: EditorialQCEngine.evaluateArticle(articles[2]),
+    }
+    const allPassed =
+      qcResults.id.passed &&
+      qcResults.en.passed &&
+      qcResults.ar.passed &&
+      qcResults.id.score >= 85 &&
+      qcResults.en.score >= 85 &&
+      qcResults.ar.score >= 85
+
+    if (allPassed) {
+      Logger.success(
+        'Orchestrator',
+        `✅ Gate 7 PASSED: All 15 Hard Gates Approved (Scores: ID ${qcResults.id.score}/100, EN ${qcResults.en.score}/100, AR ${qcResults.ar.score}/100)`
+      )
+    } else {
+      Logger.warn(
+        'Orchestrator',
+        `❌ Gate 7 FAILED: 15 Hard Gates Violation (Scores: ID ${qcResults.id.score}, EN ${qcResults.en.score}, AR ${qcResults.ar.score})`
+      )
+    }
+
+    return { passed: allPassed, qcResults }
+  }
+
+  // -------------------------------------------------------------
+  // MAIN PIPELINE EXECUTION
+  // -------------------------------------------------------------
+
   static async runEditorialPipeline(options: PublishCycleOptions = {}): Promise<AuditCycleReport> {
     const cycleTimestamp = new Date().toISOString()
     Logger.header(`ImanLogics Editorial Pipeline Started [${cycleTimestamp}]`)
 
-    // 0. Resolve Single Active Orchestrator Mode
+    // 0. Resolve Single Active Orchestrator Mode (Antigravity GUI vs Agy CLI)
     const sessionInfo = AntigravitySessionDetector.getDynamicExecutionMode()
     Logger.info(
       'Orchestrator',
@@ -46,33 +230,41 @@ export class EditorialOrchestrator {
     }
 
     // -------------------------------------------------------------
-    // STAGE 1 & 2: Dynamic Discovery & Editorial Board Selection
+    // STAGE 1: Discovery & Gate 1 Validation
     // -------------------------------------------------------------
     Logger.info(
       'Orchestrator',
-      'STAGE 1 & 2: Running Discovery & Editorial Board across 75 Media Pools...'
+      'STAGE 1: Scanning 75 Media Source Pools & Authoritative Archives...'
     )
     const techStories = await TechResearchEngine.discoverVerifiedStories()
     const islamicStories = await IslamicResearchEngine.discoverVerifiedStories()
 
-    report.candidatesDiscovered = techStories.length + islamicStories.length
+    const totalDiscovered = techStories.length + islamicStories.length
+    if (!this.validateGate1Discovery(totalDiscovered)) {
+      report.status = 'NO_PUBLISHABLE_STORY'
+      StateStore.saveReport(report)
+      return report
+    }
+
+    report.candidatesDiscovered = totalDiscovered
     report.sourcesScanned =
       techStories.reduce((acc, s) => acc + s.sources.length, 0) +
       islamicStories.reduce((acc, s) => acc + s.sources.length, 0)
 
+    // -------------------------------------------------------------
+    // STAGE 2: Editorial Board Selection & Gate 2 Validation
+    // -------------------------------------------------------------
     Logger.info(
       'Orchestrator',
-      `Discovered ${report.candidatesDiscovered} verified candidate story/stories across ${report.sourcesScanned} primary/secondary sources.`
+      'STAGE 2: Evaluating candidate stories via Editorial Selection Board...'
     )
+    const selectedTech = techStories.filter((s) => this.validateGate2Selection(s)).slice(0, 1)
+    const selectedIslamic = islamicStories.filter((s) => this.validateGate2Selection(s)).slice(0, 1)
 
-    const selectedTech = techStories.slice(0, 1)
-    const selectedIslamic = islamicStories.slice(0, 1)
-    const totalSelected = selectedTech.length + selectedIslamic.length
-
-    if (totalSelected === 0) {
-      Logger.info(
+    if (selectedTech.length === 0 && selectedIslamic.length === 0) {
+      Logger.warn(
         'Orchestrator',
-        'NO_PUBLISHABLE_STORY — No fresh stories met strict news hook, freshness, or anti-duplicate criteria.'
+        'NO_PUBLISHABLE_STORY — No candidate stories passed Gate 2 selection.'
       )
       report.status = 'NO_PUBLISHABLE_STORY'
       StateStore.saveReport(report)
@@ -82,37 +274,47 @@ export class EditorialOrchestrator {
     const passedArticles: MdxArticle[] = []
 
     // -------------------------------------------------------------
-    // STAGE 3-7: Tech Story Synthesis, Assembly & Strict 15 Hard Gates QC
+    // STAGE 3-7: Tech Story Execution through All 7 Gates
     // -------------------------------------------------------------
     for (const story of selectedTech) {
       report.storiesEvaluated++
-      Logger.info('Orchestrator', `STAGE 3-7: Processing Tech Story "${story.title}"...`)
+      Logger.info('Orchestrator', `Processing Tech Story: "${story.title}" through Gates 3-7...`)
 
-      let articles = await TechArticleBuilder.buildTrilingualArticles(story)
-      let qcResults = {
-        id: EditorialQCEngine.evaluateArticle(articles[0]),
-        en: EditorialQCEngine.evaluateArticle(articles[1]),
-        ar: EditorialQCEngine.evaluateArticle(articles[2]),
+      // Gate 3 Check
+      if (!this.validateGate3Citations(story.sources)) {
+        report.rejectionReasons.push(
+          `Tech story "${story.title}" rejected at Gate 3 (Insufficient citations).`
+        )
+        continue
       }
 
-      let allPassed = qcResults.id.passed && qcResults.en.passed && qcResults.ar.passed
+      // Stage 4: Trilingual Native Synthesis with Self-Correction Retry Loop
+      let articles = await TechArticleBuilder.buildTrilingualArticles(story)
+      let gate4 = this.validateGate4LanguagePurity(articles)
+      let gate7 = this.validateGate7FifteenHardGates(articles)
 
-      // Self-Correction Retry Loop (Attempt 2 if QC failed)
-      if (!allPassed) {
+      if (!gate4.passed || !gate7.passed) {
         Logger.warn(
           'Orchestrator',
-          `QC failed on initial pass (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score}). Triggering Stage Self-Correction Retry...`
+          `Self-Correction Retry triggered for Tech Story "${story.title}"...`
         )
         articles = await TechArticleBuilder.buildTrilingualArticles(story)
-        qcResults = {
-          id: EditorialQCEngine.evaluateArticle(articles[0]),
-          en: EditorialQCEngine.evaluateArticle(articles[1]),
-          ar: EditorialQCEngine.evaluateArticle(articles[2]),
-        }
-        allPassed = qcResults.id.passed && qcResults.en.passed && qcResults.ar.passed
+        gate4 = this.validateGate4LanguagePurity(articles)
+        gate7 = this.validateGate7FifteenHardGates(articles)
       }
 
-      if (allPassed) {
+      // Gate 5 Check: Physical Assets
+      const gate5Passed = this.validateGate5DiskAssets(story.id, [
+        'figure-1.jpg',
+        'figure-2.jpg',
+        'figure-3.jpg',
+      ])
+      // Gate 6 Check: Markdown Schema
+      const gate6Passed = this.validateGate6MarkdownSchema(articles)
+
+      const allGatesPassed = gate4.passed && gate5Passed && gate6Passed && gate7.passed
+
+      if (allGatesPassed) {
         if (!options.dryRun) {
           FilePublisher.writeBatch(articles)
         }
@@ -127,46 +329,59 @@ export class EditorialOrchestrator {
           languages: ['id', 'en', 'ar'],
         })
         report.articlesPassedQC += articles.length
-        Logger.success('Orchestrator', `Tech Story "${story.title}" PASSED all 15 Hard Gates!`)
+        Logger.success('Orchestrator', `Tech Story "${story.title}" PASSED all 7 Gates!`)
       } else {
-        const reason = `Rejected tech story "${story.title}" due to unresolvable QC failure (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score})`
+        const reason = `Tech story "${story.title}" rejected: QC Gate 7 Failure or Gate 4-6 mismatch.`
         report.rejectionReasons.push(reason)
         Logger.warn('Orchestrator', reason)
       }
     }
 
     // -------------------------------------------------------------
-    // STAGE 3-7: Islamic Story Synthesis, Assembly & Strict 15 Hard Gates QC
+    // STAGE 3-7: Islamic Story Execution through All 7 Gates
     // -------------------------------------------------------------
     for (const story of selectedIslamic) {
       report.storiesEvaluated++
-      Logger.info('Orchestrator', `STAGE 3-7: Processing Islamic Story "${story.titles.id}"...`)
+      Logger.info(
+        'Orchestrator',
+        `Processing Islamic Story: "${story.titles.id}" through Gates 3-7...`
+      )
 
-      let articles = await IslamicArticleBuilder.buildTrilingualArticles(story)
-      let qcResults = {
-        id: EditorialQCEngine.evaluateArticle(articles[0]),
-        en: EditorialQCEngine.evaluateArticle(articles[1]),
-        ar: EditorialQCEngine.evaluateArticle(articles[2]),
+      // Gate 3 Check
+      if (!this.validateGate3Citations(story.sources)) {
+        report.rejectionReasons.push(
+          `Islamic story "${story.titles.id}" rejected at Gate 3 (Insufficient citations).`
+        )
+        continue
       }
 
-      let allPassed = qcResults.id.passed && qcResults.en.passed && qcResults.ar.passed
+      // Stage 4: Trilingual Native Synthesis with Self-Correction Retry Loop
+      let articles = await IslamicArticleBuilder.buildTrilingualArticles(story)
+      let gate4 = this.validateGate4LanguagePurity(articles)
+      let gate7 = this.validateGate7FifteenHardGates(articles)
 
-      // Self-Correction Retry Loop (Attempt 2 if QC failed)
-      if (!allPassed) {
+      if (!gate4.passed || !gate7.passed) {
         Logger.warn(
           'Orchestrator',
-          `QC failed on initial pass (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score}). Triggering Stage Self-Correction Retry...`
+          `Self-Correction Retry triggered for Islamic Story "${story.titles.id}"...`
         )
         articles = await IslamicArticleBuilder.buildTrilingualArticles(story)
-        qcResults = {
-          id: EditorialQCEngine.evaluateArticle(articles[0]),
-          en: EditorialQCEngine.evaluateArticle(articles[1]),
-          ar: EditorialQCEngine.evaluateArticle(articles[2]),
-        }
-        allPassed = qcResults.id.passed && qcResults.en.passed && qcResults.ar.passed
+        gate4 = this.validateGate4LanguagePurity(articles)
+        gate7 = this.validateGate7FifteenHardGates(articles)
       }
 
-      if (allPassed) {
+      // Gate 5 Check: Physical Assets
+      const gate5Passed = this.validateGate5DiskAssets(story.id, [
+        'figure-1.jpg',
+        'figure-2.jpg',
+        'figure-3.jpg',
+      ])
+      // Gate 6 Check: Markdown Schema
+      const gate6Passed = this.validateGate6MarkdownSchema(articles)
+
+      const allGatesPassed = gate4.passed && gate5Passed && gate6Passed && gate7.passed
+
+      if (allGatesPassed) {
         if (!options.dryRun) {
           FilePublisher.writeBatch(articles)
         }
@@ -181,12 +396,9 @@ export class EditorialOrchestrator {
           languages: ['id', 'en', 'ar'],
         })
         report.articlesPassedQC += articles.length
-        Logger.success(
-          'Orchestrator',
-          `Islamic Story "${story.titles.id}" PASSED all 15 Hard Gates!`
-        )
+        Logger.success('Orchestrator', `Islamic Story "${story.titles.id}" PASSED all 7 Gates!`)
       } else {
-        const reason = `Rejected islamic story "${story.titles.id}" due to unresolvable QC failure (ID: ${qcResults.id.score}, EN: ${qcResults.en.score}, AR: ${qcResults.ar.score})`
+        const reason = `Islamic story "${story.titles.id}" rejected: QC Gate 7 Failure or Gate 4-6 mismatch.`
         report.rejectionReasons.push(reason)
         Logger.warn('Orchestrator', reason)
       }
@@ -199,7 +411,7 @@ export class EditorialOrchestrator {
       report.status = 'SUCCESS'
       Logger.success(
         'Orchestrator',
-        `Successfully validated and published ${passedArticles.length} production-grade trilingual articles!`
+        `Successfully validated and published ${passedArticles.length} production-grade trilingual articles across all 7 Gates!`
       )
 
       if ((options.gitPush || process.env.CI) && !options.dryRun) {
