@@ -1,7 +1,35 @@
 {
-  "lastUpdated": "2026-08-26T01:20:41.143Z",
-  "totalCyclesRun": 18,
+  "lastUpdated": "2026-08-26T02:50:11.901Z",
+  "totalCyclesRun": 19,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T02:45:00.558Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/your-vote-matters-decide-which-audience-choic.mdx",
+        "data/blog/your-vote-matters-decide-which-audience-choic.en.mdx",
+        "data/blog/your-vote-matters-decide-which-audience-choic.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Demokratisasi Kurasi Konferensi Teknologi: Analisis Pergeseran Paradigma Agenda Pendiri dan Validasi Komunitas",
+          "slug": "your-vote-matters-decide-which-audience-choic",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "1e4463e"
+    },
     {
       "cycleTimestamp": "2026-08-26T01:20:12.487Z",
       "sourcesScanned": 2,
