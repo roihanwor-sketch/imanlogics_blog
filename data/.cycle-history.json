@@ -1,7 +1,48 @@
 {
-  "lastUpdated": "2026-08-25T23:49:17.337Z",
-  "totalCyclesRun": 12,
+  "lastUpdated": "2026-08-26T00:00:13.519Z",
+  "totalCyclesRun": 13,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T00:00:00.012Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 6,
+      "articlesPublished": [
+        "data/blog/openai-s-jalape-o-chip-is-built-for-fast-infe.mdx",
+        "data/blog/openai-s-jalape-o-chip-is-built-for-fast-infe.en.mdx",
+        "data/blog/openai-s-jalape-o-chip-is-built-for-fast-infe.ar.mdx",
+        "data/blog/settling-a-deceased-s-debts-in-islam.mdx",
+        "data/blog/settling-a-deceased-s-debts-in-islam.en.mdx",
+        "data/blog/settling-a-deceased-s-debts-in-islam.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Evolusi Arsitektur Model Penalaran AI: Analisis Kerapatan Parameter, Latensi Inferensi, dan Efisiensi Komputasi Cerdas",
+          "slug": "openai-s-jalape-o-chip-is-built-for-fast-infe",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        },
+        {
+          "title": "Rasionalitas Larangan Riba dalam Perspektif Ekonomi Makro: Solusi Keadilan Transaksi atas Krisis Utang Global",
+          "slug": "settling-a-deceased-s-debts-in-islam",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "684d787"
+    },
     {
       "cycleTimestamp": "2026-08-25T23:49:05.092Z",
       "sourcesScanned": 4,
