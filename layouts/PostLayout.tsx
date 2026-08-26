@@ -9,13 +9,7 @@ import Image from '@/components/Image'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
-
-const postDateTemplate: Intl.DateTimeFormatOptions = {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-}
+import { formatDateTime } from '@/lib/utils/formatDateTime'
 
 interface LayoutProps {
   content: CoreContent<Blog>
@@ -40,13 +34,13 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
       <article lang={articleLang} dir={articleDir}>
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
           <header className="pt-6 xl:pb-6">
-            <div className="space-y-1 text-center">
-              <dl className="space-y-10">
+            <div className="space-y-2 text-center">
+              <dl className="space-y-4">
                 <div>
                   <dt className="sr-only">Published on</dt>
-                  <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                    <time dateTime={date}>
-                      {new Date(date).toLocaleDateString(dateLocale, postDateTemplate)}
+                  <dd className="text-sm md:text-base leading-6 font-medium text-emerald-600 dark:text-cyan-400">
+                    <time dateTime={date} suppressHydrationWarning>
+                      {formatDateTime(date, dateLocale)}
                     </time>
                   </dd>
                 </div>
@@ -62,25 +56,30 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               <dd>
                 <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-y-8 xl:space-x-0">
                   {authorDetails.map((author) => (
-                    <li className="flex items-center space-x-2" key={author.name}>
+                    <li className="flex items-center space-x-3" key={author.name}>
                       {author.avatar && (
                         <Image
                           src={author.avatar}
-                          width={38}
-                          height={38}
-                          alt="avatar"
-                          className="h-10 w-10 rounded-full"
+                          width={44}
+                          height={44}
+                          alt={author.name}
+                          className="h-11 w-11 rounded-full border border-emerald-500/20 dark:border-cyan-500/20 object-cover shadow-sm"
                         />
                       )}
-                      <dl className="text-sm leading-5 font-medium whitespace-nowrap">
+                      <dl className="text-sm leading-5 font-medium">
                         <dt className="sr-only">Name</dt>
-                        <dd className="text-gray-900 dark:text-gray-100">{author.name}</dd>
+                        <dd className="font-semibold text-gray-900 dark:text-gray-100">{author.name}</dd>
+                        {author.occupation && (
+                          <dd className="text-xs text-gray-500 dark:text-gray-400">
+                            {author.occupation}
+                          </dd>
+                        )}
                         <dt className="sr-only">Twitter</dt>
                         <dd>
                           {author.twitter && (
                             <Link
                               href={author.twitter}
-                              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                              className="text-xs text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                             >
                               {author.twitter
                                 .replace('https://twitter.com/', '@')

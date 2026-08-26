@@ -126,35 +126,27 @@ export class EditorialSelectionBoard {
       // 5. Domain Diversity Score (0-10)
       let domainDiversity = 8
       if (
-        lead.subCategory === 'mobile-smartphone' ||
-        lead.subCategory === 'cybersecurity-privacy' ||
-        lead.subCategory === 'robotics-automation' ||
+        lead.subCategory === 'daily-tech-news' ||
+        lead.subCategory === 'mobile-gadgets' ||
+        lead.subCategory === 'software-apps-web' ||
+        lead.subCategory === 'ai-tools-innovation' ||
+        lead.subCategory === 'HIKMAH_AND_SPIRITUAL_LIFE' ||
         lead.subCategory === 'RATIONALITY_OF_SHARIA' ||
         lead.subCategory === 'ATHEISM_DOUBT_FAITH' ||
         lead.subCategory === 'COMPARATIVE_RELIGION'
       ) {
-        domainDiversity = 10 // Bonus for under-represented topics
+        domainDiversity = 10 // Bonus for high-value general audience topics
       }
 
-      // 6. Repetition Penalty (-10 max)
+      // 6. Dynamic Repetition Penalty (checks against recent keyword collisions)
       let repetitionPenalty = 0
       let repetitionReason: string | undefined = undefined
 
-      if (combined.includes('nvidia') && recentPublishedKeywords.includes('nvidia')) {
-        repetitionPenalty += 6
-        repetitionReason = 'NVIDIA covered recently in last cycles'
-      }
-      if (combined.includes('lpddr6') || combined.includes('ddr6')) {
-        repetitionPenalty += 7
-        repetitionReason = 'DDR6 / LPDDR6 already covered extensively'
-      }
-      if (combined.includes('dead sea scrolls') || combined.includes('qumran')) {
-        repetitionPenalty += 6
-        repetitionReason = 'Qumran / Dead Sea Scrolls covered recently'
-      }
-      if (combined.includes('tsmc') && combined.includes('2nm')) {
-        repetitionPenalty += 7
-        repetitionReason = 'TSMC 2nm covered in latest publication'
+      const leadWords = lowerTitle.split(/\s+/).filter((w) => w.length > 4)
+      const duplicateWord = leadWords.find((w) => recentPublishedKeywords.includes(w))
+      if (duplicateWord) {
+        repetitionPenalty = 4
+        repetitionReason = `Topic containing "${duplicateWord}" covered in recent cycles`
       }
 
       const totalScore =
@@ -169,15 +161,14 @@ export class EditorialSelectionBoard {
       let determinedFormat: ScoredCandidate['determinedFormat'] = 'EXPLAINER'
       if (lead.category === 'islamic-logic') {
         determinedFormat = 'READER_FIRST_INQUIRY'
-      } else if (
-        lead.subCategory === 'silicon-semiconductor' ||
-        lead.subCategory === 'datacenter-cloud'
-      ) {
-        determinedFormat = 'DEEP_DIVE_ARCHITECTURAL'
-      } else if (lead.subCategory === 'cybersecurity-privacy') {
-        determinedFormat = 'SECURITY_INVESTIGATION'
       } else if (lead.publishedHoursAgo <= 4) {
         determinedFormat = 'BREAKING_NEWS'
+      } else if (lead.subCategory === 'cybersecurity-consumer') {
+        determinedFormat = 'SECURITY_INVESTIGATION'
+      } else if (lead.subCategory === 'ai-tools-innovation') {
+        determinedFormat = 'DEEP_DIVE_ARCHITECTURAL'
+      } else {
+        determinedFormat = 'EXPLAINER'
       }
 
       const approvedForPipeline = totalScore >= 6.8 && novelty >= 5

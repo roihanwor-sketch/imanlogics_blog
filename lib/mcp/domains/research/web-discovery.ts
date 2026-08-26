@@ -32,21 +32,19 @@ export interface DiscoveredWebLead {
 }
 
 export type TechDiscoveryDomain =
-  | 'ai-llm'
-  | 'silicon-semiconductor'
-  | 'mobile-smartphone'
+  | 'daily-tech-news'
+  | 'mobile-gadgets'
+  | 'software-apps-web'
   | 'pc-operating-systems'
-  | 'datacenter-cloud'
-  | 'cybersecurity-privacy'
-  | 'robotics-automation'
-  | 'networking-5g6g'
-  | 'gaming-graphics'
-  | 'display-battery-hardware'
-  | 'quantum-emerging'
+  | 'ai-tools-innovation'
+  | 'internet-digital-economy'
+  | 'cybersecurity-consumer'
+  | 'open-source-dev'
 
 export type IslamicLogicPillar =
   | 'LOGIC_AND_RATIONALITY'
   | 'QURAN_AND_MODERN_DISCOVERY'
+  | 'HIKMAH_AND_SPIRITUAL_LIFE'
   | 'JESUS_AND_MARY'
   | 'ISLAM_AND_EARLIER_PROPHETS'
   | 'RATIONALITY_OF_SHARIA'
@@ -59,56 +57,56 @@ export type IslamicLogicPillar =
 
 export class WebDiscoveryService {
   /**
-   * Scans live web feeds for Tech news across 75 media pools and broad technology domains
+   * Scans live web feeds for General Daily Tech news across wide global & regional media pools
    */
   static async discoverLiveTechLeads(
     domainsToProbe?: TechDiscoveryDomain[]
   ): Promise<DiscoveredWebLead[]> {
-    Logger.info('WebDiscovery', 'Scanning live web across 75 Tech Media Pools...')
+    Logger.info('WebDiscovery', 'Scanning live web across General Daily Tech Media Pools...')
     const leads: DiscoveredWebLead[] = []
 
     const techQueries = [
-      // 1. AI, LLM & Reasoning Models
+      // 1. Daily Tech News & Industry Highlights
       {
-        domain: 'ai-llm' as TechDiscoveryDomain,
+        domain: 'daily-tech-news' as TechDiscoveryDomain,
         query:
-          'site:theverge.com OR site:arstechnica.com OR site:techcrunch.com OR site:id.techinasia.com (AI model OR LLM OR "AI agent" OR OpenAI OR Anthropic OR DeepSeek OR "machine learning")',
+          'site:theverge.com OR site:techcrunch.com OR site:engadget.com OR site:kompas.com OR site:detik.com/inet ("tech news" OR "launch" OR "announced" OR "update" OR "fitur baru" OR "rilis")',
       },
-      // 2. Silicon, Semiconductor & Chip Fabrication
+      // 2. Mobile, Smartphones & Consumer Gadgets
       {
-        domain: 'silicon-semiconductor' as TechDiscoveryDomain,
+        domain: 'mobile-gadgets' as TechDiscoveryDomain,
         query:
-          'site:tomshardware.com OR site:anandtech.com OR site:jagatreview.com OR site:aitnews.com (semiconductor OR "2nm" OR "GAAFET" OR TSMC OR Intel OR AMD OR "Apple Silicon" OR Qualcomm OR ARM)',
+          'site:gsmarena.com OR site:9to5mac.com OR site:androidcentral.com OR site:jagatreview.com (smartphone OR iPhone OR Android OR Samsung OR Xiaomi OR smartwatch OR tablet OR earbuds)',
       },
-      // 3. Mobile, Smartphones & On-Device Processing
+      // 3. Software, Apps, Web & Cloud Services
       {
-        domain: 'mobile-smartphone' as TechDiscoveryDomain,
+        domain: 'software-apps-web' as TechDiscoveryDomain,
         query:
-          'site:gsmarena.com OR site:9to5mac.com OR site:androidcentral.com OR site:dhiye.com (smartphone OR Snapdragon OR Dimensity OR "iOS 19" OR "Android 16" OR "on-device AI")',
+          'site:arstechnica.com OR site:techradar.com OR site:id.techinasia.com (app OR software OR update OR browser OR Google OR Microsoft OR WhatsApp OR Telegram OR features)',
       },
-      // 4. PC, Operating Systems & Client Compute
+      // 4. PC, Operating Systems & Productivity
       {
         domain: 'pc-operating-systems' as TechDiscoveryDomain,
         query:
-          'site:bleepingcomputer.com OR site:windowscentral.com OR site:phoronix.com OR site:kompas.com ("Windows 11" OR "Linux kernel" OR macOS OR "open source" OR "PowerToys")',
+          'site:windowscentral.com OR site:bleepingcomputer.com OR site:phoronix.com ("Windows 11" OR macOS OR Linux OR laptop OR "PC" OR update OR productivity)',
       },
-      // 5. Datacenter, Server Hardware & Cloud Architecture
+      // 5. AI Tools, Consumer AI & Innovations
       {
-        domain: 'datacenter-cloud' as TechDiscoveryDomain,
+        domain: 'ai-tools-innovation' as TechDiscoveryDomain,
         query:
-          'site:servethehome.com OR site:theregister.com OR site:zdnet.com (datacenter OR "AI server" OR liquid cooling OR interconnect OR rack scale)',
+          'site:theverge.com OR site:venturebeat.com OR site:wired.com ("AI tool" OR "ChatGPT" OR "Claude" OR "Gemini" OR "AI assistant" OR "generative AI" OR "fitur AI")',
       },
-      // 6. Cybersecurity, Cryptography & Hardware Security
+      // 6. Cybersecurity & Consumer Privacy
       {
-        domain: 'cybersecurity-privacy' as TechDiscoveryDomain,
+        domain: 'cybersecurity-consumer' as TechDiscoveryDomain,
         query:
-          'site:bleepingcomputer.com OR site:thehackernews.com OR site:securityweek.com (vulnerability OR exploit OR "zero-day" OR firmware OR encryption OR malware)',
+          'site:thehackernews.com OR site:bleepingcomputer.com OR site:securityweek.com (security OR privacy OR scam OR update OR patch OR vulnerability OR protection)',
       },
-      // 7. Robotics, Autonomous Systems & Embodied AI
+      // 7. Open Source, Web Dev & Digital Ecosystem
       {
-        domain: 'robotics-automation' as TechDiscoveryDomain,
+        domain: 'open-source-dev' as TechDiscoveryDomain,
         query:
-          'site:spectrum.ieee.org OR site:techcrunch.com OR site:wired.com (humanoid robot OR autonomous OR actuator OR "embodied AI")',
+          'site:dev.to OR site:thenewstack.io OR site:techrepublic.com ("open source" OR developer OR "web development" OR framework OR coding OR tools)',
       },
     ]
 
@@ -182,6 +180,12 @@ export class WebDiscoveryService {
         pillar: 'SCIENCE_AND_ISLAM' as IslamicLogicPillar,
         query:
           'site:yaqeeninstitute.org OR site:aljazeera.net OR site:nu.or.id (cosmology OR "fine tuning" OR evolution OR astronomy OR "scientific demarcation")',
+      },
+      // 6. Hikmah, Meaning of Life, Moral Beauty & Spirituality
+      {
+        pillar: 'HIKMAH_AND_SPIRITUAL_LIFE' as IslamicLogicPillar,
+        query:
+          'site:yaqeeninstitute.org OR site:seekersguidance.org OR site:aboutislam.net ("purpose of life" OR "inner peace" OR "wisdom in Islam" OR "character of Prophet" OR compassion OR "truth about Islam")',
       },
     ]
 

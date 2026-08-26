@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { formatDate } from 'pliny/utils/formatDate'
+import { formatDateTime } from '@/lib/utils/formatDateTime'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
 import Comments from '@/components/Comments'
@@ -34,8 +34,10 @@ export default function PostLayout({ content, next, prev, children }: LayoutProp
               <dl>
                 <div>
                   <dt className="sr-only">Published on</dt>
-                  <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                    <time dateTime={date}>{formatDate(date, dateLocale)}</time>
+                  <dd className="text-sm md:text-base leading-6 font-medium text-emerald-600 dark:text-cyan-400">
+                    <time dateTime={date} suppressHydrationWarning>
+                      {formatDateTime(date, dateLocale)}
+                    </time>
                   </dd>
                 </div>
               </dl>

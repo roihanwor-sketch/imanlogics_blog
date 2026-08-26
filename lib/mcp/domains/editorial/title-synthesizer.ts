@@ -13,89 +13,83 @@ export class NativeTitleSynthesizer {
     const lower = rawTitle.toLowerCase()
 
     if (category === 'tech-ai') {
-      // 1. Windows, PowerToys, Desktop OS
-      if (lower.includes('powertoys') || (lower.includes('alt+tab') && lower.includes('window'))) {
-        return {
-          id: 'Microsoft PowerToys Hadirkan Fitur Switcher Jendela Mirip Alt-Tab: Optimalisasi Manajemen Task dan Multitasking di Windows 11',
-          en: 'Microsoft PowerToys Adds Alt+Tab-Style Window Switching: A Deep Look into Windows Desktop Multitasking Architecture',
-          ar: 'أداة Microsoft PowerToys تضيف ميزة التبديل السريع بين النوافذ بنمط Alt-Tab: تحسين إدارة المهام في بيئة ويندوز',
-        }
-      }
-
-      // 2. Linux Kernel & Multi-Kernel OS
-      if (lower.includes('linux') || lower.includes('kernel') || lower.includes('multi-kernel')) {
-        return {
-          id: 'Inovasi Rilis Kernel Linux Generasi Baru: Analisis Arsitektur Multi-Kernel, Manajemen Latensi, dan Efisiensi Komputasi',
-          en: 'Next-Gen Linux Multi-Kernel Architecture: Low-Latency Scheduling, System Microbenchmarks, and OS Performance',
-          ar: 'تطوير نواة لينكس وهندسة الأنظمة متعددة النواة: تحليل البنية المعمارية، كفاءة الجدولة، ومستقبل أنظمة التشغيل',
-        }
-      }
-
-      // 3. Zimbra, Cybersecurity, Server Vulnerabilities
+      // 1. Mobile & Smartphones (iPhone, Android, Samsung, Xiaomi, etc.)
       if (
-        lower.includes('zimbra') ||
-        lower.includes('breach') ||
-        lower.includes('vulnerability') ||
-        lower.includes('exploit') ||
-        lower.includes('cve')
-      ) {
-        return {
-          id: 'Celah Keamanan Server Zimbra Tereksploitasi dalam Serangan Global: Analisis Vektor Serangan, Dampak RCE, dan Mitigasi SysAdmin',
-          en: 'Over 270 Zimbra Collaboration Servers Compromised: Vulnerability Architecture, Attack Vectors, and Defensive Hardening',
-          ar: 'اختراق أكثر من 270 خادم Zimbra حول العالم: تفكيك الثغرة الأمنية، مسارات الاستغلال، وتدابير الحماية الموصى بها',
-        }
-      }
-
-      // 4. Smartphone, Poco, Snapdragon, Dimensity
-      if (
-        lower.includes('poco') ||
-        lower.includes('snapdragon') ||
-        lower.includes('dimensity') ||
+        lower.includes('iphone') ||
+        lower.includes('apple') ||
+        lower.includes('samsung') ||
+        lower.includes('galaxy') ||
+        lower.includes('xiaomi') ||
+        lower.includes('pixel') ||
         lower.includes('smartphone') ||
-        lower.includes('f9')
+        lower.includes('phone')
       ) {
         return {
-          id: 'Konfirmasi Arsitektur Chipset Smartphone Flagship: Analisis Silikon, Manajemen Termal, dan Ekspektasi Performa Mobile',
-          en: 'Flagship Mobile Silicon Architecture: Microarchitecture Teardown, Thermal Profiles, and Real-World Compute Density',
-          ar: 'معمارية معالجات الهواتف الذكية الرائدة: تفكيك السيليكون، الإدارة الحرارية، وتوقعات الأداء الحوسبي المتقدم',
+          id: `${rawTitle}: Tinjauan Fitur, Performa Harian, dan Dampaknya bagi Pengguna`,
+          en: `${rawTitle}: Feature Breakdown, Real-World Performance, and User Takeaways`,
+          ar: `${rawTitle}: نظرة شاملة على الميزات، الأداء العملي، وتأثيره على المستخدمين`,
         }
       }
 
-      // 5. AI, LLM, Reasoning Models
+      // 2. Apps, Software & Operating Systems (Windows, macOS, Linux, Android, WhatsApp, Telegram, Google, etc.)
+      if (
+        lower.includes('app') ||
+        lower.includes('update') ||
+        lower.includes('windows') ||
+        lower.includes('mac') ||
+        lower.includes('android') ||
+        lower.includes('whatsapp') ||
+        lower.includes('google') ||
+        lower.includes('browser') ||
+        lower.includes('chrome') ||
+        lower.includes('software')
+      ) {
+        return {
+          id: `${rawTitle}: Analisis Pembaruan Fitur Baru dan Peningkatan Pengalaman Pengguna`,
+          en: `${rawTitle}: Exploring New Capabilities, Usability Upgrades, and Practical Impact`,
+          ar: `${rawTitle}: استكشاف الميزات الجديدة، ترقيات تجربة الاستخدام، والتأثير العملي`,
+        }
+      }
+
+      // 3. AI Tools & Assistants (ChatGPT, Claude, Gemini, Agentic AI, AI Apps)
       if (
         lower.includes('ai') ||
-        lower.includes('llm') ||
-        lower.includes('deepseek') ||
+        lower.includes('chatgpt') ||
+        lower.includes('claude') ||
+        lower.includes('gemini') ||
         lower.includes('openai') ||
-        lower.includes('anthropic')
+        lower.includes('deepseek') ||
+        lower.includes('model')
       ) {
         return {
-          id: 'Evolusi Arsitektur Model Penalaran AI: Analisis Kerapatan Parameter, Latensi Inferensi, dan Efisiensi Komputasi Cerdas',
-          en: 'Reasoning AI Model Architectural Evolution: Parameter Density, Inference Latency, and Scalable Intelligence',
-          ar: 'تطور معمارية نماذج الذكاء الاصطناعي الاستدلالي: كثافة المعاملات، سرعة الاستدلال، وكفاءة الحوسبة الذكية',
+          id: `${rawTitle}: Inovasi Kecerdasan Buatan Terkini dan Penerapan Praktisnya`,
+          en: `${rawTitle}: Latest Artificial Intelligence Breakthroughs and Everyday Applications`,
+          ar: `${rawTitle}: أحدث ابتكارات الذكاء الاصطناعي وتطبيقاته اليومية للمستخدمين`,
         }
       }
 
-      // 6. Semiconductors & ASML
+      // 4. Cybersecurity & Consumer Privacy
       if (
-        lower.includes('asml') ||
-        lower.includes('euv') ||
-        lower.includes('lithography') ||
-        lower.includes('2nm') ||
-        lower.includes('semiconductor')
+        lower.includes('security') ||
+        lower.includes('privacy') ||
+        lower.includes('hack') ||
+        lower.includes('leak') ||
+        lower.includes('patch') ||
+        lower.includes('scam') ||
+        lower.includes('vulnerability')
       ) {
         return {
-          id: 'Teknologi Litografi Tingkat Lanjut dan Batas Fisik Silikon: Analisis Optik Sub-2nm dan Kelangsungan Hukum Moore',
-          en: "Advanced Lithography and the Physical Limits of Silicon: Deconstructing Sub-2nm Optics and Moore's Law Continuity",
-          ar: 'تقنيات الطباعة الضوئية المتقدمة وحدود السيليكون: تفكيك البصريات دون 2 نانومتر ومستقبل قانون مور',
+          id: `${rawTitle}: Waspada Ancaman Keamanan Digital dan Langkah Perlindungan Praktis`,
+          en: `${rawTitle}: Digital Security Insights and Essential Protective Measures for Users`,
+          ar: `${rawTitle}: إرشادات الأمان الرقمي وتدابير الحماية الأساسية للمستخدمين`,
         }
       }
 
-      // 7. General Tech Fallback (Thinking natively)
+      // 5. General Tech News Fallback
       return {
-        id: `Telaah Arsitektural dan Rekayasa Sistem Komputasi Modern: Analisis Implikasi dan Prospek Ekosistem Teknologi`,
-        en: `Modern Systems Engineering and Compute Architecture: Strategic Analysis, Benchmarks, and Ecosystem Trajectory`,
-        ar: `قراءة معمارية في هندسة النظم والحوسبة الحديثة: الأبعاد الهندسية، معايير الأداء، والآفاق التقنية المستقبلية`,
+        id: `${rawTitle}: Kabar Teknologi Terkini, Ringkasan Fitur, dan Implikasi Digital`,
+        en: `${rawTitle}: Tech News Briefing, Key Highlights, and Digital Ecosystem Insights`,
+        ar: `${rawTitle}: موجز الأخبار التقنية، أبرز الميزات، ورؤى المنظومة الرقمية`,
       }
     } else {
       // Islamic Logic Topics
@@ -174,11 +168,29 @@ export class NativeTitleSynthesizer {
         }
       }
 
-      // 6. General Islamic Logic Fallback
+      // 6. Hikmah, Inner Peace, Character & Meaning of Life
+      if (
+        lower.includes('hikmah') ||
+        lower.includes('peace') ||
+        lower.includes('purpose') ||
+        lower.includes('meaning') ||
+        lower.includes('wisdom') ||
+        lower.includes('character') ||
+        lower.includes('soul') ||
+        lower.includes('heart')
+      ) {
+        return {
+          id: `${rawTitle}: Menemukan Ketenangan Batin, Hikmah Kehidupan, dan Kejernihan Akal Manusia`,
+          en: `${rawTitle}: Discovering Inner Peace, Spiritual Wisdom, and the Clarity of Human Reason`,
+          ar: `${rawTitle}: في طلب السكينة، حكمة الحياة، وبصيرة العقل الإنساني`,
+        }
+      }
+
+      // 7. General Islamic Logic Fallback
       return {
-        id: 'Menalar Hakikat Kebenaran dan Nilai Moral: Harmoni antara Akal Sehat, Realitas Objektif, dan Epistemologi Wahyu',
-        en: 'Interrogating Truth and Moral Value: The Harmony Between Reason, Objective Reality, and Scriptural Epistemology',
-        ar: 'في عقلانية الإيمان والمنظومة الأخلاقية: التكامل بين صريح المعقول والواقع الموضوعي وأصول الوحي',
+        id: `${rawTitle}: Harmoni antara Akal Sehat, Realitas Objektif, dan Epistemologi Wahyu`,
+        en: `${rawTitle}: Rational Harmony Between Human Reason, Objective Reality, and Divine Revelation`,
+        ar: `${rawTitle}: التكامل بين صريح المعقول والواقع الموضوعي وبصائر الوحي الإلهي`,
       }
     }
   }

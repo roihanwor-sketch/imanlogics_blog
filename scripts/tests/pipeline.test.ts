@@ -132,7 +132,7 @@ async function runPipelineTests() {
     'Epistemological matrix acknowledges honest UNCERTAINTY'
   )
   assert(
-    epistemologyStory?.honestBoundaries?.whatItProves.id.includes('APA YANG TERBUKTI'),
+    Boolean(epistemologyStory?.honestBoundaries?.whatItProves.id.includes('APA YANG TERBUKTI')),
     'Essay contains clear honest boundaries (What it does and does not prove)'
   )
 

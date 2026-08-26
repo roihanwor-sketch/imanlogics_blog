@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-rian" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <linearGradient id="face-rian" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fed7aa" />
+      <stop offset="100%" stop-color="#fba068" />
+    </linearGradient>
+    <linearGradient id="shirt-rian" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="glasses-rian" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle with tech glow -->
+  <circle cx="100" cy="100" r="96" fill="url(#bg-rian)" stroke="#38bdf8" stroke-width="4" />
+  
+  <!-- Subtle circuit tech patterns -->
+  <path d="M 30 50 L 60 50 L 75 65" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" />
+  <circle cx="75" cy="65" r="3" fill="#38bdf8" />
+  <path d="M 170 140 L 145 140 L 130 125" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" />
+  <circle cx="130" cy="125" r="3" fill="#06b6d4" />
+
+  <!-- Body / Jacket -->
+  <path d="M 40 200 C 40 150, 70 140, 100 140 C 130 140, 160 150, 160 200 Z" fill="url(#shirt-rian)" />
+  <path d="M 75 145 L 100 175 L 125 145 Z" fill="#0284c7" />
+  <path d="M 88 160 L 100 200 L 112 160 Z" fill="#e2e8f0" />
+
+  <!-- Neck -->
+  <rect x="86" y="115" width="28" height="30" rx="6" fill="#fba068" />
+
+  <!-- Head -->
+  <ellipse cx="100" cy="92" rx="38" ry="44" fill="url(#face-rian)" />
+
+  <!-- Hair (Modern side-parted tech cut) -->
+  <path d="M 62 82 C 60 52, 90 40, 115 44 C 135 48, 142 62, 138 80 C 132 62, 115 54, 98 56 C 80 58, 68 68, 62 82 Z" fill="#1e1b4b" />
+  
+  <!-- Modern Stylish Glasses -->
+  <rect x="70" y="82" width="24" height="18" rx="4" fill="none" stroke="url(#glasses-rian)" stroke-width="3.5" />
+  <rect x="106" y="82" width="24" height="18" rx="4" fill="none" stroke="url(#glasses-rian)" stroke-width="3.5" />
+  <line x1="94" y1="90" x2="106" y2="90" stroke="url(#glasses-rian)" stroke-width="3" />
+  
+  <!-- Eyes behind glasses -->
+  <circle cx="82" cy="91" r="3" fill="#0f172a" />
+  <circle cx="118" cy="91" r="3" fill="#0f172a" />
+  <circle cx="83" cy="90" r="1" fill="#ffffff" />
+  <circle cx="119" cy="90" r="1" fill="#ffffff" />
+
+  <!-- Friendly Smile -->
+  <path d="M 88 112 Q 100 122 112 112" stroke="#9a3412" stroke-width="2.5" fill="none" stroke-linecap="round" />
+  
+  <!-- Tech badge on corner -->
+  <g transform="translate(140, 140)">
+    <circle cx="16" cy="16" r="16" fill="#0369a1" stroke="#38bdf8" stroke-width="2" />
+    <text x="16" y="21" font-size="14" text-anchor="middle" fill="#ffffff">⚡</text>
+  </g>
+</svg>

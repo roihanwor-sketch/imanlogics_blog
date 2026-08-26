@@ -9,6 +9,7 @@ import PageTitle from '@/components/PageTitle'
 import SectionContainer from '@/components/SectionContainer'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import { formatDateTime } from '@/lib/utils/formatDateTime'
 
 interface LayoutProps {
   content: CoreContent<Blog>
@@ -18,13 +19,14 @@ interface LayoutProps {
 }
 
 export default function PostMinimal({ content, next, prev, children }: LayoutProps) {
-  const { slug, title, images } = content
+  const { slug, title, images, date } = content
   const displayImage =
     images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
 
   const isRtl = content.language === 'ar' || slug.endsWith('.ar')
   const articleLang = isRtl ? 'ar' : content.language || 'id'
   const articleDir = isRtl ? 'rtl' : 'ltr'
+  const dateLocale = isRtl ? 'ar-EG' : articleLang === 'id' ? 'id-ID' : 'en-US'
 
   return (
     <SectionContainer>
@@ -39,8 +41,15 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                 </div>
               </Bleed>
             </div>
-            <div className="relative pt-10">
+            <div className="relative pt-10 space-y-2">
               <PageTitle>{title}</PageTitle>
+              {date && (
+                <div className="text-sm font-medium text-emerald-600 dark:text-cyan-400">
+                  <time dateTime={date} suppressHydrationWarning>
+                    {formatDateTime(date, dateLocale)}
+                  </time>
+                </div>
+              )}
             </div>
           </div>
           <div className="prose dark:prose-invert max-w-none py-4">{children}</div>

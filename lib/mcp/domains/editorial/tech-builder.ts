@@ -11,9 +11,7 @@ export class TechArticleBuilder {
   static async buildTrilingualArticles(story: TechNewsStory): Promise<MdxArticle[]> {
     const slugBase = ProseCleaner.slugify(story.id)
     const translationGroup = `tg-${slugBase}`
-    const today = story.publishedAt
-      ? story.publishedAt.split('T')[0]
-      : story.eventDate || new Date().toISOString().split('T')[0]
+    const today = story.publishedAt || story.eventDate || new Date().toISOString()
     const blogDir = MCP_CONFIG.blogDataDir
 
     const imageResult = await AssetDownloader.discoverAndDownloadSafeImages(
@@ -399,7 +397,7 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerif
         draft: false,
         summary: story.readerHook.id,
         images: images.map((img) => img.localPath || img.url),
-        authors: ['default'],
+        authors: ['rian-setiawan'],
         language: 'id',
         translation_group: translationGroup,
         original_language: 'id',
@@ -422,7 +420,7 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerif
         draft: false,
         summary: story.readerHook.en,
         images: images.map((img) => img.localPath || img.url),
-        authors: ['default'],
+        authors: ['rian-setiawan'],
         language: 'en',
         translation_group: translationGroup,
         original_language: 'id',
@@ -445,7 +443,7 @@ ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerif
         draft: false,
         summary: story.readerHook.ar,
         images: images.map((img) => img.localPath || img.url),
-        authors: ['default'],
+        authors: ['rian-setiawan'],
         language: 'ar',
         translation_group: translationGroup,
         original_language: 'id',

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg-nadia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c1d95" />
+      <stop offset="50%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+    <linearGradient id="face-nadia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffedd5" />
+      <stop offset="100%" stop-color="#fed7aa" />
+    </linearGradient>
+    <linearGradient id="hijab-nadia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312e81" />
+      <stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+    <linearGradient id="dress-nadia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#831843" />
+      <stop offset="100%" stop-color="#9d174d" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle with contemplative aurora glow -->
+  <circle cx="100" cy="100" r="96" fill="url(#bg-nadia)" stroke="#f472b6" stroke-width="4" />
+  
+  <!-- Subtle sparkles / wisdom stars in background -->
+  <circle cx="45" cy="55" r="2.5" fill="#fbcfe8" opacity="0.8" />
+  <circle cx="160" cy="65" r="3" fill="#fbcfe8" opacity="0.8" />
+  <circle cx="145" cy="125" r="2" fill="#fbcfe8" opacity="0.6" />
+  <circle cx="35" cy="130" r="2" fill="#fbcfe8" opacity="0.6" />
+
+  <!-- Body / Warm Dress -->
+  <path d="M 38 200 C 38 148, 68 138, 100 138 C 132 138, 162 148, 162 200 Z" fill="url(#dress-nadia)" />
+
+  <!-- Hijab Outer Wrap (Modern elegant draping) -->
+  <path d="M 54 86 C 54 50, 72 38, 100 38 C 128 38, 146 50, 146 86 C 146 125, 134 165, 126 185 C 114 175, 106 155, 100 155 C 94 155, 86 175, 74 185 C 66 165, 54 125, 54 86 Z" fill="url(#hijab-nadia)" />
+  
+  <!-- Inner Face Oval -->
+  <ellipse cx="100" cy="95" rx="30" ry="36" fill="url(#face-nadia)" />
+  
+  <!-- Inner hijab framing -->
+  <path d="M 70 92 C 70 70, 84 62, 100 62 C 116 62, 130 70, 130 92 C 130 110, 122 124, 100 126 C 78 124, 70 110, 70 92 Z" fill="url(#face-nadia)" />
+  
+  <!-- Gentle Eyebrows -->
+  <path d="M 80 82 Q 88 78 95 82" stroke="#4a044e" stroke-width="2" fill="none" stroke-linecap="round" />
+  <path d="M 105 82 Q 112 78 120 82" stroke="#4a044e" stroke-width="2" fill="none" stroke-linecap="round" />
+
+  <!-- Bright, empathetic eyes -->
+  <circle cx="87" cy="89" r="3" fill="#1e1b4b" />
+  <circle cx="113" cy="89" r="3" fill="#1e1b4b" />
+  <circle cx="88" cy="88" r="1" fill="#ffffff" />
+  <circle cx="114" cy="88" r="1" fill="#ffffff" />
+
+  <!-- Warm, thoughtful smile -->
+  <path d="M 90 108 Q 100 116 110 108" stroke="#be185d" stroke-width="2.5" fill="none" stroke-linecap="round" />
+
+  <!-- Wisdom / Heart badge on corner -->
+  <g transform="translate(140, 140)">
+    <circle cx="16" cy="16" r="16" fill="#701a75" stroke="#f472b6" stroke-width="2" />
+    <text x="16" y="21" font-size="14" text-anchor="middle" fill="#ffffff">✨</text>
+  </g>
+</svg>

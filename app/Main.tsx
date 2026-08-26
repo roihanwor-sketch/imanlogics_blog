@@ -2,7 +2,7 @@
 
 import Link from '@/components/Link'
 import siteMetadata from '@/data/siteMetadata'
-import { formatDate } from 'pliny/utils/formatDate'
+import { formatDateTime } from '@/lib/utils/formatDateTime'
 import NewsletterForm from '@/components/NewsletterForm'
 
 const MAX_DISPLAY = 5
@@ -27,8 +27,8 @@ export default function Home({ posts }: { posts: Post[] }) {
             <span className="text-emerald-500 dark:text-cyan-400">Iman Logics Blog</span>
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-gray-500 md:text-xl dark:text-gray-400">
-            Temukan artikel, catatan, dan panduan seputar pengembangan web, sistem kognitif
-            kecerdasan buatan (AI), dan logika digital untuk meningkatkan produktivitas Anda.
+            Temukan berita teknologi harian terkini, kajian logika & hikmah Islam, serta wawasan
+            digital mendalam yang mencerahkan akal budi Anda.
           </p>
         </div>
 
@@ -47,8 +47,10 @@ export default function Home({ posts }: { posts: Post[] }) {
                   <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
                     <dl>
                       <dt className="sr-only">Published on</dt>
-                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                        <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
+                      <dd className="text-sm leading-6 font-medium text-gray-500 dark:text-gray-400">
+                        <time dateTime={date} suppressHydrationWarning>
+                          {formatDateTime(date, siteMetadata.locale)}
+                        </time>
                       </dd>
                     </dl>
                     <div className="space-y-5 xl:col-span-3">
