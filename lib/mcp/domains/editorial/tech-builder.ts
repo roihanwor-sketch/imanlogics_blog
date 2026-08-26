@@ -27,7 +27,7 @@ export class TechArticleBuilder {
     const coverImage =
       images[0]?.localPath ||
       images[0]?.url ||
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80'
+      '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg'
 
     const imageCredits = CreditBuilder.buildImageCredits(images, slugBase, today)
 

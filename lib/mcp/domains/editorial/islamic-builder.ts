@@ -27,7 +27,7 @@ export class IslamicArticleBuilder {
     const coverImage =
       images[0]?.localPath ||
       images[0]?.url ||
-      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80'
+      '/static/images/editorial/birmingham-quran-radiocarbon-analysis/figure-1.jpg'
 
     const imageCredits = CreditBuilder.buildImageCredits(images, slugBase, today)
 
