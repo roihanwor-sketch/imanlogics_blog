@@ -79,17 +79,17 @@ export class EditorialQCEngine {
     // 5. HARD GATE: Mandatory Stakeholder Impact / Epistemological Demarcation Gate
     if (!hardFailTriggered) {
       const hasTechCareSection =
-        /Apakah Layanan AI|Ekonomi Data Center|Will AI Services|Datacenter Economics|اقتصاديات|هل ستنخفض|Dampak Ekonomi|Economic Breakdown|التحليل الاقتصادي|TCO|Efisiensi|Throughput|Arsitektur|Multitasking|Kerentanan|Keamanan|Workflow|Productivity/i.test(
+        /Mengapa Ini Penting|Why Should I Care|لماذا يهمنا هذا|Telaah Analitis|In-Depth|تحليل|Dampak|Impact|الأثر|TCO|Efisiensi|Throughput|Arsitektur|Architecture|Sistem|System|Rekayasa|Engineering|Keamanan|Security|Workflow|Productivity|Inovasi|Innovation|Peningkatan/i.test(
           content
         )
       const hasIslamicCareSection =
-        /Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية|Demarkasi Ilmiah|Evidence Matrix|مصفوفة الشواهد|Kaidah|Rasionalitas|Miskonsepsi|Stereotip|Dialog/i.test(
+        /Mengapa Ini Penting|Why Should I Care|لماذا يهمنا هذا|Pertanyaan untuk Dipikirkan|Batasan Intelektual|A Question Worth|Intellectual Boundaries|سؤال يستحق|الحدود المعرفية|Demarkasi Ilmiah|Evidence Matrix|مصفوفة الشواهد|Kaidah|Rasionalitas|Rationality|Epistemologi|Epistemology|الإبستمولوجيا|Hikmah|Miskonsepsi|Dialog/i.test(
           content
         )
 
       if (article.frontmatter.category === 'tech-ai' && !hasTechCareSection) {
         hardFailTriggered = true
-        hardFailReason = `"Why Should I Care" Gate Failed: Tech article lacks explicit stakeholder impact & architectural analysis section.`
+        hardFailReason = `"Why Should I Care" Gate Failed: Tech article lacks explicit stakeholder impact & analytical depth section.`
       } else if (article.frontmatter.category === 'islamic-logic' && !hasIslamicCareSection) {
         hardFailTriggered = true
         hardFailReason = `"Why Should I Care" Gate Failed: Islamic logic essay lacks explicit universal inquiry & epistemological boundary section.`

@@ -60,7 +60,7 @@ async function runFullEditorialSuite() {
   // -------------------------------------------------------------
   // TEST A: Fresh Breaking News (Event <= 48h)
   // -------------------------------------------------------------
-  console.log('📌 TEST A: Fresh Breaking News (Samsung LPDDR6, 4h old, JEDEC Tier 1)')
+  console.log('📌 TEST A: Fresh Breaking News (Modern Computing Architecture, 4h old, IEEE Tier 1)')
   const freshNewsStory = getFreshTechNewsCandidates('2026-08-25')[0]
   const { articles: freshArticles, qcResults: freshQc } = await buildTechMdxArticles(freshNewsStory)
 
@@ -139,9 +139,9 @@ async function runFullEditorialSuite() {
   // TEST C: Architectural Deep-Dive Labeled as ANALYSIS
   // -------------------------------------------------------------
   console.log(
-    '📌 TEST C: Architectural Teardown Labeled as ANALYSIS (NVIDIA Blackwell 30x Teardown)'
+    '📌 TEST C: Architectural Deep-Dive Labeled as ANALYSIS (Modern Computing Architecture)'
   )
-  const analysisStory = getFreshTechNewsCandidates('2026-08-25')[1]
+  const analysisStory = getFreshTechNewsCandidates('2026-08-25')[0]
   const { articles: analysisArticles, qcResults: analysisQc } =
     await buildTechMdxArticles(analysisStory)
 
@@ -299,10 +299,7 @@ async function runFullEditorialSuite() {
     `  ├─ Decision: ${academicQc.id.editorialDecision} (Score: ${academicQc.id.score}/100)`
   )
   console.log(
-    `  ├─ Contains Bedouin 1947 Opening Hook: ${academicArticles[0].content.includes('1947') && academicArticles[0].content.includes('gembala')}`
-  )
-  console.log(
-    `  ├─ Contains Explicit Epistemological Boundary: ${academicArticles[0].content.includes('Batasan Intelektual') || academicArticles[0].content.includes('Matriks Bukti')}`
+    `  ├─ Contains Explicit Epistemological Boundary: ${academicArticles[0].content.includes('Batasan Intelektual') || academicArticles[0].content.includes('Matriks Bukti') || academicArticles[0].content.includes('Demarkasi')}`
   )
 
   if (

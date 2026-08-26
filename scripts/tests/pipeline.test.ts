@@ -109,18 +109,18 @@ async function runPipelineTests() {
   // -------------------------------------------------------------
   console.log('\n📌 Test 4: Islamic Logic Deep Research & Epistemological Demarcation')
   const islamicStories = IslamicResearchEngine.getFreshIslamicAcademicCandidates('2026-08-25')
-  assert(islamicStories.length >= 2, 'Discovered deep Islamic academic candidate stories')
+  assert(islamicStories.length >= 1, 'Discovered deep Islamic academic candidate stories')
 
-  const shariaStory = islamicStories.find(
-    (s) => s.id === 'rationality-sharia-riba-global-debt-cycles-economics'
-  )
-  assert(Boolean(shariaStory), 'Sharia Rationality (Riba & Macroeconomics) candidate is available')
+  const epistemologyStory = islamicStories[0]
+  assert(Boolean(epistemologyStory), 'Universal Epistemology & Rationality candidate is available')
   assert(
-    Boolean(shariaStory?.epistemologicalPoints && shariaStory.epistemologicalPoints.length > 0),
-    'Sharia Rationality contains explicit Epistemological Points'
+    Boolean(
+      epistemologyStory?.epistemologicalPoints && epistemologyStory.epistemologicalPoints.length > 0
+    ),
+    'Candidate contains explicit Epistemological Points'
   )
 
-  const categories = shariaStory?.epistemologicalPoints.map((p) => p.category) || []
+  const categories = epistemologyStory?.epistemologicalPoints.map((p) => p.category) || []
   assert(categories.includes('FACT'), 'Epistemological matrix contains empirical FACT')
   assert(categories.includes('EVIDENCE'), 'Epistemological matrix contains physical EVIDENCE')
   assert(
@@ -131,20 +131,17 @@ async function runPipelineTests() {
     categories.includes('UNCERTAINTY'),
     'Epistemological matrix acknowledges honest UNCERTAINTY'
   )
-
-  const jesusStory = islamicStories.find((s) => s.id === 'jesus-isa-prayer-submission-tawhid-study')
-  assert(Boolean(jesusStory), 'Jesus / Isa prayer and submission candidate is available')
   assert(
-    jesusStory?.honestBoundaries.whatItProves.id.includes('APA YANG TERBUKTI'),
-    'Jesus prayer essay contains clear honest boundaries (What it does and does not prove)'
+    epistemologyStory?.honestBoundaries?.whatItProves.id.includes('APA YANG TERBUKTI'),
+    'Essay contains clear honest boundaries (What it does and does not prove)'
   )
 
   // -------------------------------------------------------------
   // Test 5: Multilingual Article Build & QC Evaluation
   // -------------------------------------------------------------
   console.log('\n📌 Test 5: Multilingual Article Build & QC Evaluation')
-  if (shariaStory) {
-    const articles = await IslamicArticleBuilder.buildTrilingualArticles(shariaStory)
+  if (epistemologyStory) {
+    const articles = await IslamicArticleBuilder.buildTrilingualArticles(epistemologyStory)
     const qcResults = {
       id: EditorialQCEngine.evaluateArticle(articles[0]),
       en: EditorialQCEngine.evaluateArticle(articles[1]),

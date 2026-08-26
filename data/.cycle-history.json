@@ -1,7 +1,35 @@
 {
-  "lastUpdated": "2026-08-26T01:20:05.604Z",
-  "totalCyclesRun": 17,
+  "lastUpdated": "2026-08-26T01:20:41.143Z",
+  "totalCyclesRun": 18,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T01:20:12.487Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/sony-xperia-10-viii-review.mdx",
+        "data/blog/sony-xperia-10-viii-review.en.mdx",
+        "data/blog/sony-xperia-10-viii-review.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Dilema Rekayasa Sony Xperia 10 VIII: Menimbang Efisiensi Energi, Ergonomi Kompak, dan Kompromi Pemrosesan Citra di Segmen Menengah",
+          "slug": "sony-xperia-10-viii-review",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "50b16d6"
+    },
     {
       "cycleTimestamp": "2026-08-26T01:19:24.827Z",
       "sourcesScanned": 2,
