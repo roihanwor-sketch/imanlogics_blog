@@ -32,3 +32,13 @@
   1. **Next.js Dev Server:** Bersihkan cache `.next` terlebih dahulu lalu jalankan di background task: `Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue; npm.cmd run dev` (`http://localhost:3000`).
   2. **Decap CMS Proxy Server:** Jalankan di background task: `npx.cmd decap-server` (`http://localhost:3000/admin`).
   3. Laporkan URL akses lokal dev server dan CMS admin kepada pengguna.
+
+## Protokol Interaksi, Audit & Analisis: Jawab dan Laporkan Terlebih Dahulu (Strict Report-First)
+
+- **Jawab Pertanyaan & Sajikan Laporan Terlebih Dahulu:**
+  - Setiap kali pengguna bertanya sesuatu, meminta audit, atau meminta analisis: AI **WAJIB** menjawab pertanyaan secara langsung dan memberikan laporan analisis temuan secara transparan terlebih dahulu.
+- **Larangan Modifikasi Kode & Build Sebelum Persetujuan:**
+  - AI **DILARANG KERAS** menyentuh kode, mengedit berkas, atau menjalankan perintah build (`npm run build`, `next build`, dll.) sebelum memberikan laporan lengkap kepada pengguna dan mendapatkan persetujuan/instruksi eksplisit.
+- **Mode Analisis Read-Only:**
+  - Selama fase audit dan analisis, seluruh proses inspeksi berkas, perayapan data, dan pengecekan logika harus dilakukan dalam mode *read-only* (hanya membaca data tanpa mengubah berkas proyek).
+
