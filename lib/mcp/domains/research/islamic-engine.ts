@@ -165,6 +165,7 @@ export class IslamicResearchEngine {
     const domainSynthesis = this.generateDomainSpecificProse(cleanTitle, pillar, lead.sourceOutlet)
     let readerHook = domainSynthesis.readerHook
     let whyShouldICare = domainSynthesis.whyShouldICare
+    let honestBoundaries = domainSynthesis.honestBoundaries
     let aiGeneratedDeepAnalysis: LocalizedText | undefined
 
     // 3. Attempt AI-Powered Deep Synthesis via Antigravity CLI Bridge (if available)
@@ -190,6 +191,12 @@ export class IslamicResearchEngine {
         }
         if (aiResult.data.deepAnalysis?.id) {
           aiGeneratedDeepAnalysis = aiResult.data.deepAnalysis
+        }
+        if (
+          aiResult.data.honestBoundaries?.whatItProves?.id &&
+          aiResult.data.honestBoundaries?.whatMustNotBeClaimed?.id
+        ) {
+          honestBoundaries = aiResult.data.honestBoundaries
         }
         Logger.info('IslamicResearch', `AI synthesis completed for: "${titles.id}"`)
       }
@@ -236,7 +243,7 @@ export class IslamicResearchEngine {
       ],
       narrativeLead: domainSynthesis.narrativeLead,
       epistemologicalPoints: domainSynthesis.epistemologicalPoints,
-      honestBoundaries: domainSynthesis.honestBoundaries,
+      honestBoundaries,
       citationChain: {
         layer1Primary: "Al-Qur'anul Karim, Kitab Tafsir Klasik & Kaidah Ushul Fiqh",
         layer2Journalism: `${lead.sourceOutlet} Academic Study & Analysis`,
