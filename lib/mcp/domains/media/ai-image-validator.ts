@@ -1,4 +1,4 @@
-﻿import { Logger } from '../../core/logger'
+import { Logger } from '../../core/logger'
 import { LiveImageSearchResult } from './live-image-searcher'
 
 export interface ImageValidationResult {
@@ -83,15 +83,20 @@ export class AISemanticImageValidator {
 
       if (isProcessor) {
         const hasProcessorVisual =
-          /processor|chip|die|silicon|wafer|cpu|gpu|integrated circuit|circuit|microarchitecture|transistor|hardware|intel|amd|nvidia/i.test(
+          /processor|chip|die|silicon|wafer|cpu|gpu|integrated circuit|circuit|microarchitecture|transistor|hardware|semiconductor|server|motherboard|socket/i.test(
             textCorpus
           )
-        if (hasProcessorVisual || matchCount >= 1) {
+        if (hasProcessorVisual) {
           return {
             isValid: true,
             confidenceScore: 95,
             relevanceReason: `Visual candidate accurately portrays semiconductor processor/die: "${candidate.title}"`,
           }
+        }
+        return {
+          isValid: false,
+          confidenceScore: 0,
+          relevanceReason: `Rejected non-processor visual for semiconductor topic: "${candidate.title}"`,
         }
       }
 
