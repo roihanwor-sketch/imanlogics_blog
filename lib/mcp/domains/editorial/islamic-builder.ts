@@ -185,6 +185,7 @@ Kajian epistemologis Islam menegaskan bahwa keimanan sejati berakar pada akal ya
 
 ${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
 
+${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n### Telaah Analisis & Refleksi Filosofis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
 ---
 
 ${renderEpistemology('id')}
@@ -258,6 +259,7 @@ Islamic epistemological traditions emphasize that authentic conviction arises fr
 
 ${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
+${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n### In-Depth Philosophical & Epistemological Inquiry\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
 ---
 
 ${renderEpistemology('en')}
@@ -331,6 +333,7 @@ ${scholarlyConsensus.ar}
 
 ${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
 
+${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n### تفكيك تحليلي واستدلال معرفي متعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
 ---
 
 ${renderEpistemology('ar')}

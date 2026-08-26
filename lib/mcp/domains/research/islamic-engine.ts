@@ -12,6 +12,8 @@ import { Logger } from '../../core/logger'
 import { WebDiscoveryService, DiscoveredWebLead, IslamicLogicPillar } from './web-discovery'
 import { EditorialSelectionBoard } from './editorial-board'
 import { NativeTitleSynthesizer } from '../editorial/title-synthesizer'
+import { AgyCliBridge } from '../../core/agy-bridge'
+import { StateStore } from '../../core/state-store'
 
 export interface IslamicAcademicStory {
   id: string
@@ -54,6 +56,7 @@ export interface IslamicAcademicStory {
     layer3Discovery?: string
     crossVerificationNotes: string
   }
+  aiGeneratedDeepAnalysis?: LocalizedText
 }
 
 export class IslamicResearchEngine {
@@ -65,19 +68,22 @@ export class IslamicResearchEngine {
   }
 
   /**
-   * Discovers and verifies high-rigor Islamic academic and reader-first stories dynamically
+   * Discovers and verifies fresh Islamic Academic & Epistemological Stories
    */
   static async discoverVerifiedStories(): Promise<IslamicAcademicStory[]> {
     Logger.info(
       'IslamicResearch',
-      'Initiating Web-Discovery-Driven Islamic Logic Cycle across 11 Pillars...'
+      'Initiating Web-Discovery-Driven Islamic Logic Cycle across Reputable Pools...'
     )
     const blogDir = MCP_CONFIG.blogDataDir
     const todayStr = new Date().toISOString().split('T')[0]
 
     let publishedSlugs: string[] = []
     if (fs.existsSync(blogDir)) {
-      publishedSlugs = fs.readdirSync(blogDir).map((f) => f.replace(/(\.id|\.en|\.ar)?\.mdx$/, ''))
+      publishedSlugs = fs
+        .readdirSync(blogDir)
+        .filter((f) => f.endsWith('.mdx'))
+        .map((f) => f.replace(/\.(id|en|ar)?\.mdx$/, ''))
     }
 
     // 1. Live Web Discovery
@@ -93,7 +99,7 @@ export class IslamicResearchEngine {
     const candidateStories: IslamicAcademicStory[] = []
 
     if (boardDecision.topIslamicCandidate) {
-      const liveStory = this.synthesizeStoryFromLead(
+      const liveStory = await this.synthesizeStoryFromLead(
         boardDecision.topIslamicCandidate.lead,
         todayStr
       )
@@ -144,19 +150,52 @@ export class IslamicResearchEngine {
    * Synthesizes an IslamicAcademicStory dynamically from an approved Web Lead
    * Generates native trilingual titles and domain-specific philosophical prose thinking in each language
    */
-  private static synthesizeStoryFromLead(
+  private static async synthesizeStoryFromLead(
     lead: DiscoveredWebLead,
     todayStr: string
-  ): IslamicAcademicStory | null {
+  ): Promise<IslamicAcademicStory | null> {
     const slugId = lead.id.replace(/^islamic-/, '')
     const cleanTitle = lead.title
     const pillar = lead.subCategory
 
     // 1. Generate Native Trilingual Titles thinking in each language
-    const titles = this.craftNativeTrilingualTitles(cleanTitle, pillar)
+    let titles = this.craftNativeTrilingualTitles(cleanTitle, pillar)
 
     // 2. Generate Domain-Specific Islamic Epistemological Content
     const domainSynthesis = this.generateDomainSpecificProse(cleanTitle, pillar, lead.sourceOutlet)
+    let readerHook = domainSynthesis.readerHook
+    let whyShouldICare = domainSynthesis.whyShouldICare
+    let aiGeneratedDeepAnalysis: LocalizedText | undefined
+
+    // 3. Attempt AI-Powered Deep Synthesis via Antigravity CLI Bridge (if available)
+    try {
+      const history = StateStore.load().recentReports.flatMap((r) => r.publishedStoryDetails)
+      const aiResult = await AgyCliBridge.synthesizeFullArticleWithAI({
+        category: 'islamic-logic',
+        topicTitle: cleanTitle,
+        rawArticleBody: lead.snippet || cleanTitle,
+        sourceUrl: lead.url,
+        cycleHistory: history,
+      })
+
+      if (aiResult.success && aiResult.data) {
+        if (aiResult.data.titles?.id && !aiResult.data.titles.id.includes('undefined')) {
+          titles = aiResult.data.titles
+        }
+        if (aiResult.data.readerHook?.id) {
+          readerHook = aiResult.data.readerHook
+        }
+        if (aiResult.data.whyShouldICare?.id) {
+          whyShouldICare = aiResult.data.whyShouldICare
+        }
+        if (aiResult.data.deepAnalysis?.id) {
+          aiGeneratedDeepAnalysis = aiResult.data.deepAnalysis
+        }
+        Logger.info('IslamicResearch', `AI synthesis completed for: "${titles.id}"`)
+      }
+    } catch {
+      // Graceful fallback to domain synthesis
+    }
 
     return {
       id: slugId,
@@ -166,6 +205,9 @@ export class IslamicResearchEngine {
       publishedAt: lead.publishedAt || `${todayStr}T09:00:00.000Z`,
       primarySourceUrl: lead.detectedPrimarySources[0]?.url || 'https://quran.ksu.edu.sa',
       primarySourceTier: 1,
+      aiGeneratedDeepAnalysis,
+      readerHook,
+      whyShouldICare,
       keywords: [
         'islamic-logic',
         pillar.toLowerCase().replace(/_/g, '-'),
@@ -192,8 +234,6 @@ export class IslamicResearchEngine {
           relevanceScore: 90,
         },
       ],
-      readerHook: domainSynthesis.readerHook,
-      whyShouldICare: domainSynthesis.whyShouldICare,
       narrativeLead: domainSynthesis.narrativeLead,
       epistemologicalPoints: domainSynthesis.epistemologicalPoints,
       honestBoundaries: domainSynthesis.honestBoundaries,

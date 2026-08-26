@@ -13,6 +13,8 @@ import { Logger } from '../../core/logger'
 import { WebDiscoveryService, DiscoveredWebLead } from './web-discovery'
 import { EditorialSelectionBoard } from './editorial-board'
 import { NativeTitleSynthesizer } from '../editorial/title-synthesizer'
+import { AgyCliBridge } from '../../core/agy-bridge'
+import { StateStore } from '../../core/state-store'
 
 export type ArticleClassification =
   | 'Breaking News'
@@ -83,6 +85,7 @@ export interface TechNewsStory {
   disambiguation: TechDisambiguationSection
   citationChain?: CitationChainRecord
   editorialBenchmark?: EditorialBenchmarkResult
+  aiGeneratedDeepAnalysis?: LocalizedText
 }
 
 export class TechResearchEngine {
@@ -119,7 +122,10 @@ export class TechResearchEngine {
 
     let publishedSlugs: string[] = []
     if (fs.existsSync(blogDir)) {
-      publishedSlugs = fs.readdirSync(blogDir).map((f) => f.replace(/(\.id|\.en|\.ar)?\.mdx$/, ''))
+      publishedSlugs = fs
+        .readdirSync(blogDir)
+        .filter((f) => f.endsWith('.mdx'))
+        .map((f) => f.replace(/\.(id|en|ar)?\.mdx$/, ''))
     }
 
     // 1. Live Web Discovery
@@ -135,7 +141,10 @@ export class TechResearchEngine {
     const candidateStories: TechNewsStory[] = []
 
     if (boardDecision.topTechCandidate) {
-      const liveStory = this.synthesizeStoryFromLead(boardDecision.topTechCandidate.lead, todayStr)
+      const liveStory = await this.synthesizeStoryFromLead(
+        boardDecision.topTechCandidate.lead,
+        todayStr
+      )
       if (liveStory) {
         candidateStories.push(liveStory)
       }
@@ -180,16 +189,16 @@ export class TechResearchEngine {
    * Synthesizes a structured TechNewsStory dynamically from an approved Web Lead
    * Generates native trilingual titles and domain-specific technical prose thinking in each language
    */
-  private static synthesizeStoryFromLead(
+  private static async synthesizeStoryFromLead(
     lead: DiscoveredWebLead,
     todayStr: string
-  ): TechNewsStory | null {
+  ): Promise<TechNewsStory | null> {
     const slugId = lead.id.replace(/^tech-/, '')
     const cleanTitle = lead.title
     const domain = lead.subCategory
 
     // 1. Generate Native Trilingual Titles (Thinking in each language, NOT literal word-for-word translation)
-    const titles = this.craftNativeTrilingualTitles(cleanTitle, domain)
+    let titles = this.craftNativeTrilingualTitles(cleanTitle, domain)
 
     // 2. Determine Classification & Editorial Angle
     let classification: ArticleClassification = 'Breaking News'
@@ -211,6 +220,39 @@ export class TechResearchEngine {
 
     // 3. Domain-Specific Synthesis
     const domainSynthesis = this.generateDomainSpecificProse(cleanTitle, domain, lead.sourceOutlet)
+    let readerHook = domainSynthesis.readerHook
+    let whyShouldICare = domainSynthesis.whyShouldICare
+    let aiGeneratedDeepAnalysis: LocalizedText | undefined
+
+    // 4. Attempt AI-Powered Deep Synthesis via Antigravity CLI Bridge (if available)
+    try {
+      const history = StateStore.load().recentReports.flatMap((r) => r.publishedStoryDetails)
+      const aiResult = await AgyCliBridge.synthesizeFullArticleWithAI({
+        category: 'tech-ai',
+        topicTitle: cleanTitle,
+        rawArticleBody: lead.snippet || cleanTitle,
+        sourceUrl: lead.url,
+        cycleHistory: history,
+      })
+
+      if (aiResult.success && aiResult.data) {
+        if (aiResult.data.titles?.id && !aiResult.data.titles.id.includes('undefined')) {
+          titles = aiResult.data.titles
+        }
+        if (aiResult.data.readerHook?.id) {
+          readerHook = aiResult.data.readerHook
+        }
+        if (aiResult.data.whyShouldICare?.id) {
+          whyShouldICare = aiResult.data.whyShouldICare
+        }
+        if (aiResult.data.deepAnalysis?.id) {
+          aiGeneratedDeepAnalysis = aiResult.data.deepAnalysis
+        }
+        Logger.info('TechResearch', `AI synthesis completed for: "${titles.id}"`)
+      }
+    } catch {
+      // Graceful fallback to heuristic synthesis
+    }
 
     return {
       id: slugId,
@@ -223,6 +265,9 @@ export class TechResearchEngine {
       recencyScore: this.calculateRecencyScore(lead.publishedHoursAgo),
       primarySourceUrl: lead.detectedPrimarySources[0]?.url || lead.url,
       primarySourceTier: 1,
+      aiGeneratedDeepAnalysis,
+      readerHook,
+      whyShouldICare,
       keywords: [
         'tech-intelligence',
         domain,
@@ -271,8 +316,6 @@ export class TechResearchEngine {
           'Menghadirkan sintesis teknis mendalam tanpa jargon kosong dengan perbandingan empiris terhadap versi sebelumnya.',
       },
       metrics: domainSynthesis.metrics,
-      readerHook: domainSynthesis.readerHook,
-      whyShouldICare: domainSynthesis.whyShouldICare,
       hardwareDeconstruction: domainSynthesis.hardwareDeconstruction,
       economicAndEcosystemImpact: domainSynthesis.economicAndEcosystemImpact,
       disambiguation: domainSynthesis.disambiguation,

@@ -190,6 +190,7 @@ Inovasi komputasi selalu bermuara pada perhitungan ekonomi dan alur kerja:
 - **Tren Ketersediaan & Distribusi:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.id}
 - **Implikasi bagi Pengembang & Pengguna:** ${story.economicAndEcosystemImpact.developerImplications.id}
 
+${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n### Telaah Analitis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
 ---
 
 ${renderCitationChain('id')}
@@ -280,6 +281,7 @@ Engineering innovations invariably reshape infrastructure economics and develope
 - **Deployment & Market Trajectory:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.en}
 - **Software Engineering Implications:** ${story.economicAndEcosystemImpact.developerImplications.en}
 
+${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n### In-Depth Architectural Teardown\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
 ---
 
 ${renderCitationChain('en')}
@@ -370,6 +372,7 @@ ${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url
 - **مسار التوافر والانتشار في الأسواق:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.ar}
 - **الأبعاد البرمجية وفرص التطوير:** ${story.economicAndEcosystemImpact.developerImplications.ar}
 
+${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n### تفكيك تحليلي متعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
 ---
 
 ${renderCitationChain('ar')}
