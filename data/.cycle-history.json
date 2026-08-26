@@ -1,7 +1,35 @@
 {
-  "lastUpdated": "2026-08-26T01:05:52.125Z",
-  "totalCyclesRun": 15,
+  "lastUpdated": "2026-08-26T01:13:36.430Z",
+  "totalCyclesRun": 16,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T01:13:00.810Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/hot-chips-2026-intel-dives-deep-on-crescent-i.mdx",
+        "data/blog/hot-chips-2026-intel-dives-deep-on-crescent-i.en.mdx",
+        "data/blog/hot-chips-2026-intel-dives-deep-on-crescent-i.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Arsitektur Intel Crescent Island: Optimalisasi Engine XMX dan Hierarki Cache Masif demi Efisiensi FLOPS Per Watt",
+          "slug": "hot-chips-2026-intel-dives-deep-on-crescent-i",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "880a04b"
+    },
     {
       "cycleTimestamp": "2026-08-26T01:05:19.253Z",
       "sourcesScanned": 2,
