@@ -1,7 +1,51 @@
 {
-  "lastUpdated": "2026-08-26T06:00:16.737Z",
-  "totalCyclesRun": 78,
+  "lastUpdated": "2026-08-26T07:03:22.461Z",
+  "totalCyclesRun": 80,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T07:02:51.117Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 0,
+      "articlesPublished": [],
+      "publishedStoryDetails": [],
+      "rejectionReasons": [
+        "Tech story \"Gamescom 2026 dan Evolusi Komputasi Grafis: Konvergensi Neural Rendering, AI Generatif, dan Batasan Arsitektur GPU\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (Gate 5 FAILED: Local image directory does not exist on physical disk: D:\\Projects\\BLOG\\public\\static\\images\\editorial\\gamescom-opening-night-live-2026-the-biggest-)."
+      ],
+      "status": "NO_PUBLISHABLE_STORY"
+    },
+    {
+      "cycleTimestamp": "2026-08-26T06:45:47.866Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/universal-islamic-epistemology-and-contemporary-rationality.mdx",
+        "data/blog/universal-islamic-epistemology-and-contemporary-rationality.en.mdx",
+        "data/blog/universal-islamic-epistemology-and-contemporary-rationality.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Epistemologi Islam dan Rasionalitas Kontemporer: Integrasi Wahyu, Nalar Kritis, dan Etika Peradaban Modern",
+          "slug": "universal-islamic-epistemology-and-contemporary-rationality",
+          "category": "islamic-logic",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [
+        "Tech story \"Gamescom Opening Night Live 2026: Konvergensi Neural Rendering, Arsitektur Game Engine Generatif, dan Paradigma Baru Komputasi Grafis Interaktif\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (Gate 5 FAILED: Local image directory does not exist on physical disk: D:\\Projects\\BLOG\\public\\static\\images\\editorial\\gamescom-opening-night-live-2026-the-biggest-)."
+      ],
+      "status": "SUCCESS",
+      "gitCommitHash": "e6ed3b1"
+    },
     {
       "cycleTimestamp": "2026-08-26T05:59:56.842Z",
       "sourcesScanned": 2,
