@@ -1,7 +1,35 @@
 {
-  "lastUpdated": "2026-08-26T02:50:11.901Z",
-  "totalCyclesRun": 19,
+  "lastUpdated": "2026-08-26T02:50:47.669Z",
+  "totalCyclesRun": 20,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T02:50:13.492Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/openai-loses-a-top-data-center-exec-as-stream.mdx",
+        "data/blog/openai-loses-a-top-data-center-exec-as-stream.en.mdx",
+        "data/blog/openai-loses-a-top-data-center-exec-as-stream.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Eksodus Eksekutif Infrastruktur OpenAI: Mengurai Friksi Skalabilitas Pusat Data Gigawatt dan Realitas Komputasi AI",
+          "slug": "openai-loses-a-top-data-center-exec-as-stream",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "6540bce"
+    },
     {
       "cycleTimestamp": "2026-08-26T02:45:00.558Z",
       "sourcesScanned": 2,
