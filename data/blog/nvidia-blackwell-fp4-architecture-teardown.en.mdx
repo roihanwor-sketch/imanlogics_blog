@@ -12,17 +12,19 @@ original_language: 'id'
 articleType: 'Architectural Analysis'
 category: 'tech-ai'
 sources: [{"name":"NVIDIA Corporation Blackwell Architecture Technical Whitepaper (v1.2)","url":"https://www.nvidia.com/en-us/data-center/blackwell-architecture/","tier":1,"type":"whitepaper"},{"name":"TSMC Custom 4NP Process Technical Specifications","url":"https://www.tsmc.com/english/dedicatedFoundry/technology/logic","tier":1,"type":"research-paper"}]
-imageCredits: [{"url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg","sourceWebsite":"Unsplash","creator":"Alexandre Debiève","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Alexandre Debiève (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg","sourceWebsite":"Unsplash","creator":"Nana Hua","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Nana Hua (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg","sourceWebsite":"Unsplash","creator":"Denis Cherkasov","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Denis Cherkasov (Unsplash License)"}]
+imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/f/f7/NV1_GPU_%28SGS-Thomson_STG2000%29.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"Trio3D","license":"CC BY-SA 3.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/3.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / Trio3D (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/9/96/NVIDIA%40500nm%40Fixed-pipeline%40NV1%40STG2000X_B_A22FN9609_MALTA_DSCx17_metal%40125x.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"FritzchensFritz","license":"CC0","licenseUrl":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / FritzchensFritz (CC0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/1/1d/NVIDIA%40500nm%40Fixed-pipeline%40NV1%40STG2000X_B_A22CI9601_MALTA_DSCx11_polysilicon%405x.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"FritzchensFritz","license":"CC0","licenseUrl":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / FritzchensFritz (CC0)"}]
 ---
 
 ## Beyond the Spec Sheet: Why This Architectural Shift Matters
 
 A "30x speedup" claim often sounds like marketing hype. But underneath, NVIDIA fundamentally altered how floating-point numbers are represented.
 
-FP4 compute efficiency reduces power consumption for trillion-parameter model inference by 25x, averting a major electrical grid crisis for global datacenters.
 
-![Modern computing circuit board showcasing microprocessors and high-speed data interconnect bus](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg)
-*Visual Source: Unsplash / Photo by Alexandre Debiève (Unsplash License)*
+
+![NVIDIA GPU Accelerator and AI Compute Architecture](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg)
+*Visual source: Wikimedia Commons / Trio3D (CC BY-SA 3.0)*
+
+FP4 compute efficiency reduces power consumption for trillion-parameter model inference by 25x, averting a major electrical grid crisis for global datacenters.
 
 ---
 
@@ -38,11 +40,12 @@ Before examining the microarchitecture, here are the verified quantitative metri
 - *Baseline Comparison:* Operates transparently as a unified monolithic GPU
 - *Primary Source:* [TSMC CoWoS-L Advanced Packaging Documentation](https://www.tsmc.com)
 
-![High-performance computing accelerator unit with advanced thermal cooling engineered for datacenter AI inference](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg)
-*Visual Source: Unsplash / Photo by Nana Hua (Unsplash License)*
-
-
 ---
+
+
+
+![NVIDIA GPU Accelerator and AI Compute Architecture (Comparative View)](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg)
+*Visual source: Wikimedia Commons / FritzchensFritz (CC0)*
 
 ### II. Hardware Deconstruction & Silicon Engineering
 
@@ -67,10 +70,6 @@ To prevent widespread confusion across tech community discussions:
 - **What This Technology Truly Is:** Enterprise-grade datacenter GPU architecture engineered specifically for frontier AI training and multi-trillion token inference.
 - **What It Is NOT:** Not a consumer gaming GeForce RTX 50-series desktop GPU for home PCs.
 - **Deployment Scope (Consumer vs Enterprise):** Deployed exclusively within hyperscale cloud facilities (AWS, Azure, GCP, OCI).
-
-![Modern flagship smartphone integrating on-device artificial intelligence silicon and high-bandwidth LPDDR6 memory](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg)
-*Visual Source: Unsplash / Photo by Denis Cherkasov (Unsplash License)*
-
 
 ---
 

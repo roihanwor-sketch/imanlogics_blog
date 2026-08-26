@@ -12,16 +12,20 @@ original_language: 'id'
 articleType: 'Architectural Analysis'
 category: 'tech-ai'
 sources: [{"name":"NVIDIA Corporation Blackwell Architecture Technical Whitepaper (v1.2)","url":"https://www.nvidia.com/en-us/data-center/blackwell-architecture/","tier":1,"type":"whitepaper"},{"name":"TSMC Custom 4NP Process Technical Specifications","url":"https://www.tsmc.com/english/dedicatedFoundry/technology/logic","tier":1,"type":"research-paper"}]
-imageCredits: [{"url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg","sourceWebsite":"Unsplash","creator":"Alexandre Debiève","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Alexandre Debiève (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg","sourceWebsite":"Unsplash","creator":"Nana Hua","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Nana Hua (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg","sourceWebsite":"Unsplash","creator":"Denis Cherkasov","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Denis Cherkasov (Unsplash License)"}]
+imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/f/f7/NV1_GPU_%28SGS-Thomson_STG2000%29.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"Trio3D","license":"CC BY-SA 3.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/3.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / Trio3D (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/9/96/NVIDIA%40500nm%40Fixed-pipeline%40NV1%40STG2000X_B_A22FN9609_MALTA_DSCx17_metal%40125x.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"FritzchensFritz","license":"CC0","licenseUrl":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / FritzchensFritz (CC0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/1/1d/NVIDIA%40500nm%40Fixed-pipeline%40NV1%40STG2000X_B_A22CI9601_MALTA_DSCx11_polysilicon%405x.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"FritzchensFritz","license":"CC0","licenseUrl":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / FritzchensFritz (CC0)"}]
 ---
 
 ## ما وراء المواصفات التقنية: لماذا يمثل هذا التحول نقطة فارقة؟
 
 قد يبدو ادعاء "أداء أعلى بـ 30 مرة" مبالغة تسويقية. ولكن تحت الغطاء، أعادت نفيديا صياغة تمثيل الأرقام الرياضية جذرياً.
 
+
+
+![مسرع معالجة الرسوميات إنفيديا ومعمارية حوسبة الذكاء الاصطناعي](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg)
+*المصدر البصري: Wikimedia Commons / Trio3D (CC BY-SA 3.0)*
+
 تخفض حوسبة FP4 استهلاك الكهرباء لمعالجة النماذج الضخمة بنسبة 25 ضعفاً، مما يحل أزمة الطاقة في مراكز البيانات.
 
-![لوحة دارات إلكترونية حديثة تعرض معالجات دقيقة ومسارات نقل بيانات فائقة السرعة](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg)
 *مصدر الصورة: Unsplash / تصوير Alexandre Debiève (Unsplash License)*
 
 ---
@@ -38,7 +42,6 @@ imageCredits: [{"url":"https://images.unsplash.com/photo-1518770660439-4636190af
 - *المقارنة المعيارية:* تعمل الشريحتان كمعالج واحد موحد
 - *المصدر الرسمي المعتمد:* [TSMC CoWoS-L Advanced Packaging Documentation](https://www.tsmc.com)
 
-![وحدة تسريع حوسبة عالية الأداء مع نظام تبريد حراري متطور مخصص لاستدلال الذkاء الاصطناعي في مراكز البيانات](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg)
 *مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)*
 
 
@@ -68,7 +71,6 @@ imageCredits: [{"url":"https://images.unsplash.com/photo-1518770660439-4636190af
 - **ما لا تمثله هذه التقنية:** ليست بطاقة ألعاب مكتبية موجهة للمستخدم العادي (GeForce RTX).
 - **نطاق الاستخدام (مستهلك أم مؤسسي):** تعمل حصرياً في مراكز البيانات السحابية العملاقة.
 
-![هاتف ذكي رائد حديث مدمج بمعالجات الذكاء الاصطناعي المحلية وذاكرة LPDDR6 عالية النطاق](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg)
 *مصدر الصورة: Unsplash / تصوير Denis Cherkasov (Unsplash License)*
 
 

@@ -12,17 +12,19 @@ original_language: 'id'
 articleType: 'Architectural Analysis'
 category: 'tech-ai'
 sources: [{"name":"NVIDIA Corporation Blackwell Architecture Technical Whitepaper (v1.2)","url":"https://www.nvidia.com/en-us/data-center/blackwell-architecture/","tier":1,"type":"whitepaper"},{"name":"TSMC Custom 4NP Process Technical Specifications","url":"https://www.tsmc.com/english/dedicatedFoundry/technology/logic","tier":1,"type":"research-paper"}]
-imageCredits: [{"url":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg","sourceWebsite":"Unsplash","creator":"Alexandre Debiève","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Alexandre Debiève (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg","sourceWebsite":"Unsplash","creator":"Nana Hua","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Nana Hua (Unsplash License)"},{"url":"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg","sourceWebsite":"Unsplash","creator":"Denis Cherkasov","license":"Unsplash License","licenseUrl":"https://unsplash.com/license","downloadDate":"2026-08-25","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Unsplash / Foto oleh Denis Cherkasov (Unsplash License)"}]
+imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/f/f7/NV1_GPU_%28SGS-Thomson_STG2000%29.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"Trio3D","license":"CC BY-SA 3.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/3.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / Trio3D (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/9/96/NVIDIA%40500nm%40Fixed-pipeline%40NV1%40STG2000X_B_A22FN9609_MALTA_DSCx17_metal%40125x.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"FritzchensFritz","license":"CC0","licenseUrl":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / FritzchensFritz (CC0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/1/1d/NVIDIA%40500nm%40Fixed-pipeline%40NV1%40STG2000X_B_A22CI9601_MALTA_DSCx11_polysilicon%405x.jpg","localPath":"/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"FritzchensFritz","license":"CC0","licenseUrl":"http://creativecommons.org/publicdomain/zero/1.0/deed.en","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-fp4-architecture-teardown","attributionText":"Wikimedia Commons / FritzchensFritz (CC0)"}]
 ---
 
 ## Di Balik Angka Spesifikasi: Mengapa Perkembangan Ini Menentukan
 
 Klaim "30x lebih cepat" kerap terdengar seperti retorika pemasaran. Namun di balik angka tersebut, NVIDIA merombak total cara representasi angka dalam matematika floating point.
 
-Efisiensi komputasi FP4 memangkas konsumsi daya inferensi model skala GPT-4 hingga 25x lipat, mencegah krisis pasokan listrik di industri pusat data global.
 
-![Papan sirkuit komputasi modern dengan prosesor mikro dan jalur interkoneksi data berkecepatan tinggi](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg)
-*Sumber visual: Unsplash / Foto oleh Alexandre Debiève (Unsplash License)*
+
+![Akselerator Grafis NVIDIA GPU dan Arsitektur Komputasi AI](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-1.jpg)
+*Sumber visual: Wikimedia Commons / Trio3D (CC BY-SA 3.0)*
+
+Efisiensi komputasi FP4 memangkas konsumsi daya inferensi model skala GPT-4 hingga 25x lipat, mencegah krisis pasokan listrik di industri pusat data global.
 
 ---
 
@@ -38,11 +40,12 @@ Sebelum menelaah detail arsitektur, berikut data empiris terukur yang telah dive
 - *Komparasi Baseline:* Dua die silikon beroperasi sebagai satu kesatuan monolitik
 - *Rujukan Primer:* [TSMC CoWoS-L Advanced Packaging Documentation](https://www.tsmc.com)
 
-![Unit akselerator komputasi performa tinggi dengan modul pendingin canggih untuk inferensi AI berskala datacenter](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg)
-*Sumber visual: Unsplash / Foto oleh Nana Hua (Unsplash License)*
-
-
 ---
+
+
+
+![Akselerator Grafis NVIDIA GPU dan Arsitektur Komputasi AI (Komparasi & Struktur)](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-2.jpg)
+*Sumber visual: Wikimedia Commons / FritzchensFritz (CC0)*
 
 ### II. Dekonstruksi Hardware & Rekayasa Silikon
 
@@ -67,10 +70,6 @@ Untuk mencegah miskonsepsi yang sering beredar di forum publik:
 - **Apa Sebenarnya Inovasi Ini:** Arsitektur GPU pusat data kelas enterprise yang dirancang khusus untuk pelatihan dan inferensi model AI frontier raksasa.
 - **Apa yang BUKAN Bagian dari Inovasi Ini:** Bukan kartu grafis consumer gaming GeForce RTX 50-series untuk PC desktop rumahan.
 - **Cakupan Penggunaan (Consumer vs Enterprise):** Beroperasi secara eksklusif di hyperscale datacenter (AWS, Microsoft Azure, Google Cloud, Oracle Cloud Infrastructure).
-
-![Perangkat smartphone modern dengan integrasi chipset dan kecerdasan buatan on-device LPDDR6](/static/images/editorial/nvidia-blackwell-fp4-architecture-teardown/figure-3.jpg)
-*Sumber visual: Unsplash / Foto oleh Denis Cherkasov (Unsplash License)*
-
 
 ---
 

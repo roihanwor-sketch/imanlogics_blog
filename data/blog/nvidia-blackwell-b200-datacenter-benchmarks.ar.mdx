@@ -16,12 +16,7 @@ tags:
   ]
 draft: false
 summary: 'تحليل معماري شامل لمنظومة NVIDIA Blackwell: التمييز بين معالج B200 الفردي، وشريحة GB200 الفائقة، ونظام الخوادم GB200 NVL72، مع تفكيك آليات حسابات FP4 الدقيقة ومقارنة ادعاءات الإطلاق باختبارات مراكز البيانات المستقلة لعام 2026.'
-images:
-  [
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
-  ]
+images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
 authors: ['default']
 language: 'ar'
 translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
@@ -52,53 +47,22 @@ sources:
       'publishedDate': '2026',
     },
   ]
-imageCredits:
-  [
-    {
-      'url': 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Nana Hua',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Nana Hua (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Alexandre Debiève',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Alexandre Debiève (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Adi Goldstein',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Adi Goldstein (Unsplash License)',
-    },
-  ]
+imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/0/07/Intel_810_Chipset_Digon3.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"“Jonathan Zander (Digon3)”","license":"CC BY-SA 3.0","licenseUrl":"http://creativecommons.org/licenses/by-sa/3.0/","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/f/ff/IGP_Vienne_blanc.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/e/ea/IGP_Loiret_ros%C3%A9.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"}]
 ---
 
 ## ما وراء سيليكون المعالجات التقليدية: لماذا أصبح اقتصاد الاستدلال ساحة الحسم في الذكاء الاصطناعي
 
 ثمة سبب جوهري وراء توقف إنفيديا عن مجرد زيادة مساحة رقاقات السيليكون التقليدية؛ فعندما تتوسع نماذج الذكاء الاصطناعي من عشرات المليارات إلى تريليونات المعاملات، لم يعد التحدي الهندسي مقتصراً على سرعة المعالجة الخام للرقاقة الفردية، بل تحول كلياً نحو اقتصاديات الاستدلال: كفاءة الطاقة المستهلكة، وسرعة نقل البيانات عبر الذاكرة، والتكلفة الفعلية لتوليد كل مليون رمز.
 
+
+
+![شريحة سيليكون معالج الرسوميات لخوادم مراكز البيانات](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
+*المصدر البصري: Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)*
+
 من أين جاء رقم مضاعفة أداء الاستدلال 30 مرة تحديداً؟ ولماذا يمثل هذا الادعاء منظومة خوادم مبردة بالكامل وليس معالجاً فردياً؟
 
 في خضم السباق العالمي نحو توسيع نماذج الذكاء الاصطناعي، تشهد هندسة أشباه الموصلات تحولاً جذرياً في فلسفة الحوسبة: إعادة هيكلة شاملة لكيفية معالجة الأرقام الحسابية، وتدفق البيانات بين الرقاقات، وإدارة الطاقة والتبريد السائل في مراكز البيانات الحديثة.
 
-![وحدة تسريع حوسبة عالية الأداء مع نظام تبريد حراري متطور مخصص لاستدلال الذkاء الاصطناعي في مراكز البيانات](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
 _مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)_
 
 ---
@@ -111,7 +75,6 @@ _مصدر الصورة: Unsplash / تصوير Nana Hua (Unsplash License)_
 2. **شريحة GB200 الفائقة: لوحة حوسبة متكاملة تجمع بين معالج ARM Grace المركزي بـ 72 نواة مع معالجي B200 عبر رابط NVLink-C2C فائق السرعة بنطاق 900 جيجابايت/ثانية.**
 3. **نظام GB200 NVL72: بنية تحتية خادمة مبردة بالسوائل بالكامل تدمج 72 معالج Blackwell و36 معالج Grace في نطاق NVLink موحد، لتعمل كمعالج جبار واحد بقدرة 1.4 إكزاDefault استدلال FP4 وذاكرة مجمعة سعة 30 تيرابايت.**
 
-![لوحة دارات إلكترونية حديثة تعرض معالجات دقيقة ومسارات نقل بيانات فائقة السرعة](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
 _مصدر الصورة: Unsplash / تصوير Alexandre Debiève (Unsplash License)_
 
 ---

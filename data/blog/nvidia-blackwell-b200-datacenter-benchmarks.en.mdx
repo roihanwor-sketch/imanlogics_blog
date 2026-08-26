@@ -16,12 +16,7 @@ tags:
   ]
 draft: false
 summary: 'Deconstructing the architectural reality of NVIDIA Blackwell: clarifying the distinction between the standalone B200 GPU, the GB200 Superchip, and the rack-scale GB200 NVL72, analyzing the mathematical mechanics of FP4 micro-tensor scaling, and contrasting 30x launch claims against independent 2026 inference benchmarks.'
-images:
-  [
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
-    '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
-  ]
+images: ["/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg"]
 authors: ['default']
 language: 'en'
 translation_group: 'tg-nvidia-blackwell-b200-datacenter-benchmarks'
@@ -52,53 +47,22 @@ sources:
       'publishedDate': '2026',
     },
   ]
-imageCredits:
-  [
-    {
-      'url': 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Nana Hua',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Nana Hua (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Alexandre Debiève',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Alexandre Debiève (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Adi Goldstein',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'nvidia-blackwell-b200-datacenter-benchmarks',
-      'attributionText': 'Unsplash / Foto oleh Adi Goldstein (Unsplash License)',
-    },
-  ]
+imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/0/07/Intel_810_Chipset_Digon3.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"“Jonathan Zander (Digon3)”","license":"CC BY-SA 3.0","licenseUrl":"http://creativecommons.org/licenses/by-sa/3.0/","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/f/ff/IGP_Vienne_blanc.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/e/ea/IGP_Loiret_ros%C3%A9.JPG","localPath":"/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"Marianne Casamance","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"nvidia-blackwell-b200-datacenter-benchmarks","attributionText":"Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)"}]
 ---
 
 ## Beyond Monolithic Silicon: Why Inference Economics is the Decisive AI Frontier
 
 There is a foundational reason why NVIDIA is no longer merely enlarging conventional monolithic GPU dies. As frontier artificial intelligence models scale from tens of billions to trillions of parameters, the decisive engineering battleground is no longer raw single-chip FLOPs, but the unforgiving physics and economics of inference: total power dissipation, memory bandwidth saturation, and the actual dollar cost to generate a million tokens.
 
+
+
+![Datacenter Server GPU Processor Silicon Die](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
+*Visual source: Wikimedia Commons / “Jonathan Zander (Digon3)” (CC BY-SA 3.0)*
+
 Where does the 30x inference performance multiplier actually originate, and why does this headline claim represent a full liquid-cooled rack rather than a standalone GPU die?
 
 Amid the global AI compute scaling race, semiconductor architecture is undergoing a fundamental paradigm shift: rather than simply packing more graphics compute units onto a wafer, engineers are overhauling how floating-point numbers are calculated, how memory travels between chiplets, and how multi-megawatt server clusters manage power and thermodynamics.
 
-![High-performance computing accelerator unit with advanced thermal cooling engineered for datacenter AI inference](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-1.jpg)
 _Visual Source: Unsplash / Photo by Nana Hua (Unsplash License)_
 
 ---
@@ -111,10 +75,14 @@ In mainstream enterprise commentary, system-level numbers are frequently conflat
 2. **GB200 Grace Blackwell Superchip: A coherent board integrating one 72-core ARM Grace CPU with two B200 GPUs via a 900 GB/s ultra-low-latency NVLink-C2C interconnect.**
 3. **GB200 NVL72: A liquid-cooled, rack-scale computing infrastructure integrating 72 Blackwell GPUs and 36 Grace CPUs into a single massive NVLink domain, functioning as a single giant accelerator with 1.4 Exaflops of FP4 inference throughput and 30 TB of aggregate fast memory.**
 
-![Modern computing circuit board showcasing microprocessors and high-speed data interconnect bus](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
 _Visual Source: Unsplash / Photo by Alexandre Debiève (Unsplash License)_
 
 ---
+
+
+
+![Datacenter Server GPU Processor Silicon Die (Comparative View)](/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg)
+*Visual source: Wikimedia Commons / Marianne Casamance (CC BY-SA 4.0)*
 
 ### II. Why Dual-Die? Overcoming the Photolithographic Reticle Limit
 

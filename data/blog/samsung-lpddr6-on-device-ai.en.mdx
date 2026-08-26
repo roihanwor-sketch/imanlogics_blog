@@ -5,12 +5,7 @@ tags:
   ['samsung', 'lpddr6', 'memory', 'ram', 'hardware', 'semiconductor', 'npu', 'on-device', 'jedec']
 draft: false
 summary: 'JEDEC and Samsung officially ratified the LPDDR6 mobile memory standard, delivering transfer speeds up to 12.8 Gbps and 21% improved energy efficiency for sustained on-device LLM inference.'
-images:
-  [
-    '/static/images/editorial/samsung-lpddr6-on-device-ai/figure-1.jpg',
-    '/static/images/editorial/samsung-lpddr6-on-device-ai/figure-2.jpg',
-    '/static/images/editorial/samsung-lpddr6-on-device-ai/figure-3.jpg',
-  ]
+images: ["/static/images/editorial/samsung-lpddr6-on-device-ai/figure-1.jpg","/static/images/editorial/samsung-lpddr6-on-device-ai/figure-2.jpg","/static/images/editorial/samsung-lpddr6-on-device-ai/figure-3.jpg"]
 authors: ['default']
 language: 'en'
 translation_group: 'tg-samsung-lpddr6-on-device-ai'
@@ -41,53 +36,22 @@ sources:
       'publishedDate': '2026-08-25',
     },
   ]
-imageCredits:
-  [
-    {
-      'url': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/samsung-lpddr6-on-device-ai/figure-1.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Denis Cherkasov',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'samsung-lpddr6-on-device-ai',
-      'attributionText': 'Unsplash / Foto oleh Denis Cherkasov (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/samsung-lpddr6-on-device-ai/figure-2.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Alexandre Debiève',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'samsung-lpddr6-on-device-ai',
-      'attributionText': 'Unsplash / Foto oleh Alexandre Debiève (Unsplash License)',
-    },
-    {
-      'url': 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1600&q=80',
-      'localPath': '/static/images/editorial/samsung-lpddr6-on-device-ai/figure-3.jpg',
-      'sourceWebsite': 'Unsplash',
-      'creator': 'Nana Hua',
-      'license': 'Unsplash License',
-      'licenseUrl': 'https://unsplash.com/license',
-      'downloadDate': '2026-08-25',
-      'articleAssociation': 'samsung-lpddr6-on-device-ai',
-      'attributionText': 'Unsplash / Foto oleh Nana Hua (Unsplash License)',
-    },
-  ]
+imageCredits: [{"url":"https://upload.wikimedia.org/wikipedia/commons/a/ac/Dual-channel_DDR_memory_use_6026.JPG","localPath":"/static/images/editorial/samsung-lpddr6-on-device-ai/figure-1.jpg","sourceWebsite":"Wikimedia Commons","creator":"Mixabest","license":"Public domain","licenseUrl":"https://creativecommons.org/","downloadDate":"2026-08-26","articleAssociation":"samsung-lpddr6-on-device-ai","attributionText":"Wikimedia Commons / Mixabest (Public domain)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/7/76/Dual-channel_DDR_memory_use_6027.JPG","localPath":"/static/images/editorial/samsung-lpddr6-on-device-ai/figure-2.jpg","sourceWebsite":"Wikimedia Commons","creator":"Mixabest","license":"Public domain","licenseUrl":"https://creativecommons.org/","downloadDate":"2026-08-26","articleAssociation":"samsung-lpddr6-on-device-ai","attributionText":"Wikimedia Commons / Mixabest (Public domain)"},{"url":"https://upload.wikimedia.org/wikipedia/commons/8/82/MPXB62D-38KT3R.jpg","localPath":"/static/images/editorial/samsung-lpddr6-on-device-ai/figure-3.jpg","sourceWebsite":"Wikimedia Commons","creator":"Mister rf","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0","downloadDate":"2026-08-26","articleAssociation":"samsung-lpddr6-on-device-ai","attributionText":"Wikimedia Commons / Mister rf (CC BY-SA 4.0)"}]
 ---
 
 ## Beyond Monolithic Silicon: Why Inference Economics is the Decisive AI Frontier
 
 The decisive bottleneck in executing generative AI models locally on edge devices has never been raw NPU compute cycles, but the physical "memory wall"—the throughput ceiling at which weights transfer from RAM into silicon registers. The finalization of the LPDDR6 specification by JEDEC and Samsung fundamentally breaks this constraint.
 
+
+
+![High-Speed DRAM Memory Module](/static/images/editorial/samsung-lpddr6-on-device-ai/figure-1.jpg)
+*Visual source: Wikimedia Commons / Mixabest (Public domain)*
+
 Can next-generation smartphones genuinely serve 14-billion-parameter multimodal AI models in real time without dispatching sensitive personal telemetry to cloud datacenters?
 
 Amid the global AI compute scaling race, semiconductor architecture is undergoing a fundamental paradigm shift: rather than simply packing more graphics compute units onto a wafer, engineers are overhauling how floating-point numbers are calculated, how memory travels between chiplets, and how multi-megawatt server clusters manage power and thermodynamics.
 
-![Modern flagship smartphone integrating on-device artificial intelligence silicon and high-bandwidth LPDDR6 memory](/static/images/editorial/samsung-lpddr6-on-device-ai/figure-1.jpg)
 _Visual Source: Unsplash / Photo by Denis Cherkasov (Unsplash License)_
 
 ---
@@ -100,10 +64,14 @@ In mainstream enterprise commentary, system-level numbers are frequently conflat
 2. **Mobile SoC Integration: Package-on-Package (PoP) bonding directly atop next-generation flagship application processors.**
 3. **Edge Computing Array: Clustered LPDDR6 modules powering industrial edge accelerators and autonomous robotics.**
 
-![Modern computing circuit board showcasing microprocessors and high-speed data interconnect bus](/static/images/editorial/samsung-lpddr6-on-device-ai/figure-2.jpg)
 _Visual Source: Unsplash / Photo by Alexandre Debiève (Unsplash License)_
 
 ---
+
+
+
+![High-Speed DRAM Memory Module (Comparative View)](/static/images/editorial/samsung-lpddr6-on-device-ai/figure-2.jpg)
+*Visual source: Wikimedia Commons / Mixabest (Public domain)*
 
 ### II. Why Dual-Die? Overcoming the Photolithographic Reticle Limit
 
