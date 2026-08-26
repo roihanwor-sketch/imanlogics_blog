@@ -20,14 +20,14 @@ export default function Page() {
 
         {specialistAuthors.length > 0 && (
           <div className="mt-12 border-t border-gray-200 pt-10 dark:border-gray-700">
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6">
+            <h2 className="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
               Tim Penulis & Kolumnis Spesialis
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {specialistAuthors.map((auth) => (
                 <div
                   key={auth.slug}
-                  className="rounded-2xl border border-gray-200/70 bg-white/50 p-5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/50 flex flex-col items-center text-center space-y-3"
+                  className="flex flex-col items-center space-y-3 rounded-2xl border border-gray-200/70 bg-white/50 p-5 text-center shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/50"
                 >
                   {auth.avatar && (
                     <Image
@@ -35,18 +35,18 @@ export default function Page() {
                       alt={auth.name}
                       width={80}
                       height={80}
-                      className="h-20 w-20 rounded-full border-2 border-emerald-500/20 dark:border-cyan-500/20 object-cover shadow-sm"
+                      className="h-20 w-20 rounded-full border-2 border-emerald-500/20 object-cover shadow-sm dark:border-cyan-500/20"
                     />
                   )}
                   <div>
                     <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
                       {auth.name}
                     </h3>
-                    <p className="text-xs text-emerald-600 dark:text-cyan-400 font-medium">
+                    <p className="text-xs font-medium text-emerald-600 dark:text-cyan-400">
                       {auth.occupation}
                     </p>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                  <p className="line-clamp-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
                     {auth.body.raw.replace(/^---[\s\S]*?---/, '').trim()}
                   </p>
                 </div>

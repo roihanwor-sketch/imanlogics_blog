@@ -41,7 +41,7 @@ export default function PostMinimal({ content, next, prev, children }: LayoutPro
                 </div>
               </Bleed>
             </div>
-            <div className="relative pt-10 space-y-2">
+            <div className="relative space-y-2 pt-10">
               <PageTitle>{title}</PageTitle>
               {date && (
                 <div className="text-sm font-medium text-emerald-600 dark:text-cyan-400">

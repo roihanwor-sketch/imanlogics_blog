@@ -6,9 +6,7 @@ import siteMetadata from '../data/siteMetadata.js'
 import { allBlogs } from '../.contentlayer/generated/index.mjs'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
-const tagData = JSON.parse(
-  readFileSync(path.join(process.cwd(), 'app', 'tag-data.json'), 'utf8')
-)
+const tagData = JSON.parse(readFileSync(path.join(process.cwd(), 'app', 'tag-data.json'), 'utf8'))
 
 const outputFolder = process.env.EXPORT ? 'out' : 'public'
 

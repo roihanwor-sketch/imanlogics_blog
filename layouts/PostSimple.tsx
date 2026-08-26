@@ -34,7 +34,7 @@ export default function PostLayout({ content, next, prev, children }: LayoutProp
               <dl>
                 <div>
                   <dt className="sr-only">Published on</dt>
-                  <dd className="text-sm md:text-base leading-6 font-medium text-emerald-600 dark:text-cyan-400">
+                  <dd className="text-sm leading-6 font-medium text-emerald-600 md:text-base dark:text-cyan-400">
                     <time dateTime={date} suppressHydrationWarning>
                       {formatDateTime(date, dateLocale)}
                     </time>

@@ -38,7 +38,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               <dl className="space-y-4">
                 <div>
                   <dt className="sr-only">Published on</dt>
-                  <dd className="text-sm md:text-base leading-6 font-medium text-emerald-600 dark:text-cyan-400">
+                  <dd className="text-sm leading-6 font-medium text-emerald-600 md:text-base dark:text-cyan-400">
                     <time dateTime={date} suppressHydrationWarning>
                       {formatDateTime(date, dateLocale)}
                     </time>
@@ -63,12 +63,14 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                           width={44}
                           height={44}
                           alt={author.name}
-                          className="h-11 w-11 rounded-full border border-emerald-500/20 dark:border-cyan-500/20 object-cover shadow-sm"
+                          className="h-11 w-11 rounded-full border border-emerald-500/20 object-cover shadow-sm dark:border-cyan-500/20"
                         />
                       )}
                       <dl className="text-sm leading-5 font-medium">
                         <dt className="sr-only">Name</dt>
-                        <dd className="font-semibold text-gray-900 dark:text-gray-100">{author.name}</dd>
+                        <dd className="font-semibold text-gray-900 dark:text-gray-100">
+                          {author.name}
+                        </dd>
                         {author.occupation && (
                           <dd className="text-xs text-gray-500 dark:text-gray-400">
                             {author.occupation}
@@ -79,7 +81,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                           {author.twitter && (
                             <Link
                               href={author.twitter}
-                              className="text-xs text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 text-xs"
                             >
                               {author.twitter
                                 .replace('https://twitter.com/', '@')
