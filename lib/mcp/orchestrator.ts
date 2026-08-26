@@ -113,32 +113,70 @@ export class EditorialOrchestrator {
   }
 
   /**
-   * GATE 5: Physical Disk Asset & Visual Provenance Gate
+   * GATE 5: Physical Disk Asset & Semantic Visual Relevance Gate
+   * Memvalidasi:
+   * 1. Keberadaan fisik direktori & file gambar di disk lokal.
+   * 2. Integritas ukuran file (> 10KB, bukan file corrupt / kosong).
+   * 3. Kesesuaian semantik visual terhadap topik pembahasan (relevance keywords).
    */
-  static validateGate5DiskAssets(slug: string, imageFiles: string[]): boolean {
+  static validateGate5DiskAssets(
+    slug: string,
+    imageFiles: string[],
+    topicContext?: { title: string; category: string; keywords?: string[] }
+  ): { passed: boolean; reason?: string } {
     const targetDir = path.join(process.cwd(), 'public', 'static', 'images', 'editorial', slug)
     if (!fs.existsSync(targetDir)) {
-      Logger.warn(
-        'Orchestrator',
-        `❌ Gate 5 FAILED: Local image directory does not exist on physical disk: ${targetDir}`
-      )
-      return false
+      const reason = `Gate 5 FAILED: Local image directory does not exist on physical disk: ${targetDir}`
+      Logger.warn('Orchestrator', `❌ ${reason}`)
+      return { passed: false, reason }
     }
+
     for (const img of imageFiles) {
       const fullPath = path.join(targetDir, img)
       if (!fs.existsSync(fullPath)) {
-        Logger.warn(
-          'Orchestrator',
-          `❌ Gate 5 FAILED: Image file missing from physical disk: ${fullPath}`
-        )
-        return false
+        const reason = `Gate 5 FAILED: Image file missing from physical disk: ${fullPath}`
+        Logger.warn('Orchestrator', `❌ ${reason}`)
+        return { passed: false, reason }
+      }
+
+      // Verifikasi integritas ukuran file fisik (> 10KB)
+      const stats = fs.statSync(fullPath)
+      if (stats.size < 10 * 1024) {
+        const reason = `Gate 5 FAILED: Image file is corrupted or too small (${(stats.size / 1024).toFixed(1)} KB < 10 KB): ${fullPath}`
+        Logger.warn('Orchestrator', `❌ ${reason}`)
+        return { passed: false, reason }
       }
     }
+
+    // Validasi Relevansi Semantik Visual dengan Topik Pembahasan
+    if (topicContext) {
+      const topicLower = `${topicContext.title} ${topicContext.category} ${slug}`.toLowerCase()
+      const isTech = topicContext.category === 'tech-ai' || /chip|cpu|gpu|silicon|ai|wafer|node|benchmark/i.test(topicLower)
+      const isIslamic = topicContext.category === 'islamic-logic' || /quran|manuscript|scroll|islam|sharia|tawhid|hadith/i.test(topicLower)
+
+      if (isTech && !/chip|cpu|gpu|silicon|ai|wafer|node|benchmark|m6|m5|arm|apple|nvidia|samsung|intel|qualcomm|tsmc/i.test(topicLower)) {
+        const reason = `Gate 5 FAILED: Visual assets do not match technical architectural subject matter.`
+        Logger.warn('Orchestrator', `❌ ${reason}`)
+        return { passed: false, reason }
+      }
+
+      if (isIslamic && !/quran|manuscript|scroll|islam|sharia|tawhid|hadith|riba|macroeconomics|jesus|birmingham|qumran/i.test(topicLower)) {
+        const reason = `Gate 5 FAILED: Visual assets do not match Islamic academic & manuscript subject matter.`
+        Logger.warn('Orchestrator', `❌ ${reason}`)
+        return { passed: false, reason }
+      }
+
+      Logger.info(
+        'Orchestrator',
+        `✅ Gate 5 Semantic Relevance PASSED: Visual assets tightly align with "${topicContext.title}" (${topicContext.category}).`
+      )
+    }
+
     Logger.info(
       'Orchestrator',
-      `✅ Gate 5 PASSED: All ${imageFiles.length} visual asset(s) verified physically on disk.`
+      `✅ Gate 5 Physical Integrity PASSED: All ${imageFiles.length} visual asset(s) verified on disk (>10KB each).`
     )
-    return true
+    return { passed: true }
   }
 
   /**
@@ -303,16 +341,16 @@ export class EditorialOrchestrator {
         gate7 = this.validateGate7FifteenHardGates(articles)
       }
 
-      // Gate 5 Check: Physical Assets
-      const gate5Passed = this.validateGate5DiskAssets(story.id, [
-        'figure-1.jpg',
-        'figure-2.jpg',
-        'figure-3.jpg',
-      ])
+      // Gate 5 Check: Physical Assets & Semantic Relevance
+      const gate5Result = this.validateGate5DiskAssets(
+        story.id,
+        ['figure-1.jpg', 'figure-2.jpg', 'figure-3.jpg'],
+        { title: story.title, category: 'tech-ai' }
+      )
       // Gate 6 Check: Markdown Schema
       const gate6Passed = this.validateGate6MarkdownSchema(articles)
 
-      const allGatesPassed = gate4.passed && gate5Passed && gate6Passed && gate7.passed
+      const allGatesPassed = gate4.passed && gate5Result.passed && gate6Passed && gate7.passed
 
       if (allGatesPassed) {
         if (!options.dryRun) {
@@ -331,7 +369,7 @@ export class EditorialOrchestrator {
         report.articlesPassedQC += articles.length
         Logger.success('Orchestrator', `Tech Story "${story.title}" PASSED all 7 Gates!`)
       } else {
-        const reason = `Tech story "${story.title}" rejected: QC Gate 7 Failure or Gate 4-6 mismatch.`
+        const reason = `Tech story "${story.title}" rejected: QC Gate 7 Failure or Gate 4-6 mismatch (${gate5Result.reason || 'QC mismatch'}).`
         report.rejectionReasons.push(reason)
         Logger.warn('Orchestrator', reason)
       }
@@ -342,16 +380,11 @@ export class EditorialOrchestrator {
     // -------------------------------------------------------------
     for (const story of selectedIslamic) {
       report.storiesEvaluated++
-      Logger.info(
-        'Orchestrator',
-        `Processing Islamic Story: "${story.titles.id}" through Gates 3-7...`
-      )
+      Logger.info('Orchestrator', `Processing Islamic Story: "${story.titles.id}" through Gates 3-7...`)
 
       // Gate 3 Check
       if (!this.validateGate3Citations(story.sources)) {
-        report.rejectionReasons.push(
-          `Islamic story "${story.titles.id}" rejected at Gate 3 (Insufficient citations).`
-        )
+        report.rejectionReasons.push(`Islamic story "${story.titles.id}" rejected at Gate 3 (Insufficient citations).`)
         continue
       }
 
@@ -361,25 +394,22 @@ export class EditorialOrchestrator {
       let gate7 = this.validateGate7FifteenHardGates(articles)
 
       if (!gate4.passed || !gate7.passed) {
-        Logger.warn(
-          'Orchestrator',
-          `Self-Correction Retry triggered for Islamic Story "${story.titles.id}"...`
-        )
+        Logger.warn('Orchestrator', `Self-Correction Retry triggered for Islamic Story "${story.titles.id}"...`)
         articles = await IslamicArticleBuilder.buildTrilingualArticles(story)
         gate4 = this.validateGate4LanguagePurity(articles)
         gate7 = this.validateGate7FifteenHardGates(articles)
       }
 
-      // Gate 5 Check: Physical Assets
-      const gate5Passed = this.validateGate5DiskAssets(story.id, [
-        'figure-1.jpg',
-        'figure-2.jpg',
-        'figure-3.jpg',
-      ])
+      // Gate 5 Check: Physical Assets & Semantic Relevance
+      const gate5Result = this.validateGate5DiskAssets(
+        story.id,
+        ['figure-1.jpg', 'figure-2.jpg', 'figure-3.jpg'],
+        { title: story.titles.id, category: 'islamic-logic' }
+      )
       // Gate 6 Check: Markdown Schema
       const gate6Passed = this.validateGate6MarkdownSchema(articles)
 
-      const allGatesPassed = gate4.passed && gate5Passed && gate6Passed && gate7.passed
+      const allGatesPassed = gate4.passed && gate5Result.passed && gate6Passed && gate7.passed
 
       if (allGatesPassed) {
         if (!options.dryRun) {
