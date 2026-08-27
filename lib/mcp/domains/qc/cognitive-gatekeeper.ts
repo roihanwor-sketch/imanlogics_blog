@@ -84,11 +84,14 @@ export class CognitiveGatekeeper {
     let gateBPassed = true
     let gateBNote = 'No unverified placeholder metrics detected.'
 
-    const hasFabricated25Percent = /\+25% Throughput Gain/i.test(content)
+    const hasFabricated25Percent =
+      /\+25% Throughput Gain|Metrik Kualitas:\s*Autentik|Status QC:\s*Terverifikasi oleh Sistem QC|Penjelasan mendalam mengenai aspek ini menunjukkan bahwa kombinasi/i.test(
+        content
+      )
     if (hasFabricated25Percent && !hardFail) {
       gateBPassed = false
       gateBNote =
-        'FABRICATED METRIC DETECTED: Hardcoded generic "+25% Throughput Gain" found in article.'
+        'FABRICATED METRIC / OBSOLETE QC TEMPLATE DETECTED: Hardcoded obsolete template string found in article.'
       hardFail = true
       failReason = gateBNote
     }
