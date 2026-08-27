@@ -149,7 +149,7 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## Menelusuri Jejak Sejarah & Titik Temu Intelektual
+## Menelusuri Pokok Masalah & Relevansi Kontemporer
 
 ${narrativeHook.id}
 
@@ -157,14 +157,12 @@ ${story.readerHook.id}
 
 ${story.whyShouldICare.id}
 
-Di balik dinamika wacana dan dialog keagamaan antar-zaman, telaah kritis terhadap naskah dan logika ibadah memberikan perspektif berharga tentang bagaimana manusia memahami hakikat ketundukan kepada Sang Pencipta.
-
 ![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Sumber visual: ${images[0]?.source} / Foto oleh ${images[0]?.author} (${images[0]?.license})*
+*Sumber visual: ${images[0]?.source || 'Arsip Otentik'} / Foto oleh ${images[0]?.author || 'Kontributor'} (${images[0]?.license || 'CC BY-SA'})*
 
 ---
 
-### I. Rekonstruksi Historis & Konteks Teks
+### I. Rekonstruksi Historis & Konteks Dalil Primer
 
 ${historicalContext.id}
 
@@ -172,19 +170,13 @@ ${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url
 
 ---
 
-### II. Konsensus Ilmiah & Telaah Kritis
+### II. Konsensus Akademik & Telaah Kritis Multidimensi
 
 ${scholarlyConsensus.id}
 
----
-
-### III. Pembahasan Tematik & Analisis Rasional
-
-Kajian epistemologis Islam menegaskan bahwa keimanan sejati berakar pada akal yang tercerahkan, bukan kepasrahan buta. Prinsip-prinsip syariat dan akidah senantiasa memanggil akal manusia untuk mengamati, menimbang, dan menarik kesimpulan berdasarkan bukti yang nyata.
-
 ${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
 
-${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n### Telaah Analisis & Refleksi Filosofis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
+${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n### III. Telaah Analisis & Refleksi Filosofis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
 ---
 
 ${renderEpistemology('id')}
@@ -223,7 +215,7 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## Exploring Historical Trajectories & Intellectual Inquiries
+## Framing the Inquiry & Contemporary Relevance
 
 ${narrativeHook.en}
 
@@ -231,14 +223,12 @@ ${story.readerHook.en}
 
 ${story.whyShouldICare.en}
 
-Beneath the surface of historical discourse and philosophical dialogue, rigorous investigation into foundational texts provides invaluable perspective on humanity's understanding of divine transcendence.
-
 ![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Visual Source: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
+*Visual Source: ${images[0]?.source || 'Authentic Archive'} / Photo by ${images[0]?.author || 'Contributor'} (${images[0]?.license || 'CC BY-SA'})*
 
 ---
 
-### I. Historical Reconstruction & Textual Context
+### I. Textual Reconstruction & Primary Context
 
 ${historicalContext.en}
 
@@ -246,19 +236,13 @@ ${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url
 
 ---
 
-### II. Scholarly Consensus & Critical Synthesis
+### II. Scholarly Consensus & Multidimensional Rigor
 
 ${scholarlyConsensus.en}
 
----
-
-### III. Thematic Inquiry & Rational Demarcation
-
-Islamic epistemological traditions emphasize that authentic conviction arises from illuminated reasoning rather than uncritical dogma. The core tenets of faith consistently invite humanity to observe, reflect, and deduce meaning from coherent evidence.
-
 ${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
-${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n### In-Depth Philosophical & Epistemological Inquiry\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
+${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n### III. In-Depth Scholarly Teardown & Philosophical Reflection\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
 ---
 
 ${renderEpistemology('en')}
@@ -297,7 +281,7 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## قراءة نقدية في الشواهد التاريخية ومنطق التوحيد الخالص
+## تأطير القضية والصلة المعاصرة
 
 ${narrativeHook.ar}
 
@@ -305,34 +289,26 @@ ${story.readerHook.ar}
 
 ${story.whyShouldICare.ar}
 
-بين طيات السرد التاريخي ومسارات الحوار الفكري، تقدم الدراسات المقارنة رؤية رصينة تكشف كيف أدرك الإنسان جوهر العبودية والانقياد للخالق سبحانه وتعالى.
-
 ![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
-*مصدر الصورة: ${images[0]?.source} / تصوير ${images[0]?.author} (${images[0]?.license})*
+*مصدر الصورة: ${images[0]?.source || 'الأرشيف المعتمد'} / تصوير: ${images[0]?.author || 'المساهم'} (${images[0]?.license || 'CC BY-SA'})*
 
 ---
 
-### أولاً: التحقيق التاريخي وسياق النصوص التأسيسية
+### أولاً: إعادة البناء التاريخي وسياق النصوص التأسيسية
 
 ${historicalContext.ar}
 
-${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
+${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير: ${images[1].author} (${images[1].license})*\\n` : ''}
 
 ---
 
-### ثانياً: الإجماع الأكاديمي والتحليل النقدي
+### ثانياً: الإجماع العلمي والتحقيق المنهجي المتعدد الأبعاد
 
 ${scholarlyConsensus.ar}
 
----
+${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير: ${images[2].author} (${images[2].license})*\\n` : ''}
 
-### ثالثاً: المباحث الموضوعية والاستدلال العقلاني
-
-تؤكد المنظومة المعرفية الإسلامية أن الإيمان الراسخ يستند إلى العقل الواعي والبرهان الساطع، لا إلى التقليد الأعمى. وتدعو تعاليم الشريعة العقل البشري دوماً إلى التأمل والتدبر واستنباط الحقائق من الشواهد المحكمة.
-
-${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
-
-${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n### تفكيك تحليلي واستدلال معرفي متعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
+${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n### ثالثاً: التحليل المنهجي والتفكيك الفلسفي المعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
 ---
 
 ${renderEpistemology('ar')}

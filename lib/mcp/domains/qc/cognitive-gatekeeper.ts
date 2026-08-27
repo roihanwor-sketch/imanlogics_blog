@@ -61,6 +61,17 @@ export class CognitiveGatekeeper {
         hardFail = true
         failReason = gateANote
       }
+
+      const hasRepetitiveBoilerplate =
+        /di balik dinamika wacana dan dialog keagamaan antar-zaman|beneath the surface of historical discourse and philosophical dialogue|بين طيات السرد التاريخي ومسارات الحوار الفكري/i.test(
+          content
+        )
+      if (hasRepetitiveBoilerplate && !hardFail) {
+        gateAPassed = false
+        gateANote = 'TEMPLATE CONTAMINATION: Generic repetitive Islamic boilerplate phrase detected in article body.'
+        hardFail = true
+        failReason = gateANote
+      }
     }
 
     // Gate B: Zero Fake Metrics & Uncited Generic Claims
