@@ -1,5 +1,65 @@
 {
-  "lastUpdated": "2026-08-27T12:47:40.691Z",
-  "totalCyclesRun": 0,
-  "recentReports": []
+  "lastUpdated": "2026-08-27T14:34:42.660Z",
+  "totalCyclesRun": 2,
+  "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-27T14:33:55.549Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/openai-to-start-showing-ads-on-chatgpt-s-free.mdx",
+        "data/blog/openai-to-start-showing-ads-on-chatgpt-s-free.en.mdx",
+        "data/blog/openai-to-start-showing-ads-on-chatgpt-s-free.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Pergeseran Paradigma Monetisasi Kecerdasan Buatan: Mengapa OpenAI Menguji Iklan pada ChatGPT Tingkat Gratis dan Go di India",
+          "slug": "openai-to-start-showing-ads-on-chatgpt-s-free",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [
+        "Islamic story \"Enam Bulan Konflik Iran: Dialektika Strategis dan Etika Islam dalam Mencari Titik Akhir Perang\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch."
+      ],
+      "status": "SUCCESS"
+    },
+    {
+      "cycleTimestamp": "2026-08-27T14:29:40.913Z",
+      "sourcesScanned": 4,
+      "candidatesDiscovered": 2,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 2,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/samsung-reportedly-decided-against-a-7-000-ma.mdx",
+        "data/blog/samsung-reportedly-decided-against-a-7-000-ma.en.mdx",
+        "data/blog/samsung-reportedly-decided-against-a-7-000-ma.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Dilema Ketebalan dan Efisiensi Termal: Mengapa Samsung Membatalkan Baterai 7.000 mAh pada Galaxy Generasi Mendatang",
+          "slug": "samsung-reportedly-decided-against-a-7-000-ma",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [
+        "Islamic story \"Dialektika Kebuntuan Strategis: Rasionalitas Eskalasi, Fikih Ma'alat, dan Pencarian Solusi Akhir Pasca Enam Bulan Konflik Iran\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch."
+      ],
+      "status": "SUCCESS",
+      "gitCommitHash": "c08b82b"
+    }
+  ]
 }

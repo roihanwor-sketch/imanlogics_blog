@@ -235,7 +235,7 @@ ${images[0] ? `![${images[0].altText.ar || story.titles.ar}](${images[0].localPa
 
 ${story.aiGeneratedDeepAnalysis?.ar || story.readerHook.ar}
 
-${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير: ${images[1].author} (\${images[1].license})*\n\n---\n` : ''}
+${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source || 'الأرشيف المعتمد'} / تصوير: ${images[1].author || 'المساهم'} (${images[1].license || 'CC BY-SA'})*\n\n---\n` : ''}
 
 ## التداعيات على المنظومة والمطورين والمستخدمين
 

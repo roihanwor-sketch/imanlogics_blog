@@ -211,13 +211,25 @@ export class AssetDownloader {
             localPath: downloadRes.localPath,
             source: candidate.source,
             sourceUrl: candidate.sourceUrl,
-            author: candidate.author,
+            author: (candidate.author || 'Wikimedia Contributor').replace(/[\r\n]+/g, ' ').trim(),
             license: candidate.license,
             licenseUrl: candidate.licenseUrl,
             altText: {
-              id: `${candidate.description || candidate.title} terkait ${idTitle}`,
-              en: `${candidate.description || candidate.title} concerning ${enTitle}`,
-              ar: `${candidate.description || candidate.title} لـ ${arTitle}`,
+              id: `${(candidate.description || candidate.title || 'Dokumentasi Visual')
+                .replace(/[\r\n]+/g, ' ')
+                .replace(/[[\]]/g, '')
+                .slice(0, 80)
+                .trim()} terkait ${idTitle.replace(/[\r\n]+/g, ' ').trim()}`,
+              en: `${(candidate.description || candidate.title || 'Visual Documentation')
+                .replace(/[\r\n]+/g, ' ')
+                .replace(/[[\]]/g, '')
+                .slice(0, 80)
+                .trim()} concerning ${enTitle.replace(/[\r\n]+/g, ' ').trim()}`,
+              ar: `${(candidate.description || candidate.title || 'توثيق بصري')
+                .replace(/[\r\n]+/g, ' ')
+                .replace(/[[\]]/g, '')
+                .slice(0, 80)
+                .trim()} لـ ${arTitle.replace(/[\r\n]+/g, ' ').trim()}`,
             },
             tags: keywords,
           })
@@ -244,7 +256,11 @@ export class AssetDownloader {
           .replace(/^File:/, '')
           .replace(/\.[^/.]+$/, '')
           .trim()
-        const cleanShortDesc = cleanTitle.length > 80 ? cleanTitle.slice(0, 80) : cleanTitle
+        const rawDesc = (candidate.description || cleanTitle || 'Visual Documentation')
+          .replace(/[\r\n]+/g, ' ')
+          .replace(/[[\]]/g, '')
+          .trim()
+        const shortDesc = rawDesc.length > 80 ? rawDesc.slice(0, 80) : rawDesc
 
         if (downloadRes.success) {
           selectedImages.push({
@@ -252,13 +268,13 @@ export class AssetDownloader {
             localPath: downloadRes.localPath,
             source: candidate.source,
             sourceUrl: candidate.sourceUrl,
-            author: candidate.author,
+            author: (candidate.author || 'Wikimedia Contributor').replace(/[\r\n]+/g, ' ').trim(),
             license: candidate.license,
             licenseUrl: candidate.licenseUrl,
             altText: {
-              id: `Dokumentasi visual ${cleanShortDesc} terkait ${idTitle}`,
-              en: `Visual documentation of ${cleanShortDesc} for ${enTitle}`,
-              ar: `توثيق بصري لـ ${cleanShortDesc} متعلق بـ ${arTitle}`,
+              id: `Dokumentasi visual ${shortDesc} terkait ${idTitle.replace(/[\r\n]+/g, ' ').trim()}`,
+              en: `Visual documentation of ${shortDesc} concerning ${enTitle.replace(/[\r\n]+/g, ' ').trim()}`,
+              ar: `توثيق بصري لـ ${shortDesc} لـ ${arTitle.replace(/[\r\n]+/g, ' ').trim()}`,
             },
             tags: keywords,
           })
