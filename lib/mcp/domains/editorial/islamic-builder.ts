@@ -132,15 +132,39 @@ export class IslamicArticleBuilder {
       ar: 'يؤكد الباحثون والمحققون على ضرورة تقييم المفاهيم التأسيسية من خلال مصادرها الأصلية.',
     }
 
-    const whatItProves = story.honestBoundaries?.whatItProves || {
+    const rawWhatItProves = story.honestBoundaries?.whatItProves || {
       id: 'APA YANG TERBUKTI: Keselarasan rasional antara wahyu dan bukti tekstual objektif.',
       en: 'WHAT IT PROVES: Rational coherence between revelation and objective textual evidence.',
       ar: 'ما يثبته البحث: التوافق العقلاني بين نصوص الوحي والشواهد المنطقية الموضوعية.',
     }
-    const whatMustNotBeClaimed = story.honestBoundaries?.whatMustNotBeClaimed || {
+    const rawWhatMustNotBeClaimed = story.honestBoundaries?.whatMustNotBeClaimed || {
       id: 'APA YANG TIDAK BOLEH DIKLAIM: Penafsiran manusia tidak boleh dipaksakan sebagai doktrin mutlak tanpa dalil yang kokoh.',
       en: 'WHAT MUST NOT BE CLAIMED: Human interpretations must not be overstated as absolute dogmas without firm evidence.',
       ar: 'ما لا يجوز ادعاؤه: عدم فرض الاجتهادات البشرية كعقائد قطعية دون أدلة محكمة.',
+    }
+
+    const whatItProves = {
+      id: rawWhatItProves.id.startsWith('APA YANG TERBUKTI')
+        ? rawWhatItProves.id
+        : `APA YANG TERBUKTI: ${rawWhatItProves.id}`,
+      en: rawWhatItProves.en.startsWith('WHAT IT PROVES')
+        ? rawWhatItProves.en
+        : `WHAT IT PROVES: ${rawWhatItProves.en}`,
+      ar: rawWhatItProves.ar.startsWith('ما يثبته')
+        ? rawWhatItProves.ar
+        : `ما يثبته البحث: ${rawWhatItProves.ar}`,
+    }
+
+    const whatMustNotBeClaimed = {
+      id: rawWhatMustNotBeClaimed.id.startsWith('APA YANG TIDAK BOLEH DIKLAIM')
+        ? rawWhatMustNotBeClaimed.id
+        : `APA YANG TIDAK BOLEH DIKLAIM: ${rawWhatMustNotBeClaimed.id}`,
+      en: rawWhatMustNotBeClaimed.en.startsWith('WHAT MUST NOT BE CLAIMED')
+        ? rawWhatMustNotBeClaimed.en
+        : `WHAT MUST NOT BE CLAIMED: ${rawWhatMustNotBeClaimed.en}`,
+      ar: rawWhatMustNotBeClaimed.ar.startsWith('ما لا يجوز ادعاؤه')
+        ? rawWhatMustNotBeClaimed.ar
+        : `ما لا يجوز ادعاؤه: ${rawWhatMustNotBeClaimed.ar}`,
     }
 
     // 1. Indonesian Version
