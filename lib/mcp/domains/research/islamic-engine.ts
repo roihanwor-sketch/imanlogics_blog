@@ -11,7 +11,6 @@ import { SourceVerifier } from './source-verifier'
 import { Logger } from '../../core/logger'
 import { WebDiscoveryService, DiscoveredWebLead, IslamicLogicPillar } from './web-discovery'
 import { EditorialSelectionBoard } from './editorial-board'
-import { NativeTitleSynthesizer } from '../editorial/title-synthesizer'
 import { AgyCliBridge } from '../../core/agy-bridge'
 import { StateStore } from '../../core/state-store'
 
@@ -263,11 +262,13 @@ export class IslamicResearchEngine {
     }
   }
 
-  /**
-   * Crafts native trilingual titles by thinking in the target language
-   */
   private static craftNativeTrilingualTitles(rawTitle: string, pillar: string): LocalizedText {
-    return NativeTitleSynthesizer.synthesizeTrilingualTitles(rawTitle, pillar, 'islamic-logic')
+    const clean = rawTitle.replace(/ - [^-]+$/, '').trim()
+    return {
+      id: clean,
+      en: clean,
+      ar: clean,
+    }
   }
 
   /**

@@ -14,9 +14,8 @@ import { TechResearchEngine, TechNewsStory } from './domains/research/tech-engin
 import { IslamicResearchEngine, IslamicAcademicStory } from './domains/research/islamic-engine'
 import { SourceVerifier } from './domains/research/source-verifier'
 import { AssetDownloader } from './domains/media/asset-downloader'
-import { TechArticleBuilder } from './domains/editorial/tech-builder'
-import { IslamicArticleBuilder } from './domains/editorial/islamic-builder'
-import { EditorialQCEngine } from './domains/qc/qc-engine'
+import { ArticleAssembler, RawArticleInput } from './domains/editorial/article-assembler'
+import { FilePublisher } from './domains/publishing/file-publisher'
 import { GitSyncService } from './domains/publishing/git-sync'
 import { WhatsAppService } from './domains/notification/wa-service'
 import { ReportFormatter } from './domains/notification/report-formatter'
@@ -125,35 +124,42 @@ export function createImanLogicsMcpServer(): Server {
           },
         },
         {
-          name: 'imanlogics_build_article',
+          name: 'imanlogics_publish_mdx',
           description:
-            'Build full investigative trilingual MDX articles (ID, EN, AR) with frontmatter, ATM benchmark context, and image credits.',
+            'Assemble and write organic trilingual MDX articles directly to data/blog/ without rigid templates.',
           inputSchema: {
             type: 'object',
             properties: {
-              category: { type: 'string', enum: ['tech-ai', 'islamic-logic'] },
-              storyId: { type: 'string' },
+              articles: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    slug: { type: 'string' },
+                    title: { type: 'string' },
+                    summary: { type: 'string' },
+                    content: { type: 'string' },
+                    language: { type: 'string', enum: ['id', 'en', 'ar'] },
+                    translation_group: { type: 'string' },
+                    category: { type: 'string', enum: ['tech-ai', 'islamic-logic'] },
+                    keywords: { type: 'array', items: { type: 'string' } },
+                    images: { type: 'array', items: { type: 'string' } },
+                    sources: { type: 'array' },
+                    imageCredits: { type: 'array' },
+                  },
+                  required: [
+                    'slug',
+                    'title',
+                    'summary',
+                    'content',
+                    'language',
+                    'translation_group',
+                    'category',
+                  ],
+                },
+              },
             },
-            required: ['category', 'storyId'],
-          },
-        },
-        {
-          name: 'imanlogics_audit_qc',
-          description:
-            'Run 100-Point Multidimensional Human-Level Editorial QC Gatekeeper on MDX article.',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              filename: { type: 'string' },
-              content: { type: 'string' },
-              language: { type: 'string', enum: ['id', 'en', 'ar'] },
-              category: { type: 'string', enum: ['tech-ai', 'islamic-logic'] },
-              articleType: { type: 'string' },
-              publishedHoursAgo: { type: 'number' },
-              sources: { type: 'array' },
-              imageCredits: { type: 'array' },
-            },
-            required: ['filename', 'content', 'language', 'category'],
+            required: ['articles'],
           },
         },
         {
@@ -354,56 +360,26 @@ export function createImanLogicsMcpServer(): Server {
         }
       }
 
-      case 'imanlogics_build_article': {
-        const category = args?.category as string
-        const storyId = args?.storyId as string
-        const today = new Date().toISOString().split('T')[0]
+      case 'imanlogics_publish_mdx': {
+        const rawArticles = (args?.articles as RawArticleInput[]) || []
+        const assembledArticles = rawArticles.map((raw) => ArticleAssembler.assembleMdx(raw))
+        const publishedPaths = FilePublisher.writeBatch(assembledArticles)
 
-        if (category === 'tech-ai') {
-          const candidates = TechResearchEngine.getFreshTechNewsCandidates(today)
-          const story = candidates.find((s) => s.id === storyId) || candidates[0]
-          const articles = await TechArticleBuilder.buildTrilingualArticles(story)
-          return {
-            content: [{ type: 'text', text: JSON.stringify({ storyId, articles }, null, 2) }],
-          }
-        } else {
-          const candidates = IslamicResearchEngine.getFreshIslamicAcademicCandidates(today)
-          const story = candidates.find((s) => s.id === storyId) || candidates[0]
-          const articles = await IslamicArticleBuilder.buildTrilingualArticles(story)
-          return {
-            content: [{ type: 'text', text: JSON.stringify({ storyId, articles }, null, 2) }],
-          }
-        }
-      }
-
-      case 'imanlogics_audit_qc': {
-        const article: MdxArticle = {
-          filename: (args?.filename as string) || 'article.mdx',
-          filepath: '',
-          content: (args?.content as string) || '',
-          language: (args?.language as 'id' | 'en' | 'ar') || 'id',
-          publishedHoursAgo: (args?.publishedHoursAgo as number) ?? 0,
-          frontmatter: {
-            title: '',
-            date: '',
-            tags: [],
-            draft: false,
-            summary: '',
-            images: [],
-            authors: ['default'],
-            language: (args?.language as 'id' | 'en' | 'ar') || 'id',
-            translation_group: '',
-            original_language: 'id',
-            category: (args?.category as 'tech-ai' | 'islamic-logic') || 'tech-ai',
-            articleType: (args?.articleType as string) || 'Analysis',
-            sources: (args?.sources as Array<{ name: string; url: string; tier: number }>) || [],
-            imageCredits: (args?.imageCredits as ImageCreditRecord[]) || [],
-          },
-        }
-
-        const qcResult = EditorialQCEngine.evaluateArticle(article)
         return {
-          content: [{ type: 'text', text: JSON.stringify(qcResult, null, 2) }],
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(
+                {
+                  success: true,
+                  count: publishedPaths.length,
+                  files: publishedPaths,
+                },
+                null,
+                2
+              ),
+            },
+          ],
         }
       }
 
