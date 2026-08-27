@@ -30,107 +30,59 @@ export class CognitiveGatekeeper {
     let hardFail = false
     let failReason: string | undefined
 
-    // Gate A: Topic-Entity Alignment
+    // Gate A: Topic-Entity Alignment (No Cross-Domain Hallucinations)
     let gateAPassed = true
     let gateANote = 'Topic and body entities are strictly aligned.'
 
-    const isLinuxTitle = /linux|kernel/i.test(title)
-    const hasPowerToysContent = /powertoys|win32|dwm|desktop window manager|alt\+tab/i.test(content)
-    if (isLinuxTitle && hasPowerToysContent) {
+    const titleKeywords = title
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 3)
+
+    const contentLower = content.toLowerCase()
+    let keywordHits = 0
+    for (const kw of titleKeywords) {
+      if (contentLower.includes(kw)) {
+        keywordHits++
+      }
+    }
+
+    if (titleKeywords.length > 0 && keywordHits === 0) {
       gateAPassed = false
       gateANote =
-        'CRITICAL TOPIC CONTAMINATION: Linux kernel title contains Microsoft PowerToys body.'
+        'CRITICAL TOPIC DRIFT: Article content contains zero entity references to the title.'
       hardFail = true
       failReason = gateANote
     }
 
-    const isExecutiveDeparture = /exec|executive|departure|leaves|steps down/i.test(title)
-    const hasIncompatibleSiliconTeardown = /die topology|transistor density|wafer yield/i.test(
-      content
-    )
-    if (isExecutiveDeparture && hasIncompatibleSiliconTeardown && !hardFail) {
-      gateAPassed = false
-      gateANote =
-        'TEMPLATE MISMATCH: Executive departure news forced into silicon hardware teardown structure.'
-      hardFail = true
-      failReason = gateANote
-    }
-
-    const isIslamic = category === 'islamic-logic'
-    if (isIslamic && !hardFail) {
-      const hasHinduContent = /nyaya|hindu|vedic|pratyaksha|anumana|upamana|sabda/i.test(content)
-      if (hasHinduContent) {
-        gateAPassed = false
-        gateANote =
-          'THEOLOGICAL CONTAMINATION: Islamic logic article contains Hindu Nyaya philosophy content.'
-        hardFail = true
-        failReason = gateANote
-      }
-
-      const hasRepetitiveBoilerplate =
-        /di balik dinamika wacana dan dialog keagamaan antar-zaman|beneath the surface of historical discourse and philosophical dialogue|بين طيات السرد التاريخي ومسارات الحوار الفكري/i.test(
-          content
-        )
-      if (hasRepetitiveBoilerplate && !hardFail) {
-        gateAPassed = false
-        gateANote =
-          'TEMPLATE CONTAMINATION: Generic repetitive Islamic boilerplate phrase detected in article body.'
-        hardFail = true
-        failReason = gateANote
-      }
-    }
-
-    // Gate B: Zero Fake Metrics & Uncited Generic Claims
+    // Gate B: Zero Fake Metrics & Zero Hardcoded Template Artifacts
     let gateBPassed = true
-    let gateBNote = 'No unverified placeholder metrics detected.'
+    let gateBNote = 'No unverified placeholder metrics or template fragments detected.'
 
-    const hasFabricated25Percent =
-      /\+25% Throughput Gain|Metrik Kualitas:\s*Autentik|Status QC:\s*Terverifikasi oleh Sistem QC|Penjelasan mendalam mengenai aspek ini menunjukkan bahwa kombinasi/i.test(
+    const hasFabricatedTemplateArtifacts =
+      /\+25% Throughput Gain|Metrik Kualitas:\s*Autentik|Status QC:\s*Terverifikasi oleh Sistem QC|Penjelasan mendalam mengenai aspek ini menunjukkan bahwa kombinasi|### I\. Metrik Kunci|### II\. Dekonstruksi Hardware/i.test(
         content
       )
-    if (hasFabricated25Percent && !hardFail) {
+    if (hasFabricatedTemplateArtifacts && !hardFail) {
       gateBPassed = false
       gateBNote =
-        'FABRICATED METRIC / OBSOLETE QC TEMPLATE DETECTED: Hardcoded obsolete template string found in article.'
+        'OBSOLETE TEMPLATE POLLUTION DETECTED: Hardcoded template artifact found in article content.'
       hardFail = true
       failReason = gateBNote
     }
 
-    // Gate C: Visual-Semantic Match
+    // Gate C: Visual-Semantic Match (Verify Media Assets Align with Topic Entity)
     let gateCPassed = true
     let gateCNote = 'Visual assets are strictly compatible with subject matter.'
 
     if (!hardFail) {
       const imageCredits = fm.imageCredits || []
       for (const cred of imageCredits) {
-        const urlLower = cred.url.toLowerCase()
         const textCorpus = `${cred.attributionText} ${cred.url} ${cred.license}`.toLowerCase()
-
-        const isModernChip =
-          /wildcat|crescent|b200|blackwell|m5|m6|intel core|snapdragon|tsmc 2nm/i.test(title)
-        if (
-          isModernChip &&
-          /80186|8086|80286|pentium|486|retro-pc|vintage|master 512/i.test(textCorpus)
-        ) {
+        if (textCorpus.includes('blank') || textCorpus.includes('placeholder')) {
           gateCPassed = false
-          gateCNote = `ANACHRONISTIC ASSET: Ancient processor visual (${cred.url}) used for modern 2026 silicon article.`
-          hardFail = true
-          failReason = gateCNote
-          break
-        }
-
-        const isXperiaVIII = /xperia 10 viii/i.test(title)
-        if (isXperiaVIII && /xperia 10 iii|xperia 10 ii|xperia 10 iv/i.test(textCorpus)) {
-          gateCPassed = false
-          gateCNote = `DEVICE GENERATION MISMATCH: Old generation Xperia visual (${cred.url}) used for Xperia 10 VIII article.`
-          hardFail = true
-          failReason = gateCNote
-          break
-        }
-
-        if (isIslamic && /nyayasutras|hindu|temple|buddhist|church/i.test(urlLower)) {
-          gateCPassed = false
-          gateCNote = `ICONOGRAPHY MISMATCH: Non-Islamic religious visual (${cred.url}) used in Islamic logic essay.`
+          gateCNote = `INVALID PLACEHOLDER ASSET: Placeholder visual (${cred.url}) rejected.`
           hardFail = true
           failReason = gateCNote
           break

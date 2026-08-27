@@ -1,35 +1,5 @@
 {
-  "lastUpdated": "2026-08-27T12:23:39.906Z",
-  "totalCyclesRun": 1,
-  "recentReports": [
-    {
-      "cycleTimestamp": "2026-08-27T12:22:35.515Z",
-      "sourcesScanned": 4,
-      "candidatesDiscovered": 2,
-      "duplicatesRemoved": 0,
-      "storiesEvaluated": 2,
-      "articlesPassedQC": 3,
-      "articlesPublished": [
-        "data/blog/here-s-how-android-ios-and-harmony-os-rank-gl.mdx",
-        "data/blog/here-s-how-android-ios-and-harmony-os-rank-gl.en.mdx",
-        "data/blog/here-s-how-android-ios-and-harmony-os-rank-gl.ar.mdx"
-      ],
-      "publishedStoryDetails": [
-        {
-          "title": "Peta Geopolitik Sistem Operasi Seluler: Dinamika Triopoli Android, iOS, dan Eskalasi HarmonyOS",
-          "slug": "here-s-how-android-ios-and-harmony-os-rank-gl",
-          "category": "tech-ai",
-          "languages": [
-            "id",
-            "en",
-            "ar"
-          ]
-        }
-      ],
-      "rejectionReasons": [
-        "Islamic story \"Dinamika Konflik Regional dan Dialektika Strategis: Analisis Rasional Menuju Resolusi Berkelanjutan\" rejected: QC Gate 7 Failure or Gate 4-6 mismatch."
-      ],
-      "status": "SUCCESS"
-    }
-  ]
+  "lastUpdated": "2026-08-27T12:47:40.691Z",
+  "totalCyclesRun": 0,
+  "recentReports": []
 }

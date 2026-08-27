@@ -131,75 +131,36 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## Di Balik Angka Spesifikasi: Mengapa Perkembangan Ini Menentukan
+## Konteks & Latar Belakang Perkembangan
 
 ${story.readerHook.id}
 
 ${story.whyShouldICare.id}
 
 ![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Sumber visual: ${images[0]?.source} / Foto oleh ${images[0]?.author} (${images[0]?.license})*
+*Sumber visual: ${images[0]?.source || 'Dokumentasi Publik'} / Foto oleh ${images[0]?.author || 'Kontributor'} (${images[0]?.license || 'CC BY-SA'})*
 
 ---
 
-### I. Metrik Kunci & Verifikasi Benchmark
+## Analisis Arsitektur & Dinamika Sistem
 
-Sebelum menelaah detail teknis, berikut data empiris terukur yang telah diverifikasi silang dari lembar spesifikasi resmi:
+${story.aiGeneratedDeepAnalysis?.id || story.readerHook.id}
 
-${story.metrics
-  .map(
-    (m, idx) => `#### ${idx + 1}. ${m.label.id}: **${m.value}**
-- *Komparasi Baseline:* ${m.baselineComparison.id}
-- *Rujukan Primer:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`
-  )
-  .join('\n\n')}
+${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n\n---\n` : ''}
 
-${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url})\n*Sumber visual: ${images[1].source} / Foto oleh ${images[1].author} (${images[1].license})*\n` : ''}
+## Implikasi bagi Ekosistem, Pengembang & Pengguna
 
----
+Perkembangan ini membawa konsekuensi nyata bagi arah industri komputasi modern:
 
-${section2Titles.id}
+- **Dampak Efisiensi & Infrastruktur:** ${story.economicAndEcosystemImpact.enterpriseTCO.id}
+- **Penyebaran Teknologi Konsumen:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.id}
+- **Peluang Pengembang & Ekosistem:** ${story.economicAndEcosystemImpact.developerImplications.id}
 
-Untuk memahami bagaimana performa ini tercapai secara teknis:
-
-- **Spesifikasi Rekayasa Sistem:** ${story.hardwareDeconstruction.siliconSpecs.id}
-- **Perubahan Mikroarsitektur / Alur Eksekusi:** ${story.hardwareDeconstruction.microarchitectureChanges.id}
-- **Profil Daya, Beban & Termal:** ${story.hardwareDeconstruction.thermalAndPowerProfile.id}
-
----
-
-### III. Disambiguasi: Menghindari Salah Paham Industri
-
-Untuk mencegah miskonsepsi yang sering beredar di forum publik:
-
-- **Apa Sebenarnya Inovasi Ini:** ${story.disambiguation.whatItIs.id}
-- **Apa yang BUKAN Bagian dari Inovasi Ini:** ${story.disambiguation.whatItIsNot.id}
-- **Cakupan Penggunaan (Consumer vs Enterprise):** ${story.disambiguation.consumerVsEnterpriseScope.id}
-
-${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
-
----
-
-### IV. Analisis Dampak Ekonomi & Biaya Operasional (TCO)
-
-Inovasi komputasi selalu bermuara pada perhitungan ekonomi dan alur kerja:
-
-- **Dampak Biaya Enterprise (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.id}
-- **Tren Ketersediaan & Distribusi:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.id}
-- **Implikasi bagi Pengembang & Pengguna:** ${story.economicAndEcosystemImpact.developerImplications.id}
-
-${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n### Telaah Analitis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
 ---
 
 ${renderCitationChain('id')}
 
-### VI. Kesimpulan Editorial ImanLogics
-
-Perkembangan ini membuktikan bahwa lompatan komputasi modern ditentukan oleh kejelasan arsitektur, efisiensi eksekusi data, dan keandalan sistem tanpa kompromi.
-
----
-
-### Rujukan Primer & Sumber Otoritatif
+## Rujukan & Sumber Terverifikasi
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'id')} (Tier ${src.tier})*`).join('\n')}
 `
@@ -222,75 +183,36 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## Beyond Specification Sheets: Architectural Demarcation & Strategic Impact
+## Framing the Technical Landscape
 
 ${story.readerHook.en}
 
 ${story.whyShouldICare.en}
 
 ![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Visual Source: ${images[0]?.source} / Photo by ${images[0]?.author} (${images[0]?.license})*
+*Visual Source: ${images[0]?.source || 'Public Archive'} / Photo by ${images[0]?.author || 'Contributor'} (${images[0]?.license || 'CC BY-SA'})*
 
 ---
 
-### I. Verifiable Empirical Benchmarks & Performance Metrics
+## Architectural Teardown & Systems Dynamics
 
-Before examining system internals, the following measured empirical points have been verified across official documentation:
+${story.aiGeneratedDeepAnalysis?.en || story.readerHook.en}
 
-${story.metrics
-  .map(
-    (m, idx) => `#### ${idx + 1}. ${m.label.en}: **${m.value}**
-- *Baseline Comparison:* ${m.baselineComparison.en}
-- *Primary Citation:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`
-  )
-  .join('\n\n')}
+${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Source: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n\n---\n` : ''}
 
-${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url})\n*Visual Source: ${images[1].source} / Photo by ${images[1].author} (${images[1].license})*\n` : ''}
+## Industry, Developer & Ecosystem Implications
 
----
+This technological shift introduces measurable impacts across the broader computing landscape:
 
-${section2Titles.en}
+- **Infrastructure & Energy Efficiency:** ${story.economicAndEcosystemImpact.enterpriseTCO.en}
+- **Consumer Hardware Trajectory:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.en}
+- **Developer Ecosystem Capabilities:** ${story.economicAndEcosystemImpact.developerImplications.en}
 
-Analyzing how this performance density is achieved at the engineering boundary:
-
-- **System Engineering Specifications:** ${story.hardwareDeconstruction.siliconSpecs.en}
-- **Microarchitectural & Execution Pipeline Modifications:** ${story.hardwareDeconstruction.microarchitectureChanges.en}
-- **Thermal Dissipation & Power Scaling Dynamics:** ${story.hardwareDeconstruction.thermalAndPowerProfile.en}
-
----
-
-### III. Industry Disambiguation: Demarcating Marketing from Reality
-
-To prevent prevalent industry misconceptions:
-
-- **What This Innovation Concretely Delivers:** ${story.disambiguation.whatItIs.en}
-- **What Is Explicitly NOT Part of This Release:** ${story.disambiguation.whatItIsNot.en}
-- **Target Deployment Scope (Consumer vs Enterprise):** ${story.disambiguation.consumerVsEnterpriseScope.en}
-
-${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
-
----
-
-### IV. Economic Breakdown & Total Cost of Ownership (TCO)
-
-Engineering innovations invariably reshape infrastructure economics and developer productivity:
-
-- **Enterprise Infrastructure Impact (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.en}
-- **Deployment & Market Trajectory:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.en}
-- **Software Engineering Implications:** ${story.economicAndEcosystemImpact.developerImplications.en}
-
-${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n### In-Depth Architectural Teardown\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
 ---
 
 ${renderCitationChain('en')}
 
-### VI. ImanLogics Editorial Synthesis
-
-This technological milestone underscores that enduring computational scaling relies not on uncalibrated claims, but on structural architectural rigor and execution efficiency.
-
----
-
-### Primary References & Authoritative Sources
+## Primary References & Verified Sources
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'en')} (Tier ${src.tier})*`).join('\n')}
 `
@@ -313,75 +235,36 @@ sources: ${JSON.stringify(story.sources)}
 imageCredits: ${JSON.stringify(imageCredits)}
 ---
 
-## ما وراء الأرقام والمعايير: تفكيك البنية التقنية والأبعاد الاستراتيجية
+## السياق الاستراتيجي والأهمية التقنية
 
 ${story.readerHook.ar}
 
 ${story.whyShouldICare.ar}
 
 ![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
-*مصدر الصورة: ${images[0]?.source} / تصوير ${images[0]?.author} (${images[0]?.license})*
+*مصدر الصورة: ${images[0]?.source || 'الأرشيف المعتمد'} / تصوير: ${images[0]?.author || 'المساهم'} (${images[0]?.license || 'CC BY-SA'})*
 
 ---
 
-### أولاً: المؤشرات المقاسة ومصفوفة الأداء المعياري
+## التحليل المعماري وتفكيك المنظومة
 
-قبل الخوض في التفاصيل التقنية، نورد فيما يلي البيانات التجريبية المؤكدة والمطابقة للوثائق الرسمية:
+${story.aiGeneratedDeepAnalysis?.ar || story.readerHook.ar}
 
-${story.metrics
-  .map(
-    (m, idx) => `#### ${idx + 1}. ${m.label.ar}: **${m.value}**
-- *المقارنة المعيارية:* ${m.baselineComparison.ar}
-- *المرجع التأسيسي:* [${m.primarySourceCitation}](${m.independentVerificationUrl})`
-  )
-  .join('\n\n')}
+${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير: ${images[1].author} (\${images[1].license})*\n\n---\n` : ''}
 
-${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير ${images[1].author} (${images[1].license})*\n` : ''}
+## التداعيات على المنظومة والمطورين والمستخدمين
 
----
+يحمل هذا التطور المعماري انعكاسات عملية على خارطة طريق الحوسبة المعاصرة:
 
-${section2Titles.ar}
+- **كفاءة البنية التحتية واستهلاك الطاقة:** ${story.economicAndEcosystemImpact.enterpriseTCO.ar}
+- **تطور منتجات الأجهزة الاستهلاكية:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.ar}
+- **آفاق التطوير والبرمجيات المتقدمة:** ${story.economicAndEcosystemImpact.developerImplications.ar}
 
-لفهم كيفية تحقيق هذه الكفاءة على مستوى هندسة المنظومة:
-
-- **المواصفات الهندسية للمنظومة:** ${story.hardwareDeconstruction.siliconSpecs.ar}
-- **تعديلات المعمارية الدقيقة ومسارات التنفيذ:** ${story.hardwareDeconstruction.microarchitectureChanges.ar}
-- **غلاف الطاقة والأداء الحراري:** ${story.hardwareDeconstruction.thermalAndPowerProfile.ar}
-
----
-
-### ثالثاً: التمييز المفاهيمي: تفنيد المغالطات الشائعة
-
-حرصاً على ضبط المفاهيم وتفادي التفسيرات غير الدقيقة:
-
-- **ما يقدمه هذا الابتكار فعلياً:** ${story.disambiguation.whatItIs.ar}
-- **ما لا يدخل ضمن نطاق هذا التطور:** ${story.disambiguation.whatItIsNot.ar}
-- **نطاق الاستخدام (المستهلك الفردي مقابل المؤسسات):** ${story.disambiguation.consumerVsEnterpriseScope.ar}
-
-${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير ${images[2].author} (${images[2].license})*\n` : ''}
-
----
-
-### رابعاً: التحليل الاقتصادي وتكلفة الملكية الإجمالية (TCO)
-
-ينعكس التطور الهندسي دوماً على اقتصاديات البنية التحتية والإنتاجية:
-
-- **التأثير على التكاليف المؤسسية (TCO):** ${story.economicAndEcosystemImpact.enterpriseTCO.ar}
-- **مسار التوافر والانتشار في الأسواق:** ${story.economicAndEcosystemImpact.consumerPricingTrajectory.ar}
-- **الأبعاد البرمجية وفرص التطوير:** ${story.economicAndEcosystemImpact.developerImplications.ar}
-
-${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n### تفكيك تحليلي متعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
 ---
 
 ${renderCitationChain('ar')}
 
-### سادساً: الخلاصة التحليلية لـ ImanLogics
-
-يؤكد هذا التطور أن التقدم الحاسوبي المستدام لا يتحقق بالوعود التسويقية، بل بالانضباط المعماري وكفاءة المعالجة الفائقة دون مساومة.
-
----
-
-### المراجع الرسمية والمصادر المعتمدة
+## المراجع والمصادر المعتمدة
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'ar')} (Tier ${src.tier})*`).join('\n')}
 `

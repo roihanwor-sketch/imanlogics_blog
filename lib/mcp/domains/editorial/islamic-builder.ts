@@ -162,7 +162,7 @@ ${story.whyShouldICare.id}
 
 ---
 
-### I. Rekonstruksi Historis & Konteks Dalil Primer
+## Rekonstruksi Historis & Konteks Dalil Primer
 
 ${historicalContext.id}
 
@@ -170,20 +170,20 @@ ${images[1] ? `![${images[1].altText.id}](${images[1].localPath || images[1].url
 
 ---
 
-### II. Konsensus Akademik & Telaah Kritis Multidimensi
+## Konsensus Akademik & Telaah Kritis Multidimensi
 
 ${scholarlyConsensus.id}
 
 ${images[2] ? `![${images[2].altText.id}](${images[2].localPath || images[2].url})\n*Sumber visual: ${images[2].source} / Foto oleh ${images[2].author} (${images[2].license})*\n` : ''}
 
-${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n### III. Telaah Analisis & Refleksi Filosofis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
+${story.aiGeneratedDeepAnalysis?.id ? `\n---\n\n## Telaah Analisis & Refleksi Filosofis Mendalam\n\n${story.aiGeneratedDeepAnalysis.id}\n` : ''}
 ---
 
 ${renderEpistemology('id')}
 
 ${renderCitationChain('id')}
 
-### VII. Batasan Intelektual: Apa yang Terbukti—dan Apa yang Tidak
+## Batasan Intelektual: Apa yang Terbukti—dan Apa yang Tidak
 
 Sebuah telaah yang bermartabat harus berani menarik batas tegas antara data empiris dan kesimpulan iman:
 
@@ -192,7 +192,7 @@ Sebuah telaah yang bermartabat harus berani menarik batas tegas antara data empi
 
 ---
 
-### Rujukan Akademik & Sumber Otoritatif
+## Rujukan Akademik & Sumber Otoritatif
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'id')} (Tier ${src.tier})*`).join('\n')}
 `
@@ -228,7 +228,7 @@ ${story.whyShouldICare.en}
 
 ---
 
-### I. Textual Reconstruction & Primary Context
+## Textual Reconstruction & Primary Context
 
 ${historicalContext.en}
 
@@ -236,20 +236,20 @@ ${images[1] ? `![${images[1].altText.en}](${images[1].localPath || images[1].url
 
 ---
 
-### II. Scholarly Consensus & Multidimensional Rigor
+## Scholarly Consensus & Multidimensional Rigor
 
 ${scholarlyConsensus.en}
 
 ${images[2] ? `![${images[2].altText.en}](${images[2].localPath || images[2].url})\n*Visual Source: ${images[2].source} / Photo by ${images[2].author} (${images[2].license})*\n` : ''}
 
-${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n### III. In-Depth Scholarly Teardown & Philosophical Reflection\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
+${story.aiGeneratedDeepAnalysis?.en ? `\n---\n\n## In-Depth Scholarly Teardown & Philosophical Reflection\n\n${story.aiGeneratedDeepAnalysis.en}\n` : ''}
 ---
 
 ${renderEpistemology('en')}
 
 ${renderCitationChain('en')}
 
-### VII. Intellectual Boundaries: What This Does—and Doesn't—Prove
+## Intellectual Boundaries: What This Does—and Doesn't—Prove
 
 A rigorous inquiry must maintain strict demarcation between empirical data and theological interpretation:
 
@@ -258,7 +258,7 @@ A rigorous inquiry must maintain strict demarcation between empirical data and t
 
 ---
 
-### Primary References & Scholarly Sources
+## Primary References & Scholarly Sources
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'en')} (Tier ${src.tier})*`).join('\n')}
 `
@@ -294,28 +294,28 @@ ${story.whyShouldICare.ar}
 
 ---
 
-### أولاً: إعادة البناء التاريخي وسياق النصوص التأسيسية
+## إعادة البناء التاريخي وسياق النصوص التأسيسية
 
 ${historicalContext.ar}
 
-${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير: ${images[1].author} (${images[1].license})*\\n` : ''}
+${images[1] ? `![${images[1].altText.ar}](${images[1].localPath || images[1].url})\n*مصدر الصورة: ${images[1].source} / تصوير: ${images[1].author} (${images[1].license})*\n` : ''}
 
 ---
 
-### ثانياً: الإجماع العلمي والتحقيق المنهجي المتعدد الأبعاد
+## الإجماع العلمي والتحقيق المنهجي المتعدد الأبعاد
 
 ${scholarlyConsensus.ar}
 
-${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير: ${images[2].author} (${images[2].license})*\\n` : ''}
+${images[2] ? `![${images[2].altText.ar}](${images[2].localPath || images[2].url})\n*مصدر الصورة: ${images[2].source} / تصوير: ${images[2].author} (${images[2].license})*\n` : ''}
 
-${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n### ثالثاً: التحليل المنهجي والتفكيك الفلسفي المعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
+${story.aiGeneratedDeepAnalysis?.ar ? `\n---\n\n## التحليل المنهجي والتفكيك الفلسفي المعمق\n\n${story.aiGeneratedDeepAnalysis.ar}\n` : ''}
 ---
 
 ${renderEpistemology('ar')}
 
 ${renderCitationChain('ar')}
 
-### سابعاً: الحدود المعرفية: ما يثبته البحث وما لا يجوز ادعاؤه
+## الحدود المعرفية: ما يثبته البحث وما لا يجوز ادعاؤه
 
 تقتضي الأمانة العلمية رسم حدود صارمة بين الشواهد المادية والمسلمات الإيمانية:
 
@@ -324,7 +324,7 @@ ${renderCitationChain('ar')}
 
 ---
 
-### المراجع الأكاديمية والمصادر المعتمدة
+## المراجع الأكاديمية والمصادر المعتمدة
 
 ${story.sources.map((src) => `- **[${src.name}](${src.url})** — *${SourceVerifier.localizeSourceType(src.type, 'ar')} (Tier ${src.tier})*`).join('\n')}
 `
