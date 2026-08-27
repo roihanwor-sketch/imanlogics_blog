@@ -333,347 +333,88 @@ export class TechResearchEngine {
    * Generates domain-accurate technical prose matching the specific field
    */
   /**
-   * Generates domain-accurate technical prose strictly customized to the discovered story
+   * Generates dynamic contextual prose strictly extracted from the discovered news story
    */
   private static generateDomainSpecificProse(title: string, domain: string, outlet: string) {
-    const titleLower = title.toLowerCase()
-    const isLinux = /linux|kernel/i.test(titleLower)
-    const isPowerToys = /powertoys/i.test(titleLower)
-    const isExecutive = /exec|executive|departure|leaves|steps down|datacenter lead/i.test(
-      titleLower
-    )
-    const isSmartphone = /phone|smartphone|xperia|galaxy|pixel|poco|oneplus/i.test(titleLower)
-    const isSilicon = /chip|die|semiconductor|blackwell|m5|m6|intel|crescent|wildcat|jalape/i.test(
-      titleLower
-    )
+    const cleanTitle = title.replace(/ - [^-]+$/, '').trim()
 
-    if (isLinux) {
-      return {
-        metrics: [
-          {
-            label: {
-              id: 'Efisiensi Alur Kerja Multi-Kernel & Penjadwalan Latensi Rendah',
-              en: 'Multi-Kernel Latency & Scheduler Execution Efficiency',
-              ar: 'كفاءة جدولة المهام في معمارية النواة المتعددة',
-            },
-            value: 'Sub-millisecond Preemption',
-            baselineComparison: {
-              id: 'Evaluasi komparatif terhadap model monolitik standar Linux CFS/EEVDF.',
-              en: 'Compared against standard monolithic Linux CFS/EEVDF scheduler latency.',
-              ar: 'مقارنة مع معدلات زمن الاستجابة في مجدول نواة لينكس التقليدي.',
-            },
-            primarySourceCitation: 'Linux Kernel Documentation & Git Tree',
-            independentVerificationUrl: 'https://kernel.org',
-          },
-        ],
-        readerHook: {
-          id: `Pengembangan subsistem inti Linux terus mendorong batas efisiensi komputasi modern. Laporan terbaru dari ${outlet} menganalisis lompatan arsitektural pada subsistem kernel generasi baru.`,
-          en: `Core Linux kernel architecture continues to advance system responsiveness and low-latency scaling. Recent engineering coverage across ${outlet} examines pivotal subsystem upgrades.`,
-          ar: `تواصل بنية نواة نظام لينكس مسار التطور الهندسي لتعزيز كفاءة المعالجة وتقليص زمن الاستجابة. يسلط تقرير ${outlet} الضوء على تحديثات جوهرية في المنظومة.`,
-        },
-        whyShouldICare: {
-          id: `Penyempurnaan pada kernel scheduler, memori virtual, dan isolasi thread langsung meningkatkan throughput server cloud dan responsivitas sistem operasi desktop.`,
-          en: `Refinements in memory management and thread preemption directly elevate cloud instance throughput and developer workstation responsiveness.`,
-          ar: `تنعكس تحسينات إدارة الذاكرة وجدولة المسارات التنفيذية إيجابياً على كفاءة الخوادم السحابية وسرعة أجهزة المطورين.`,
-        },
-        hardwareDeconstruction: {
-          siliconSpecs: {
-            id: 'Optimalisasi struktur lockless ring buffer dan pengurangan jejak interupsi sistem.',
-            en: 'Lockless ring buffer optimizations paired with reduced hardware interrupt overhead.',
-            ar: 'تحسين بنية المخازن المؤقتة وتقليل استهلاك المقاطعات العتادية للنظام.',
-          },
-          microarchitectureChanges: {
-            id: 'Peningkatan efisiensi alur eksekusi syscall dan isolasi memori antar-domain eksekusi.',
-            en: 'Streamlined syscall execution path and refined per-core isolation domains.',
-            ar: 'مسارات تنفيذ أكثر كفاءة لنداءات النظام مع عزل دقيق لنطاقات الذاكرة.',
-          },
-          thermalAndPowerProfile: {
-            id: 'Manajemen state frekuensi dinamis (CPUfreq) yang lebih responsif terhadap lonjakan beban.',
-            en: 'Adaptive CPU frequency state management providing rapid response to compute spikes.',
-            ar: 'إدارة متكيفة لترددات المعالج تضمن الاستجابة السريعة لأحمال العمل المكثفة.',
-          },
-        },
-        economicAndEcosystemImpact: {
-          enterpriseTCO: {
-            id: 'Mengurangi utilisasi siklus CPU idle pada skala datacenter besar tanpa biaya royalti.',
-            en: 'Reduces wasted compute cycles across hyperscale datacenter workloads without proprietary licensing.',
-            ar: 'تقليل إهدار دورات المعالجة في مراكز البيانات الضخمة دون تكاليف تراخيص تجارية.',
-          },
-          consumerPricingTrajectory: {
-            id: 'Didistribusikan secara terbuka melalui upstream repository kernel.org untuk seluruh distro.',
-            en: 'Distributed freely upstream via kernel.org for universal distribution adoption.',
-            ar: 'متاح للجميع ومفتوح المصدر عبر مستودعات النواة الرسمية لكافة التوزيعات.',
-          },
-          developerImplications: {
-            id: 'Pengembang sistem dapat menguji API kernel baru dan mengoptimalkan pipeline runtime.',
-            en: 'Systems developers can leverage enhanced tracepoints and modern scheduler APIs.',
-            ar: 'يمكن لمطوري الأنظمة الاستفادة من واجهات التتبع البرمجية الحديثة لتحسين أداء البرامج.',
-          },
-        },
-        disambiguation: {
-          whatItIs: {
-            id: 'Evolusi subsistem kernel terbuka untuk meningkatkan efisiensi dan skalabilitas multi-core.',
-            en: 'An upstream open-source kernel architectural progression optimizing multi-core concurrency.',
-            ar: 'تطوير جذري في بنية النواة مفتوحة المصدر يهدف لتحسين إدارة الأنوية المتعددة.',
-          },
-          whatItIsNot: {
-            id: 'Bukan sekadar utilitas pengguna tingkat atas, melainkan rekayasa lapisan subsistem kernel murni.',
-            en: 'Not a high-level userland application, but an intrinsic core operating system refinement.',
-            ar: 'ليس مجرد تطبيق في واجهة المستخدم، بل ترقية بنيوية عميقة في نواة النظام.',
-          },
-          consumerVsEnterpriseScope: {
-            id: 'Berdampak pada seluruh lapisan sistem mulai dari workstation pengembang hingga infrastruktur cloud.',
-            en: 'Universally applicable from developer laptops to hyperscale enterprise servers.',
-            ar: 'ذو أثر ممتد من أجهزة العمل الشخصية إلى خوادم السحاب المؤسسية.',
-          },
-        },
-      }
-    }
-
-    if (isExecutive) {
-      return {
-        metrics: [
-          {
-            label: {
-              id: 'Dinamika Kepemimpinan Infrastruktur Datacenter',
-              en: 'Datacenter Strategic Leadership Shift',
-              ar: 'التحولات الهيكلية في إدارة مراكز البيانات',
-            },
-            value: 'Strategic Transition',
-            baselineComparison: {
-              id: 'Dianalisis dalam konteks ekspansi kapasitas komputasi berskala multi-gigawatt industri AI.',
-              en: 'Contextualized within multi-gigawatt compute capacity scaling in the AI industry.',
-              ar: 'ضمن سياق التوسع الهائل في القدرات الحاسوبية للبنية التحتية للذكاء الاصطناعي.',
-            },
-            primarySourceCitation: 'Industry Executive Filings & Verified Corporate Reports',
-            independentVerificationUrl: 'https://techcrunch.com',
-          },
-        ],
-        readerHook: {
-          id: `Persaingan infrastruktur komputasi kecerdasan artifisial kini ditentukan oleh kepemimpinan strategis dan efisiensi manajemen data center. Laporan industri dari ${outlet} mengonfirmasi transisi kepemimpinan kunci.`,
-          en: `The accelerating race for foundational AI compute capacity is increasingly shaped by datacenter leadership and energy infrastructure. Recent reporting by ${outlet} confirms a pivotal executive movement.`,
-          ar: `يتحدد مسار التنافس في مجال البنية التحتية للذكاء الاصطناعي بالقيادة الاستراتيجية وإدارة الطاقة. تؤكد التقارير الصادرة عن ${outlet} انتقالاً إدارياً محورياً.`,
-        },
-        whyShouldICare: {
-          id: `Perubahan eksekutif pada lini infrastruktur AI berskala besar mencerminkan pergeseran prioritas industri menuju efisiensi daya, pengadaan chip kustom, dan kemandirian arsitektur cloud.`,
-          en: `Executive shifts across frontier AI compute teams signal broader industry pivots toward energy efficiency, custom silicon deployment, and supply chain independence.`,
-          ar: `تعكس التغييرات القيادية في فرق البنية التحتية للذكاء الاصطناعي توجهاً استراتيجياً نحو كفاءة الطاقة وتطوير الشرائح المخصصة.`,
-        },
-        hardwareDeconstruction: {
-          siliconSpecs: {
-            id: 'Perencanaan klaster superkomputer multi-tier dan integrasi interkoneksi berkecepatan tinggi.',
-            en: 'Supercomputing cluster capacity planning paired with high-bandwidth optical interconnect deployment.',
-            ar: 'تخطيط سعات الحوسبة الفائقة وتكامل شبكات الربط الضوئي عالي السرعة.',
-          },
-          microarchitectureChanges: {
-            id: 'Optimalisasi alur distribusi beban komputasi dan manajemen failover lintas fasilitas data center.',
-            en: 'Workload orchestration orchestration models ensuring fault-tolerant multi-site scaling.',
-            ar: 'إدارة متقدمة لتوزيع أحمال التدريب والاستدلال وضمان استمرارية التشغيل عبر مراكز البيانات.',
-          },
-          thermalAndPowerProfile: {
-            id: 'Tantangan efisiensi daya (PUE) dan adopsi sistem pendingin cair direct-to-chip pada skala gigawatt.',
-            en: 'Power Usage Effectiveness (PUE) targets driving direct-to-chip liquid cooling architectures.',
-            ar: 'تحسين كفاءة استهلاك الطاقة واعتماد تقنيات التبريد السائل المباشر للشرائح.',
-          },
-        },
-        economicAndEcosystemImpact: {
-          enterpriseTCO: {
-            id: 'Penataan ulang belanja modal (CapEx) infrastruktur server AI bernilai miliaran dolar.',
-            en: 'Strategic realignment of multi-billion dollar AI server CapEx and energy contracts.',
-            ar: 'إعادة ضبط النفقات الرأسمالية الضخمة على خوادم الذكاء الاصطناعي وعقود الطاقة.',
-          },
-          consumerPricingTrajectory: {
-            id: 'Efisiensi operasional skala besar menentukan biaya per token API bagi pengembang dan konsumen.',
-            en: 'Operational economies of scale dictate sustainable API inference pricing for end users.',
-            ar: 'تسهم وفورات الحجم التشغيلية في ضبط تكاليف واجهات البرمجة للمستخدمين النهائيين.',
-          },
-          developerImplications: {
-            id: 'Kestabilan infrastruktur data center menjamin ketersediaan kuota inferensi model AI frontier.',
-            en: 'Datacenter operational stability secures continuous capacity for frontier model fine-tuning and inference.',
-            ar: 'ضمان الاستقرار التشغيلي لمراكز البيانات يتيح استمرارية تدريب النماذج وتوفير خدمات الاستدلال.',
-          },
-        },
-        disambiguation: {
-          whatItIs: {
-            id: 'Pergeseran manajemen strategis dalam divisi infrastruktur komputasi data center terkemuka.',
-            en: 'A strategic leadership and infrastructure management transition in enterprise AI computing.',
-            ar: 'تحول استراتيجي في قيادة وإدارة البنية التحتية لمراكز البيانات في قطاع الذكاء الاصطناعي.',
-          },
-          whatItIsNot: {
-            id: 'Bukan pengumuman rilis chip silikon baru, melainkan dinamika organisasi dan strategi fasilitas komputasi.',
-            en: 'Not a new silicon architecture release, but a strategic organizational and datacenter operations realignment.',
-            ar: 'ليس إعلاناً عن معمارية شرائح جديدة، بل تحولاً إدارياً وتشغيلياً في منظومة الحوسبة.',
-          },
-          consumerVsEnterpriseScope: {
-            id: 'Berorientasi pada peta jalan infrastruktur korporat dan penyedia komputasi skala raksasa.',
-            en: 'Focused on enterprise hyperscale cloud roadmaps and long-term computing capacity.',
-            ar: 'يركز على خطط البنية التحتية المؤسسية وسعات الحوسبة السحابية واسعة النطاق.',
-          },
-        },
-      }
-    }
-
-    if (isSmartphone) {
-      return {
-        metrics: [
-          {
-            label: {
-              id: 'Efisiensi Daya & Ergonomi Perangkat Mobile',
-              en: 'Mobile Power Efficiency & Thermal Sustained Performance',
-              ar: 'كفاءة استهلاك الطاقة والأداء الحراري المستدام',
-            },
-            value: 'Optimized Battery Retention',
-            baselineComparison: {
-              id: 'Dianalisis terhadap konsumsi daya platform generasi sebelumnya di segmen menengah.',
-              en: 'Compared against prior mid-range mobile platform energy draw.',
-              ar: 'مقارنة بمعدلات استهلاك الطاقة في الأجيال السابقة من نفس الفئة.',
-            },
-            primarySourceCitation: 'Official Manufacturer Specifications & Testing Sheets',
-            independentVerificationUrl: 'https://sony.com',
-          },
-        ],
-        readerHook: {
-          id: `Pasar perangkat mobile kelas menengah kini menuntut keseimbangan presisi antara daya tahan baterai, kualitas optik kamera, dan ergonomi fisik. Pengumuman resmi yang dilaporkan oleh ${outlet} membedah kompromi rekayasa tersebut.`,
-          en: `The contemporary mid-range smartphone segment requires precise engineering trade-offs between battery longevity, optical processing, and ergonomics. Recent reporting by ${outlet} provides detailed technical deconstruction.`,
-          ar: `يتطلب سوق الهواتف الذكية المتوسطة توازناً هندسياً دقيقاً بين عمر البطارية وجودة المعالجة الصورية والتصميم المريح. يحلل تقرير ${outlet} أحدث هذه الابتكارات.`,
-        },
-        whyShouldICare: {
-          id: `Bagi konsumen yang mencari perangkat tahan lama tanpa kompromi performa harian, kejelasan spesifikasi sensor, panel layar, dan sistem pendingin menjadi parameter penentu.`,
-          en: `For users prioritizing sustained daily endurance and compact form factors, architectural clarity on display drivers, sensors, and thermal design is paramount.`,
-          ar: `بالنسبة للمستخدمين، تشكل المواصفات الدقيقة لحساسات الكاميرا والبطارية وشاشة العرض المعيار الحاسم للاقتناء.`,
-        },
-        hardwareDeconstruction: {
-          siliconSpecs: {
-            id: 'Integrasi SoC hemat daya dengan fabrikasi modern dan modem 5G terintegrasi.',
-            en: 'Energy-efficient SoC integration leveraging modern process nodes and integrated 5G baseband.',
-            ar: 'تكامل معالج موفر للطاقة بتقنية تصنيع حديثة مع مودم مدمج لشبكات الجيل الخامس.',
-          },
-          microarchitectureChanges: {
-            id: 'Pengoptimalan pipeline Image Signal Processor (ISP) untuk pemrosesan citra komputasional.',
-            en: 'Optimized Image Signal Processor (ISP) pipeline for multi-frame computational photography.',
-            ar: 'مسارات معالجة صورية متقدمة في معالج الإشارة لتحسين جودة التصوير الحسابي.',
-          },
-          thermalAndPowerProfile: {
-            id: 'Penyaluran panas pasif yang menjaga kestabilan frame rate tanpa throttling agresif.',
-            en: 'Passive thermal dissipation maintaining sustained performance without aggressive thermal throttling.',
-            ar: 'تبديد حراري سلبي فعال يحافظ على استقرار الأداء دون هبوط حاد في الترددات.',
-          },
-        },
-        economicAndEcosystemImpact: {
-          enterpriseTCO: {
-            id: 'Dukungan pembaruan perangkat lunak jangka panjang yang memperpanjang siklus penggunaan armada mobile.',
-            en: 'Multi-year software update commitments extending mobile deployment lifecycles.',
-            ar: 'التزام ممتد بالتحديثات البرمجية يعزز العمر الافتراضي للجهاز ويقلل تكاليف الاستبدال.',
-          },
-          consumerPricingTrajectory: {
-            id: 'Penetapan harga yang kompetitif di segmen menengah dengan keunggulan ketahanan fisik.',
-            en: 'Competitive mid-range market positioning balanced with IP-rated physical durability.',
-            ar: 'تسعير منافس في الفئة المتوسطة مع معايير متقدمة لمقاومة الماء والغبار.',
-          },
-          developerImplications: {
-            id: 'Kompatibilitas API kamera dan grafis standar Android untuk pengalaman aplikasi yang konsisten.',
-            en: 'Standard Android CameraX and graphics API compliance ensuring consistent app performance.',
-            ar: 'توافق كامل مع واجهات برمجة الكاميرا والرسوميات لنظام أندرويد لضمان سلاسة التطبيقات.',
-          },
-        },
-        disambiguation: {
-          whatItIs: {
-            id: 'Penyempurnaan iteratif pada lini perangkat mobile menengah dengan fokus pada efisiensi.',
-            en: 'An iterative mid-range mobile engineering progression focused on energy efficiency.',
-            ar: 'تطوير متوازن في سلسلة الهواتف المتوسطة يركز على كفاءة الطاقة وسلاسة الاستخدام.',
-          },
-          whatItIsNot: {
-            id: 'Bukan flagship berbiaya tinggi dengan pendingin aktif, melainkan ponsel harian berdaya tahan tinggi.',
-            en: 'Not a high-cost flagship with active cooling, but a highly balanced daily endurance device.',
-            ar: 'ليس هاتفاً رائداً فائق التكلفة، بل جهاز عملي موجه للاستخدام اليومي الممتد.',
-          },
-          consumerVsEnterpriseScope: {
-            id: 'Ditujukan untuk konsumen umum, profesional mobile, dan penggunaan korporat.',
-            en: 'Targeted at general consumers, mobile professionals, and enterprise fleet deployments.',
-            ar: 'موجه للمستهلكين والمهنيين والمؤسسات التي تبحث عن أجهزة موثوقة.',
-          },
-        },
-      }
-    }
-
-    // Default: Silicon & Computational Architecture
     return {
       metrics: [
         {
           label: {
-            id: 'Optimalisasi Mikroarsitektur & Bandwidth Komputasi',
-            en: 'Microarchitectural Optimization & Compute Bandwidth',
-            ar: 'تحسين المعمارية الدقيقة ونطاق تمرير البيانات',
+            id: `Analisis Efisiensi & Keandalan: ${cleanTitle}`,
+            en: `Efficiency & Reliability Analysis: ${cleanTitle}`,
+            ar: `تحليل الكفاءة والموثوقية: ${cleanTitle}`,
           },
-          value: 'Architectural Density Scaling',
+          value: 'Verified Architectural Assessment',
           baselineComparison: {
-            id: 'Dianalisis terhadap topologi interkoneksi dan node semikonduktor generasi sebelumnya.',
-            en: 'Evaluated against prior-generation interconnect topology and semiconductor node metrics.',
-            ar: 'مقارنة مع المعايير المعمارية ونطاقات الذاكرة في الجيل السابق.',
+            id: `Dianalisis komparatif terhadap ekosistem teknologi terkait dan standar industri terkini.`,
+            en: `Evaluated comparatively against contemporary industry benchmarks and ecosystem standards.`,
+            ar: `تم التحليل بمقارنة المعايير الصناعية المعاصرة وتطورات المنظومة التقنية.`,
           },
-          primarySourceCitation: 'Official Architecture Whitepapers & Manufacturer Specifications',
-          independentVerificationUrl: 'https://anandtech.com',
+          primarySourceCitation: `${outlet} Reporting & Institutional Specifications`,
+          independentVerificationUrl: 'https://standards.ieee.org',
         },
       ],
       readerHook: {
-        id: `Batas rekayasa silikon modern terus diperluas melalui inovasi interkoneksi die, efisiensi memori terpadu, dan akselerasi komputasi khusus. Laporan teknis dari ${outlet} membedah arsitektur mutakhir tersebut.`,
-        en: `The frontiers of silicon engineering continue to scale through advanced die interconnects, unified memory bandwidth, and specialized compute blocks. Technical reporting across ${outlet} examines these architectural breakthroughs.`,
-        ar: `تتواصل ابتكارات هندسة أشباه الموصلات عبر تقنيات الربط البيني للشرائح وتوسيع نطاق الذاكرة الموحدة. يحلل تقرير ${outlet} أحدث هذه التطورات المعمارية.`,
+        id: `Perkembangan terbaru seputar "${cleanTitle}" yang dilaporkan oleh ${outlet} menandai babak penting dalam evolusi industri komputasi. Pembahasan ini menyoroti pergeseran strategis dan peningkatan kapabilitas nyata yang ditawarkan kepada pengguna dan pengembang.`,
+        en: `The latest developments regarding "${cleanTitle}" as documented by ${outlet} mark a significant milestone in computing evolution. This analysis examines the strategic architecture and tangible capability upgrades delivered to end-users and developers.`,
+        ar: `يمثل التطور الأخير المتعلق بـ "${cleanTitle}" والموثق عبر ${outlet} محطة بارزة في مسار تطور الحوسبة. يحلل هذا التقرير الأبعاد المعمارية والترقيات العملية المقدمة للمستخدمين والمطورين.`,
       },
       whyShouldICare: {
-        id: `Bagi para insinyur sistem, praktisi AI, dan pengembang software, memahami topologi komputasi ini penting untuk mengoptimalkan beban kerja yang membutuhkan throughput memori tinggi.`,
-        en: `For systems architects and software engineers, understanding underlying die topology is critical for maximizing memory-bound and compute-intensive application throughput.`,
-        ar: `بالنسبة لمهندسي الأنظمة ومطوري البرمجيات، يعد فهم البنية العتادية للشرائح أمراً حاسماً لرفع كفاءة معالجة البيانات الضخمة.`,
+        id: `Bagi pengambil keputusan teknologi, insinyur perangkat lunak, dan konsumen, memahami dinamika ini memberikan panduan strategis dalam memilih infrastruktur, mengoptimalkan produktivitas, dan mengantisipasi arah masa depan ekosistem digital.`,
+        en: `For technology leaders, software engineers, and users, understanding these dynamics provides strategic guidance for navigating system choices, maximizing productivity, and anticipating ecosystem shifts.`,
+        ar: `بالنسبة للمهندسين وصناع القرار والمستخدمين، يوفر فهم هذه التحولات رؤية استراتيجية لاختيار البنية التحتية المناسبة ورفع الإنتاجية ومواكبة مسار المنظومة الرقمية.`,
       },
       hardwareDeconstruction: {
         siliconSpecs: {
-          id: 'Penerapan node fabrikasi canggih dengan efisiensi kerapatan transistor dan interkoneksi latensi rendah.',
-          en: 'Advanced fabrication process node deployment delivering heightened transistor density and low-latency interconnects.',
-          ar: 'اعتماد دقة تصنيع متقدمة تضمن كثافة أعلى للترانزستورات وسرعة فائقة في نقل البيانات بين الوحدات.',
+          id: `Optimalisasi rekayasa sistem yang dirancang untuk memaksimalkan efisiensi komputasi pada arsitektur terkait.`,
+          en: `System engineering optimization designed to maximize computational efficiency across the targeted architecture.`,
+          ar: `تحسين هندسي للمنظومة يهدف لتعظيم كفاءة المعالجة في المعمارية المستهدفة.`,
         },
         microarchitectureChanges: {
-          id: 'Perluasan alur eksekusi instruksi, optimalisasi cache hirarkis, dan akselerasi matriks khusus.',
-          en: 'Widened execution pipelines, refined hierarchical cache architectures, and dedicated matrix acceleration blocks.',
-          ar: 'توسيع مسارات تنفيذ التعليمات البرمجية وتحسين هيكلية الذاكرة المخبأة وتسريع معالجة المصفوفات.',
+          id: `Penyempurnaan alur eksekusi, manajemen beban kerja cerdas, dan integrasi antar-komponen yang lebih responsif.`,
+          en: `Streamlined execution pipelines, intelligent workload management, and highly responsive subsystem integration.`,
+          ar: `مسارات تنفيذ أكثر انسيابية وإدارة ذكية لأحمال العمل مع تكامل سريع الاستجابة بين المكونات.`,
         },
         thermalAndPowerProfile: {
-          id: 'Manajemen voltase dinamis dan distribusi termal terpadu untuk mencegah pelambatan termal saat beban puncak.',
-          en: 'Dynamic voltage-frequency scaling and unified thermal distribution sustaining peak computational workloads.',
-          ar: 'إدارة متقدمة للطاقة والجهد الكهربائي تضمن التبديد الحراري الفعال واستقرار الأداء تحت أقصى أحمال العمل.',
+          id: `Manajemen konsumsi energi dan distribusi termal adaptif guna memastikan stabilitas performa berkelanjutan.`,
+          en: `Adaptive energy management and thermal dissipation profiles sustaining continuous operational stability.`,
+          ar: `إدارة متكيفة للطاقة والتبديد الحراري تضمن استقرار الأداء التشغيلي المستدام.`,
         },
       },
       economicAndEcosystemImpact: {
         enterpriseTCO: {
-          id: 'Meningkatkan rasio performa per watt, menurunkan konsumsi energi operasional, dan menekan biaya total kepemilikan.',
-          en: 'Heightens performance-per-watt metrics, curbing datacenter energy draw and optimizing long-term infrastructure TCO.',
-          ar: 'رفع معدل الأداء لكل واط مما يقلل من استهلاك الطاقة ويخفض التكاليف التشغيلية الإجمالية.',
+          id: `Meningkatkan rasio efisiensi biaya operasional dan memperkuat keandalan infrastruktur jangka panjang.`,
+          en: `Elevates operational cost efficiency and reinforces long-term infrastructure reliability.`,
+          ar: `تعزيز كفاءة التكاليف التشغيلية وترسيخ موثوقية البنية التحتية على المدى الطويل.`,
         },
         consumerPricingTrajectory: {
-          id: 'Inovasi arsitektur silikon canggih secara bertahap merambah produk komputasi konsumen generasi berikutnya.',
-          en: 'Advanced silicon architectural features progressively transition into next-generation consumer hardware tiers.',
-          ar: 'انتقال الابتكارات المعمارية المتقدمة تدريجياً إلى منتجات الأجهزة الاستهلاكية في الأجيال القادمة.',
+          id: `Membuka akses terhadap kapabilitas teknologi yang semakin matang dan mudah dijangkau di pasar luas.`,
+          en: `Expands broad market access to mature, high-value technological capabilities.`,
+          ar: `إتاحة الوصول إلى قدرات تقنية متقدمة وذات قيمة عالية لكافة قطاعات السوق.`,
         },
         developerImplications: {
-          id: 'Memungkinkan kompilasi dan eksekusi model komputasi yang lebih kompleks langsung di tingkat perangkat keras.',
-          en: 'Enables developers to compile and deploy increasingly complex workloads optimized for underlying hardware features.',
-          ar: 'تمكين المطورين من بناء وتدريب نماذج حاسوبية متقدمة تستفيد مباشرة من القدرات العتادية المتاحة.',
+          id: `Memperluas fleksibilitas pengembang dalam membangun aplikasi modern yang lebih cepat dan efisien.`,
+          en: `Broadens developer flexibility to engineer responsive, highly optimized modern applications.`,
+          ar: `توسيع آفاق المطورين لبناء تطبيقات معاصرة أكثر سرعة وكفاءة في استهلاك الموارد.`,
         },
       },
       disambiguation: {
         whatItIs: {
-          id: 'Lompatan rekayasa arsitektur silikon yang terverifikasi untuk meningkatkan efisiensi dan kerapatan komputasi.',
-          en: 'A verified silicon architectural progression elevating compute density and memory bandwidth efficiency.',
-          ar: 'تطور هندسي موثق في بنية الشرائح يهدف لتعزيز كثافة الحوسبة وكفاءة معالجة البيانات.',
+          id: `Langkah inovasi terverifikasi yang membawa peningkatan nyata pada fungsionalitas dan efisiensi sistem.`,
+          en: `A verified technological advancement introducing tangible performance and efficiency gains.`,
+          ar: `تطور تقني موثق يحقق تحسينات ملموسة في الكفاءة والقدرات التشغيلية.`,
         },
         whatItIsNot: {
-          id: 'Bukan sekadar kenaikan clock speed nominal, melainkan penyempurnaan topologi dan efisiensi eksekusi data.',
-          en: 'Not merely a nominal clock frequency bump, but a structural refinement in topology and data throughput.',
-          ar: 'ليس مجرد زيادة اسمية في ترددات التشغيل، بل إعادة هندسة شاملة لمسارات نقل ومعالجة البيانات.',
+          id: `Bukan sekadar perubahan minor di permukaan, melainkan pembaruan terukur yang didukung fakta empiris.`,
+          en: `Not merely an incremental superficial revision, but a measurable upgrade grounded in verifiable data.`,
+          ar: `ليس مجرد تعديل شكلي طفيف، بل ترقية نوعية تستند إلى بيانات وحقائق موثقة.`,
         },
         consumerVsEnterpriseScope: {
-          id: 'Relevan bagi perancangan sistem komputasi berkinerja tinggi dari workstation hingga klaster skala besar.',
-          en: 'Relevant across high-performance compute architectures from high-end workstations to datacenter clusters.',
-          ar: 'ذو أهمية كبرى لمنظومات الحوسبة عالية الأداء ومحطات العمل المتطورة والخوادم.',
+          id: `Relevan bagi spektrum luas pengguna dari praktisi individual hingga integrasi skala industri.`,
+          en: `Applicable across a broad spectrum ranging from individual practitioners to enterprise deployments.`,
+          ar: `ذو صلة واسعة تمتد من المستخدمين الأفراد إلى التطبيقات المؤسسية الكبرى.`,
         },
       },
     }

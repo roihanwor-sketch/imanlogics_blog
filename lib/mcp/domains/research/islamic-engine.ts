@@ -271,7 +271,7 @@ export class IslamicResearchEngine {
   }
 
   /**
-   * Generates domain-accurate philosophical prose matching the specific pillar
+   * Generates domain-accurate philosophical prose dynamically matching the specific lead
    */
   private static generateDomainSpecificProse(
     title: string,
@@ -291,121 +291,8 @@ export class IslamicResearchEngine {
       whatMustNotBeClaimed: LocalizedText
     }
   } {
-    if (pillar === 'CURRENT_AND_VIRAL_QUESTIONS' || title.toLowerCase().includes('misconception')) {
-      return {
-        readerHook: {
-          id: `Dalam perbincangan publik global, narasi seputar Islam kerap diwarnai generalisasi dan kesalahpahaman budaya. Kajian terkini yang dilansir ${outlet} membuka ruang dialog rasional untuk mengurai pokok persoalan secara objektif.`,
-          en: `In global public discourse, discussions concerning Islam often encounter cultural stereotypes and uncritical generalizations. Contemporary analysis documented by ${outlet} invites reasoned examination of these core questions.`,
-          ar: `في الحوارات الفكرية المعاصرة، غالباً ما تحاط المفاهيم الإسلامية بتصورات نمطية وقوالب جاهزة. يفتح التقرير التحليلي الصادر عن ${outlet} نافذة للحوار العقلاني الرصين لتفكيك هذه الإشكالات.`,
-        },
-        whyShouldICare: {
-          id: `Menelaah miskonsepsi secara ilmiah membantu membedakan antara ajaran normatif wahyu yang menjunjung keadilan dan kebebasan bernalar, dengan praktik kultural manusiawi yang rentan bias.`,
-          en: `A rigorous examination distinguishes authentic scriptural mandates promoting justice and critical thought from localized cultural practices.`,
-          ar: `يساعد التمييز العلمي الرصين على الفصل بين التعاليم التأسيسية القائمة على العدل وحرية التفكير، وبين الممارسات الثقافية والاجتماعية المتغيرة.`,
-        },
-        narrativeLead: {
-          hook: {
-            id: 'Dialog keagamaan yang sehat tidak dibangun di atas prasangka, melainkan di atas kejujuran memeriksa teks dan fakta sejarah.',
-            en: 'Constructive interfaith dialogue cannot rest upon inherited assumptions, but demands honest examination of primary texts and historical context.',
-            ar: 'لا يُبنى الحوار الفكري البناء على التصورات المسبقة، بل يستند إلى التحقيق الموضوعي في النصوص التأسيسية والشواهد التاريخية.',
-          },
-          historicalContext: {
-            id: "Sepanjang sejarah peradaban, prinsip Al-Qur'an secara eksplisit melarang pemaksaan keyakinan dan menegaskan tanggung jawab moral individual (QS. Al-Baqarah [2]: 256).",
-            en: "Historically, the Qur'anic corpus explicitly established non-coercion in matters of conscience and emphasized individual moral agency (Qur'an 2:256).",
-            ar: 'تاريخياً، أرست النصوص القرآنية بوضوح مبدأ نفي الإكراه في الدين والتأكيد على المسؤولية الأخلاقية الفردية (سورة البقرة: 256).',
-          },
-          scholarlyConsensus: {
-            id: 'Para akademisi comparative religion menegaskan pentingnya memahami doktrin keagamaan dari sumber orisinalnya, bukan dari perilaku parsial pemeluknya.',
-            en: 'Scholars of comparative religion emphasize evaluating faith traditions through their foundational sources rather than localized deviations.',
-            ar: 'يؤكد باحثو الأديان المقارنة على ضرورة تقييم المنظومة الدينية من خلال مصادرها التأسيسية الأصلية وليس من خلال السلوكيات الفردية.',
-          },
-        },
-        epistemologicalPoints: [
-          {
-            category: 'FACT' as const,
-            confidenceLevel: 'High' as const,
-            statement: {
-              id: "Teks Al-Qur'an secara eksplisit melarang segala bentuk pemaksaan dalam beragama (QS. Al-Baqarah: 256) dan memerintahkan keadilan terhadap seluruh umat manusia.",
-              en: "The Qur'an explicitly prohibits compulsion in religion (2:256) and commands universal justice regardless of identity.",
-              ar: 'يقرر القرآن الكريم بوضوح مبدأ "لا إكراه في الدين" ويأمر بإقامة القسط والعدل مع كافة البشر.',
-            },
-            sources: [
-              {
-                name: "Al-Qur'an Surah Al-Baqarah: 256 & Al-Mumtahanah: 8",
-                url: 'https://quran.ksu.edu.sa',
-                tier: 1 as 1 | 2 | 3,
-                type: 'classical-tafsir',
-              },
-            ],
-          },
-          {
-            category: 'EVIDENCE' as const,
-            confidenceLevel: 'High' as const,
-            statement: {
-              id: 'Piagam Madinah (Shahifatul Madinah) mendokumentasikan perlindungan hukum dan kebebasan beragama yang setara bagi seluruh komunitas majemuk.',
-              en: 'The historical Constitution of Medina established mutual protection, equal civic belonging, and religious freedom for diverse communities.',
-              ar: 'وثقت صحيفة المدينة المنورة تاريخياً مبادئ التعايش المشترك، والمواطنة العادلة، وحرية المعتقد لمختلف المكونات.',
-            },
-            sources: [
-              {
-                name: 'Sirah Nabawiyyah (Ibn Hisham / Ibn Ishaq)',
-                url: 'https://shamela.ws',
-                tier: 1 as 1 | 2 | 3,
-                type: 'historical-primary',
-              },
-            ],
-          },
-          {
-            category: 'COUNTERARGUMENT' as const,
-            confidenceLevel: 'High' as const,
-            statement: {
-              id: 'Klaim bahwa tradisi Islam menolak rasionalitas terbantahkan oleh kaidah ushul fiqh yang menempatkan hifz al-aql (perlindungan akal) sebagai salah satu maqasid syariah pokok.',
-              en: "The claim that Islamic tradition rejects critical inquiry is refuted by Islamic legal philosophy, which enshrines the preservation of reason (hifz al-'aql) as a core objective.",
-              ar: 'دعوى معاداة الفكر الإسلامي للعقل تفندها مقاصد الشريعة التي جعلت "حفظ العقل" من الضروريات الكلية الحتمية.',
-            },
-            sources: [
-              {
-                name: 'Al-Mustasfa (Al-Ghazali) & Al-Muwafaqat (Al-Shatibi)',
-                url: 'https://shamela.ws',
-                tier: 1 as 1 | 2 | 3,
-                type: 'classical-tafsir',
-              },
-            ],
-          },
-          {
-            category: 'UNCERTAINTY' as const,
-            confidenceLevel: 'Moderate' as const,
-            statement: {
-              id: 'Interpretasi fiqh terhadap isu-isu sosial kontemporer bersifat dinamis dan terbuka terhadap ijtihad baru sesuai kemaslahatan zaman.',
-              en: 'Legal jurisprudence addressing modern social dynamics remains open to legitimate continuous ijtihad in pursuit of public welfare.',
-              ar: 'تظل الاجتهادات الفقهية في النوازل الاجتماعية المعاصرة متجددة وخاضعة لقواعد المصلحة المعتبرة.',
-            },
-            sources: [
-              {
-                name: 'Majma al-Fiqh al-Islami / Yaqeen Institute',
-                url: 'https://yaqeeninstitute.org',
-                tier: 2 as 1 | 2 | 3,
-                type: 'academic-journal',
-              },
-            ],
-          },
-        ],
-        honestBoundaries: {
-          whatItProves: {
-            id: 'APA YANG TERBUKTI: Ajaran fundamental Islam secara konsisten menjunjung tinggi keadilan sosial, kebebasan bernalar, dan penghormatan terhadap martabat manusia.',
-            en: 'WHAT IT PROVES: Foundational Islamic principles consistently champion social justice, rational reflection, and human dignity.',
-            ar: 'ما يثبته البحث: ترسيخ المبادئ الإسلامية التأسيسية لقيم العدالة، وحرية التدبر، وصيانة كرامة الإنسان.',
-          },
-          whatMustNotBeClaimed: {
-            id: 'APA YANG TIDAK BOLEH DIKLAIM: Tidak boleh mengabaikan fakta adanya praktik kultural historis yang keliru di kalangan sebagian umat yang bertentangan dengan prinsip wahyu.',
-            en: 'WHAT MUST NOT BE CLAIMED: One must not conflate flawed historical cultural practices among communities with the normative ethical revelation.',
-            ar: 'ما لا يجوز ادعاؤه: عدم الخلط بين الممارسات الثقافية التاريخية الخاطئة لبعض الأفراد وبين روح الشريعة وقيمها الأخلاقية.',
-          },
-        },
-      }
-    }
+    const cleanTitle = title.replace(/ - [^-]+$/, '').trim()
 
-    // Default Islamic Logic Prose
     return {
       readerHook: {
         id: `Ketika peradaban modern mencari kompas moral dan kejelasan epistemologi, khazanah Islam menyajikan perpaduan harmonis antara dalil yang jernih dan akal yang merdeka. Laporan dari ${outlet} memantik kajian mendalam atas tema ini.`,

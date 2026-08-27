@@ -275,7 +275,7 @@ export class AssetDownloader {
   }
 
   /**
-   * Formulates specific visual search queries based on the article's core entity
+   * Formulates specific visual search queries dynamically based on the article's actual subject matter
    */
   private static formulateDynamicSearchQueries(
     idTitle: string,
@@ -283,37 +283,23 @@ export class AssetDownloader {
     category: 'tech-ai' | 'islamic-logic',
     keywords: string[]
   ): string[] {
-    const combined = `${enTitle} ${idTitle}`.toLowerCase()
     const queries: string[] = []
 
-    // Extract prominent product / entity names (e.g. Xperia 10, Wildcat Lake, OnePlus, Blackwell, Bible King James, Birmingham Quran)
-    const entityMatches = combined.match(
-      /\b(xperia\s*\w*|galaxy\s*s\d+|iphone\s*\w+|pixel\s*\d+|oneplus\s*\w*|intel\s*\w+|amd\s*\w+|nvidia\s*\w+|blackwell|snapdragon|king james|birmingham|qumran|dead sea)\b/gi
-    )
+    // 1. Extract the main subject clause before colon or dash
+    const cleanEnSubject = enTitle.split(/[:-|]/)[0]?.trim()
+    const cleanIdSubject = idTitle.split(/[:-|]/)[0]?.trim()
 
-    if (entityMatches && entityMatches.length > 0) {
-      for (const rawEntity of entityMatches.slice(0, 2)) {
-        const entity = rawEntity.trim()
-        if (category === 'tech-ai') {
-          if (/intel|amd|nvidia|qualcomm|apple|snapdragon/i.test(entity)) {
-            queries.push(`${entity} processor die`)
-            queries.push(`${entity} silicon chip`)
-            queries.push(`${entity} microprocessor hardware`)
-          } else if (/xperia|galaxy|iphone|pixel|oneplus|poco/i.test(entity)) {
-            queries.push(`${entity} smartphone device`)
-            queries.push(`${entity} mobile phone`)
-          } else {
-            queries.push(`${entity} hardware`)
-          }
-        } else {
-          queries.push(`${entity} manuscript folio`)
-          queries.push(`${entity} ancient history`)
-        }
+    if (cleanEnSubject && cleanEnSubject.length > 3) {
+      queries.push(cleanEnSubject)
+      if (category === 'tech-ai') {
+        queries.push(`${cleanEnSubject} technology`)
+      } else {
+        queries.push(`${cleanEnSubject} manuscript`)
       }
     }
 
-    // Secondary queries from keywords
-    for (const kw of keywords.slice(0, 3)) {
+    // 2. High-value topic keywords
+    for (const kw of keywords.slice(0, 4)) {
       if (
         kw.length > 3 &&
         ![
@@ -327,10 +313,10 @@ export class AssetDownloader {
       }
     }
 
-    if (queries.length === 0) {
-      queries.push(enTitle.split(':')[0] || idTitle.split(':')[0])
+    if (queries.length === 0 && cleanIdSubject) {
+      queries.push(cleanIdSubject)
     }
 
-    return queries
+    return Array.from(new Set(queries))
   }
 }

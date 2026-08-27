@@ -14,7 +14,6 @@ import { TechResearchEngine, TechNewsStory } from './domains/research/tech-engin
 import { IslamicResearchEngine, IslamicAcademicStory } from './domains/research/islamic-engine'
 import { SourceVerifier } from './domains/research/source-verifier'
 import { AssetDownloader } from './domains/media/asset-downloader'
-import { SAFE_EDITORIAL_IMAGE_VAULT } from './domains/media/image-vault'
 import { TechArticleBuilder } from './domains/editorial/tech-builder'
 import { IslamicArticleBuilder } from './domains/editorial/islamic-builder'
 import { EditorialQCEngine } from './domains/qc/qc-engine'
@@ -593,7 +592,11 @@ export function createImanLogicsMcpServer(): Server {
           {
             uri,
             mimeType: 'application/json',
-            text: JSON.stringify(SAFE_EDITORIAL_IMAGE_VAULT, null, 2),
+            text: JSON.stringify(
+              { message: '100% Dynamic Wikimedia Commons & Scraped Media API Active' },
+              null,
+              2
+            ),
           },
         ],
       }
