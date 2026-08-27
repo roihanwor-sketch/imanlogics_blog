@@ -22,12 +22,14 @@ export function formatDateTime(
 
   const isRtl = locale.startsWith('ar')
   const activeLocale = isRtl ? 'ar-EG' : locale.startsWith('id') ? 'id-ID' : 'en-US'
+  const timeZone = options?.timeZone || 'Asia/Jakarta'
 
   // Format Date Part
   const dateOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone,
   }
 
   const formattedDate = date.toLocaleDateString(activeLocale, dateOptions)
@@ -43,6 +45,7 @@ export function formatDateTime(
     hour: '2-digit',
     minute: '2-digit',
     hour12: activeLocale === 'en-US',
+    timeZone,
   }
 
   const formattedTime = date.toLocaleTimeString(activeLocale, timeOptions)
@@ -71,5 +74,6 @@ export function formatTimeOnly(
     hour: '2-digit',
     minute: '2-digit',
     hour12: activeLocale === 'en-US',
+    timeZone: 'Asia/Jakarta',
   })
 }
