@@ -1,7 +1,35 @@
 {
-  "lastUpdated": "2026-08-26T07:45:51.070Z",
-  "totalCyclesRun": 82,
+  "lastUpdated": "2026-08-26T10:46:20.646Z",
+  "totalCyclesRun": 83,
   "recentReports": [
+    {
+      "cycleTimestamp": "2026-08-26T10:45:06.587Z",
+      "sourcesScanned": 2,
+      "candidatesDiscovered": 1,
+      "duplicatesRemoved": 0,
+      "storiesEvaluated": 1,
+      "articlesPassedQC": 3,
+      "articlesPublished": [
+        "data/blog/huawei-continues-pura-x-view-teasers-ahead-of.mdx",
+        "data/blog/huawei-continues-pura-x-view-teasers-ahead-of.en.mdx",
+        "data/blog/huawei-continues-pura-x-view-teasers-ahead-of.ar.mdx"
+      ],
+      "publishedStoryDetails": [
+        {
+          "title": "Arsitektur Optik XMAGE dan Kemandirian Silikon: Bedah Rekayasa Flagship Huawei Pura Series",
+          "slug": "huawei-continues-pura-x-view-teasers-ahead-of",
+          "category": "tech-ai",
+          "languages": [
+            "id",
+            "en",
+            "ar"
+          ]
+        }
+      ],
+      "rejectionReasons": [],
+      "status": "SUCCESS",
+      "gitCommitHash": "b91fa97"
+    },
     {
       "cycleTimestamp": "2026-08-26T07:45:07.802Z",
       "sourcesScanned": 2,

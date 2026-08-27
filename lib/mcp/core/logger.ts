@@ -1,14 +1,14 @@
 export class Logger {
   static info(prefix: string, message: string, ...args: unknown[]) {
-    console.log(`ℹ️ [${prefix}] ${message}`, ...args)
+    console.error(`ℹ️ [${prefix}] ${message}`, ...args)
   }
 
   static success(prefix: string, message: string, ...args: unknown[]) {
-    console.log(`✅ [${prefix}] ${message}`, ...args)
+    console.error(`✅ [${prefix}] ${message}`, ...args)
   }
 
   static warn(prefix: string, message: string, ...args: unknown[]) {
-    console.warn(`⚠️ [${prefix}] ${message}`, ...args)
+    console.error(`⚠️ [${prefix}] ${message}`, ...args)
   }
 
   static error(prefix: string, message: string, ...args: unknown[]) {
@@ -16,8 +16,8 @@ export class Logger {
   }
 
   static header(title: string) {
-    console.log(`\n===============================================================`)
-    console.log(`🚀 ${title}`)
-    console.log(`===============================================================`)
+    console.error(`\n===============================================================`)
+    console.error(`🚀 ${title}`)
+    console.error(`===============================================================`)
   }
 }

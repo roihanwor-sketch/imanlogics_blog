@@ -1,6 +1,7 @@
 import { MdxArticle, HumanEditorialScoreResult } from '../../core/types'
 import { FillerDetector } from './filler-detector'
 import { LeakDetector } from './leak-detector'
+import { CognitiveGatekeeper } from './cognitive-gatekeeper'
 import {
   QC_SCORING_WEIGHTS,
   MIN_EDITORIAL_PASSING_SCORE,
@@ -176,14 +177,15 @@ export class EditorialQCEngine {
       }
     }
 
-    // 15. HARD GATE: Visual Relevance & Context Gate
+    // 16. ULTIMATE HARD GATE: Rendered Webpage Multi-Modal AI Inspection (5 Cognitive Gates)
     if (!hardFailTriggered) {
-      const isSoftware = /powertoys|software|windows|desktop/i.test(title)
-      const hasLpddr6Alt = /lpddr6|smartphone modern/i.test(content)
-
-      if (isSoftware && hasLpddr6Alt) {
+      const cogRes = CognitiveGatekeeper.inspectRenderedWebpage(article)
+      if (cogRes.hardFailTriggered) {
         hardFailTriggered = true
-        hardFailReason = `Visual Relevance Gate Failed: Software article contains mismatched mobile LPDDR6 image alt text.`
+        hardFailReason = `Cognitive Webpage Gate Failed: ${cogRes.hardFailReason}`
+      }
+      if (cogRes.warnings.length > 0) {
+        warnings.push(...cogRes.warnings)
       }
     }
 

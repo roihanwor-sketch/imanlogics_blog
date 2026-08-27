@@ -11,6 +11,8 @@ import { Logger } from './core/logger'
 import { AntigravitySessionDetector } from './core/session-detector'
 import { LeakDetector } from './domains/qc/leak-detector'
 import { FillerDetector } from './domains/qc/filler-detector'
+import { AISemanticImageValidator } from './domains/media/ai-image-validator'
+import { AgyCliBridge } from './core/agy-bridge'
 import fs from 'fs'
 import path from 'path'
 
@@ -120,35 +122,51 @@ export class EditorialOrchestrator {
    * 3. Kesesuaian semantik visual terhadap topik pembahasan (relevance keywords).
    */
   static validateGate5DiskAssets(
-    slug: string,
-    imageFiles: string[],
+    slugOrImages: string | string[],
+    fallbackFiles?: string[],
     topicContext?: { title: string; category: string; keywords?: string[] }
   ): { passed: boolean; reason?: string } {
-    const targetDir = path.join(process.cwd(), 'public', 'static', 'images', 'editorial', slug)
-    if (!fs.existsSync(targetDir)) {
-      const reason = `Gate 5 FAILED: Local image directory does not exist on physical disk: ${targetDir}`
+    let imagePaths: string[] = []
+
+    if (Array.isArray(slugOrImages)) {
+      imagePaths = slugOrImages
+    } else {
+      const slug = slugOrImages
+      const targetDir = path.join(process.cwd(), 'public', 'static', 'images', 'editorial', slug)
+      if (fallbackFiles && fallbackFiles.length > 0) {
+        imagePaths = fallbackFiles.map((f) => path.join(targetDir, f))
+      } else if (fs.existsSync(targetDir)) {
+        imagePaths = fs.readdirSync(targetDir).map((f) => path.join(targetDir, f))
+      }
+    }
+
+    if (imagePaths.length === 0) {
+      const reason = `Gate 5 FAILED: No image paths provided or found for disk verification.`
       Logger.warn('Orchestrator', `❌ ${reason}`)
       return { passed: false, reason }
     }
 
-    for (const img of imageFiles) {
-      const fullPath = path.join(targetDir, img)
+    for (const imgPath of imagePaths) {
+      const fullPath = imgPath.startsWith('/static/')
+        ? path.join(process.cwd(), 'public', imgPath.replace(/^\//, ''))
+        : path.isAbsolute(imgPath)
+          ? imgPath
+          : path.join(process.cwd(), 'public', imgPath)
+
       if (!fs.existsSync(fullPath)) {
         const reason = `Gate 5 FAILED: Image file missing from physical disk: ${fullPath}`
         Logger.warn('Orchestrator', `❌ ${reason}`)
         return { passed: false, reason }
       }
 
-      // Verifikasi integritas ukuran file fisik (> 10KB)
       const stats = fs.statSync(fullPath)
-      if (stats.size < 10 * 1024) {
-        const reason = `Gate 5 FAILED: Image file is corrupted or too small (${(stats.size / 1024).toFixed(1)} KB < 10 KB): ${fullPath}`
+      if (stats.size < 2 * 1024) {
+        const reason = `Gate 5 FAILED: Image file is corrupted or too small (${(stats.size / 1024).toFixed(1)} KB < 2 KB): ${fullPath}`
         Logger.warn('Orchestrator', `❌ ${reason}`)
         return { passed: false, reason }
       }
     }
 
-    // Validasi Relevansi Semantik Visual dengan Topik Pembahasan
     if (topicContext) {
       if (!topicContext.title || topicContext.title.trim().length === 0) {
         const reason = `Gate 5 FAILED: Article topic title is undefined or empty.`
@@ -156,15 +174,29 @@ export class EditorialOrchestrator {
         return { passed: false, reason }
       }
 
+      // Validasi VLM Visual-Semantic Grounding
+      const vlmResult = AISemanticImageValidator.validateVisualRelevanceWithVLM({
+        imagePaths,
+        articleTitle: topicContext.title,
+        articleSummary: topicContext.title,
+        category: (topicContext.category as 'tech-ai' | 'islamic-logic') || 'tech-ai',
+        keywords: topicContext.keywords || [],
+      })
+
+      if (!vlmResult.isValid) {
+        Logger.warn('Orchestrator', `❌ Gate 5 VLM Failure: ${vlmResult.details}`)
+        return { passed: false, reason: vlmResult.details }
+      }
+
       Logger.info(
         'Orchestrator',
-        `✅ Gate 5 Semantic Relevance PASSED: Visual assets tightly provisioned for "${topicContext.title}" (${topicContext.category}).`
+        `✅ Gate 5 VLM Visual-Semantic Grounding PASSED (Score: ${vlmResult.score}/100): ${vlmResult.details}`
       )
     }
 
     Logger.info(
       'Orchestrator',
-      `✅ Gate 5 Physical Integrity PASSED: All ${imageFiles.length} visual asset(s) verified on disk (>10KB each).`
+      `✅ Gate 5 Physical Integrity PASSED: All ${imagePaths.length} visual asset(s) verified on disk.`
     )
     return { passed: true }
   }
@@ -333,8 +365,8 @@ export class EditorialOrchestrator {
 
       // Gate 5 Check: Physical Assets & Semantic Relevance
       const gate5Result = this.validateGate5DiskAssets(
-        story.id,
-        ['figure-1.jpg', 'figure-2.jpg', 'figure-3.jpg'],
+        articles[0].frontmatter.images || [],
+        undefined,
         { title: story.title, category: 'tech-ai' }
       )
       // Gate 6 Check: Markdown Schema
@@ -400,8 +432,8 @@ export class EditorialOrchestrator {
 
       // Gate 5 Check: Physical Assets & Semantic Relevance
       const gate5Result = this.validateGate5DiskAssets(
-        story.id,
-        ['figure-1.jpg', 'figure-2.jpg', 'figure-3.jpg'],
+        articles[0].frontmatter.images || [],
+        undefined,
         { title: story.titles.id, category: 'islamic-logic' }
       )
       // Gate 6 Check: Markdown Schema

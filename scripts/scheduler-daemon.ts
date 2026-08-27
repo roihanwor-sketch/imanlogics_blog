@@ -8,21 +8,44 @@ import { AntigravitySessionDetector } from '../lib/mcp/core/session-detector'
 
 export const ADVANCE_PREPARATION_BUFFER_MS = 15 * 60 * 1000 // 15 menit sebelum jam target
 
-export function getNext3HourScheduleSlot(): {
+export function getNext3HourScheduleSlot(now = new Date()): {
   nextTargetDate: Date
   advanceTriggerDate: Date
   delayMs: number
   targetLabel: string
 } {
-  const now = new Date()
-  const intervalMs = 3 * 60 * 60 * 1000 // 3 hours in ms
-  const nextTargetTime = Math.ceil((now.getTime() + 1000) / intervalMs) * intervalMs
-  const nextTarget = new Date(nextTargetTime)
-  const advanceTriggerTime = nextTargetTime - ADVANCE_PREPARATION_BUFFER_MS
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth()
+  const currentDate = now.getDate()
+
+  const slots = [0, 3, 6, 9, 12, 15, 18, 21]
+
+  // Find the next target hour slot where the advance trigger (h - 15m) is in the future
+  let targetYear = currentYear
+  let targetMonth = currentMonth
+  let targetDate = currentDate
+  let targetHour = slots.find((h) => {
+    const targetCandidate = new Date(currentYear, currentMonth, currentDate, h, 0, 0, 0)
+    const triggerCandidate = targetCandidate.getTime() - ADVANCE_PREPARATION_BUFFER_MS
+    return triggerCandidate > now.getTime()
+  })
+
+  if (targetHour === undefined) {
+    // Wrap to next day
+    const nextDaySlot = slots.find((h) => {
+      const targetCandidate = new Date(currentYear, currentMonth, currentDate + 1, h, 0, 0, 0)
+      const triggerCandidate = targetCandidate.getTime() - ADVANCE_PREPARATION_BUFFER_MS
+      return triggerCandidate > now.getTime()
+    })
+    targetHour = nextDaySlot !== undefined ? nextDaySlot : 0
+    targetDate = currentDate + 1
+  }
+
+  const nextTarget = new Date(targetYear, targetMonth, targetDate, targetHour, 0, 0, 0)
+  const advanceTriggerTime = nextTarget.getTime() - ADVANCE_PREPARATION_BUFFER_MS
 
   let delayMs = advanceTriggerTime - now.getTime()
   if (delayMs <= 0) {
-    // Current time is within the 15-minute preparation window!
     delayMs = 1000
   }
 
@@ -43,13 +66,12 @@ export function getNext3HourScheduleSlot(): {
   }
 }
 
-export function getNextWAScheduleSlot(): {
+export function getNextWAScheduleSlot(now = new Date()): {
   nextTargetDate: Date
   advanceTriggerDate: Date
   delayMs: number
   targetLabel: string
 } {
-  const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth()
   const date = now.getDate()
@@ -72,15 +94,15 @@ export function getNextWAScheduleSlot(): {
     targetLabel = '05:00 (Besok Pagi)'
   }
 
-  const advanceTriggerTime = nextTarget.getTime() - ADVANCE_PREPARATION_BUFFER_MS
-  let delayMs = advanceTriggerTime - now.getTime()
+  const triggerTime = nextTarget.getTime()
+  let delayMs = triggerTime - now.getTime()
   if (delayMs <= 0) {
     delayMs = 1000
   }
 
   return {
     nextTargetDate: nextTarget,
-    advanceTriggerDate: new Date(advanceTriggerTime),
+    advanceTriggerDate: new Date(triggerTime),
     delayMs,
     targetLabel,
   }
@@ -111,13 +133,44 @@ export async function startSchedulerDaemon(runImmediately = true) {
   )
   Logger.info(
     'Scheduler',
-    'Autonomous Research Rhythm: Every 3 Hours (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00)'
+    'Autonomous Research Rhythm: Every 3 Hours (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00 WIB)'
   )
   Logger.info(
     'Scheduler',
     'WhatsApp Dissemination Schedule: Strictly at 05:00 & 17:00 (Aggregated 12-Hour Report)'
   )
 
+  // -------------------------------------------------------------
+  // DEDICATED WHATSAPP DISSEMINATION TIMER LOOP (05:00 & 17:00)
+  // -------------------------------------------------------------
+  const scheduleDedicatedWhatsAppTimer = () => {
+    const waSlot = getNextWAScheduleSlot()
+    const hoursUntilWA = (waSlot.delayMs / (1000 * 60 * 60)).toFixed(2)
+    Logger.info(
+      'Scheduler',
+      `Next dedicated WhatsApp dissemination scheduled in ${hoursUntilWA} hours at ${waSlot.targetLabel}.`
+    )
+
+    setTimeout(async () => {
+      try {
+        Logger.info('Scheduler', `Triggering dedicated 05:00/17:00 WhatsApp dissemination...`)
+        const payload = WhatsAppService.buildAggregatedPayload()
+        await WhatsAppService.sendNotification(payload)
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : String(err)
+        Logger.error('Scheduler', `WhatsApp scheduled trigger encountered an exception: ${errorMsg}`)
+      } finally {
+        scheduleDedicatedWhatsAppTimer()
+      }
+    }, waSlot.delayMs)
+  }
+
+  // Start independent WhatsApp timer
+  scheduleDedicatedWhatsAppTimer()
+
+  // -------------------------------------------------------------
+  // EDITORIAL RESEARCH 3-HOUR PIPELINE LOOP
+  // -------------------------------------------------------------
   const executeCycle = async (isManualTrigger = false) => {
     LockManager.heartbeat()
     const nextSlot = getNext3HourScheduleSlot()
@@ -132,7 +185,6 @@ export async function startSchedulerDaemon(runImmediately = true) {
       )
       const report = await EditorialOrchestrator.runEditorialPipeline({ gitPush: true })
 
-      // Check if current time is within the designated WhatsApp reporting slot (05:00 / 17:00) or manual trigger
       const isWAReportingWindow = WhatsAppService.isWhatsAppReportingSlot() || isManualTrigger
 
       if (isWAReportingWindow) {

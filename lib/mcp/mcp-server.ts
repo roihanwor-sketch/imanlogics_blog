@@ -451,7 +451,8 @@ export function createImanLogicsMcpServer(): Server {
       }
 
       case 'imanlogics_dispatch_notification': {
-        const payload = args?.payload as unknown as NotificationPayload
+        const rawPayload = args?.payload as unknown as NotificationPayload | undefined
+        const payload = rawPayload || WhatsAppService.buildAggregatedPayload()
         const phone = args?.phoneNumber as string | undefined
         const success = await WhatsAppService.sendNotification(payload, phone)
         return {

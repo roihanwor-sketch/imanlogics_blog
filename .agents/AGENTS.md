@@ -11,18 +11,35 @@
 ## Standarisasi Eksekusi Otomasi Konten & Pipeline Otonom (Universal Trigger: "Jalankan")
 
 - Jika pengguna memberikan perintah yang mengandung kata **"jalankan"** (misalnya: _"jalankan"_, _"jalankan sekarang"_, _"jalankan otomasi"_, _"jalankan pipeline"_, dll.):
+
   1. **JANGAN Menyalakan Server Lokal Secara Otomatis:**
      - Karena hasil artikel yang diterbitkan langsung di-push ke GitHub (`origin main`), **TIDAK PERLU** menyalakan Next.js Dev Server maupun Decap CMS Proxy Server.
      - Server lokal **HANYA dinyalakan jika pengguna secara eksplisit meminta**: _"nyalakan server"_, _"jalankan dev server"_, _"start server"_, atau _"nyalakan CMS"_.
-  2. **Aktifkan Scheduler & Pipeline Otomasi Konten:**
-     - Jalankan scheduler otonom / engine MCP: `npx.cmd tsx scripts/scheduler-daemon.ts` (atau `npm.cmd run auto:publish`) di background task untuk memantau siklus otonom 3 jam.
-     - **Riset Otonom Berjalan Setiap 3 Jam** (00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00) mengikuti jam dan timezone sistem Windows secara dinamis via core `lib/mcp/orchestrator.ts`.
-     - **Strategi Sumber 3 Lapisan:** Layer 1 (Primer: Whitepaper, Standar JEDEC/IEEE, Arsip Manuskrip), Layer 2 (Sekunder: Pool 75 Media ID/EN/AR permanen di `lib/mcp/config/media-pool.ts`), Layer 3 (Discovery: Media Sosial/Forum).
-     - Melakukan sinkronisasi: **Discover → Research → 3-Layer Citation Chain Verify → Trilingual MDX Build (ID/EN/AR) → Copyright-Safe Image Sourcing → Multi-dimensional QC (>=85) → Git Commit & Push**.
-     - Jika artikel lolos QC: Otomatis melakukan `git add`, `git commit`, dan `git push origin main`.
-     - Jika tidak ada berita aktual atau QC gagal: Mengeluarkan status `NO_PUBLISHABLE_STORY` (tanpa membuat artikel filler atau push kosong).
+
+  2. **Dual-Mode Autonomous Operation (Eksklusif Sesuai Kondisi Jendela):**
+     - **MODE 1 (Live Session - Saat Jendela Antigravity Terbuka & Aktif):**
+       - **Menggunakan Native Cron Antigravity (`schedule` tool)**:
+         1. **Cron Riset & Editorial 3-Jam**: Pada interval T-15 menit (`45 2,5,8,11,14,17,20,23 * * *`).
+         2. **Cron Diseminasi WhatsApp 12-Jam**: Tepat pada pukul 05:00 & 17:00 WIB (`0 5,17 * * *`).
+       - **JANGAN menyalakan `scheduler-daemon.ts` di OS background secara bersamaan** untuk mencegah redundansi proses dan konflik file lock.
+       - AI Antigravity di jendela ini bertindak sebagai **Editor-in-Chief, Gatekeeper, Guardrail, dan Validator** kognitif utama.
+       - Setiap kali terbangun (*Reactive Wakeup*), AI Antigravity mengeksekusi 8 Tahap Editorial secara sadar di jendela ini:
+         1. **Tahap 1:** Memanggil `imanlogics_discover_stories` untuk mendapatkan kandidat berita dari 75 Media Pool & Arsip Primer.
+         2. **Tahap 2:** Menelaah dan menyetujui topik/angle artikel (**Gate 1 & Gate 2**: Novelty & Anti-Duplikasi).
+         3. **Tahap 3:** Memanggil `imanlogics_verify_sources` dan melakukan audit kognitif bukti (**Gate 3**: Dual-Tier Citations & Epistemological Rigor).
+         4. **Tahap 4:** Menyusun nalar artikel trilingual (ID, EN, AR) dengan *Native Thinking* dan kedalaman analisis (**Gate 4**: Purity & Zero Leaks).
+         5. **Tahap 5:** Memanggil `imanlogics_source_media` dan melakukan validasi **VLM Visual-Semantic Grounding** (memastikan konten visual benar-benar sesuai dengan subjek artikel, bukan sekadar file fisik lokal di disk >10KB) beserta atribusi lisensinya (**Gate 5**: VLM Visual Relevance & Physical Assets).
+         6. **Tahap 6:** Memvalidasi skema frontmatter, metadata taksonomi, dan grup terjemahan (**Gate 6**: Schema Integrity).
+         7. **Tahap 7:** Mengaudit 15 Hard Gates secara kognitif multidimensi (**Gate 7**: Skor QC $\ge 85$).
+         8. **Tahap 8:** Menulis file MDX ke `data/blog/`, memanggil `imanlogics_sync_git` untuk melakukan `git add`, `git commit`, dan `git push origin main`.
+         9. **Tahap 9 (Diseminasi WhatsApp):** Jika waktu berada di slot **05:00** atau **17:00 WIB**, memanggil `imanlogics_dispatch_notification` untuk mengirim ringkasan ke nomor **085335329341**.
+     - **MODE 2 (Headless CLI - HANYA Saat Jendela Antigravity Ditutup/Standalone):**
+       - Scheduler daemon Node.js (`scripts/scheduler-daemon.ts`) memantau ritme 3 jam di latar belakang OS.
+       - Eksekusi penalaran kognitif didelegasikan ke `agy.exe -p` (Antigravity CLI Bridge) dengan evaluasi kognitif pada Gate 3 (Sitasi), Gate 4 (Nalar), Gate 5 (VLM Visual-Semantic), Gate 6 (Skema), dan Gate 7 (15 Hard Gates $\ge 85$) sehingga mutunya 100% identik dengan Mode 1.
+
   3. **Diseminasi Notifikasi WhatsApp (Hanya 05:00 & 17:00 WIB):**
      - Notifikasi WhatsApp **TIDAK dikirim setiap 3 jam**, melainkan mengagregasi seluruh aktivitas riset 12 jam terakhir dan dikirimkan khusus pada pukul **05:00** dan **17:00** ke nomor pribadi **085335329341** menggunakan integrasi WhatsApp yang tersedia di `D:\KULIAH\AGENT\src\wa_dispatcher.py` melalui bridge Base64 anti-collision.
+
   4. **Laporkan Status Komprehensif:**
      - Berikan konfirmasi status kesiapan ImanLogics MCP Server & Scheduler, ringkasan artikel trilingual yang diproses QC, status Git push ke GitHub, serta jadwal siklus berikutnya.
 

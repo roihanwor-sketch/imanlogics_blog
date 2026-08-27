@@ -263,13 +263,14 @@ async function runFullEditorialSuite() {
   // TEST F: Image File Verification (Local asset download check)
   // -------------------------------------------------------------
   console.log('📌 TEST F: Local Asset Download & Physical File Existence Verification')
+  const activeSlug = freshArticles[0].frontmatter.translation_group.replace(/^tg-/, '')
   const targetImageDir = path.join(
     process.cwd(),
     'public',
     'static',
     'images',
     'editorial',
-    'samsung-lpddr6-on-device-ai'
+    activeSlug
   )
   const files = fs.existsSync(targetImageDir) ? fs.readdirSync(targetImageDir) : []
   console.log(`  ├─ Local Image Directory: ${targetImageDir}`)
