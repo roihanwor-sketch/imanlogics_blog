@@ -20,8 +20,36 @@ export interface RawArticleInput {
 }
 
 export class ArticleAssembler {
+  /**
+   * Generates a precise ISO timestamp in Western Indonesia Time (WIB / UTC+7)
+   */
+  static getLocalWibTimestamp(date = new Date()): string {
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const localWib = new Date(date.getTime() + (7 * 60 + date.getTimezoneOffset()) * 60000)
+    const yyyy = localWib.getFullYear()
+    const mm = pad(localWib.getMonth() + 1)
+    const dd = pad(localWib.getDate())
+    const hh = pad(localWib.getHours())
+    const min = pad(localWib.getMinutes())
+    const ss = pad(localWib.getSeconds())
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}+07:00`
+  }
+
+  /**
+   * Resolves specialized editorial author persona based on article category
+   */
+  static resolveDefaultAuthor(
+    category: 'tech-ai' | 'islamic-logic',
+    explicitAuthors?: string[]
+  ): string[] {
+    if (explicitAuthors && explicitAuthors.length > 0) return explicitAuthors
+    if (category === 'tech-ai') return ['rian-setiawan']
+    if (category === 'islamic-logic') return ['fauzan-hakim']
+    return ['default']
+  }
+
   static assembleMdx(input: RawArticleInput): MdxArticle {
-    const today = input.date || new Date().toISOString().split('T')[0]
+    const today = input.date || this.getLocalWibTimestamp()
     const filename =
       input.language === 'id' ? `${input.slug}.mdx` : `${input.slug}.${input.language}.mdx`
     const filepath = path.join(MCP_CONFIG.blogDataDir, filename)
@@ -33,7 +61,7 @@ export class ArticleAssembler {
       draft: false,
       summary: input.summary,
       images: input.images || [],
-      authors: input.authors || ['default'],
+      authors: this.resolveDefaultAuthor(input.category, input.authors),
       language: input.language,
       translation_group: input.translation_group,
       original_language: 'id' as const,
