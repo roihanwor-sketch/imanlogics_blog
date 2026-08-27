@@ -28,10 +28,10 @@
          2. **Tahap 2:** Menelaah dan menyetujui topik/angle artikel (**Gate 1 & Gate 2**: Novelty & Anti-Duplikasi).
          3. **Tahap 3:** Memanggil `imanlogics_verify_sources` dan melakukan audit kognitif bukti (**Gate 3**: Dual-Tier Citations & Epistemological Rigor).
          4. **Tahap 4:** Menyusun nalar artikel trilingual (ID, EN, AR) dengan *Native Thinking* dan kedalaman analisis (**Gate 4**: Purity & Zero Leaks).
-         5. **Tahap 5:** Memanggil `imanlogics_source_media` dan melakukan validasi **VLM Visual-Semantic Grounding** (memastikan konten visual benar-benar sesuai dengan subjek artikel, bukan sekadar file fisik lokal di disk >10KB) beserta atribusi lisensinya (**Gate 5**: VLM Visual Relevance & Physical Assets).
+         5. **Tahap 5 (Unduh & Validasi VLM Nyata):** Skrip mengunduh aset visual fisik ke disk. AI Antigravity **WAJIB membuka file biner gambar (`view_file`) dan melihat langsung piksel visualnya secara VLM** untuk memastikan gambar benar-benar sesuai dengan subjek artikel (menolak tegas gambar vintage/anachronistic, scan usang, atau logo yang tidak relevan) beserta atribusi lisensinya (**Gate 5**: VLM Visual Relevance & Physical Assets).
          6. **Tahap 6:** Memvalidasi skema frontmatter, metadata taksonomi, dan grup terjemahan (**Gate 6**: Schema Integrity).
-         7. **Tahap 7:** Mengaudit 15 Hard Gates secara kognitif multidimensi (**Gate 7**: Skor QC $\ge 85$).
-         8. **Tahap 8:** Menulis file MDX ke `data/blog/`, memanggil `imanlogics_sync_git` untuk melakukan `git add`, `git commit`, dan `git push origin main`.
+         7. **Tahap 7 (Render & Audit Webpage Nyata):** Skrip me-render file `.html` pratinjau utuh (Full DOM Webpage Proof: Navbar, Header Glassmorphism, Konten MDX, Matriks Bukti, Footer). AI Antigravity **WAJIB mengaudit file HTML utuh tersebut dari header hingga footer** untuk memastikan 0% teks placeholder `25%`, 0% nomor romawi `### I.`, dan 15 Hard Gates lolos sempurna (**Gate 7**: Skor QC $\ge 85$).
+         8. **Tahap 8:** Menulis file MDX final ke `data/blog/`, memanggil `imanlogics_sync_git` untuk melakukan `git add`, `git commit`, dan `git push origin main`.
          9. **Tahap 9 (Diseminasi WhatsApp):** Jika waktu berada di slot **05:00** atau **17:00 WIB**, memanggil `imanlogics_dispatch_notification` untuk mengirim ringkasan ke nomor **085335329341**.
      - **MODE 2 (Headless CLI - HANYA Saat Jendela Antigravity Ditutup/Standalone):**
        - Scheduler daemon Node.js (`scripts/scheduler-daemon.ts`) memantau ritme 3 jam di latar belakang OS.

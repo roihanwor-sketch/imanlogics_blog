@@ -49,58 +49,107 @@ export class WebpageRenderer {
       .join('\n')
 
     return `<!DOCTYPE html>
-<html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}">
+<html lang="${language}" dir="${language === 'ar' ? 'rtl' : 'ltr'}" class="dark">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>${title} | ImanLogics Editorial Proof</title>
+  <title>${title} | Iman Logics Blog</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; background: #f8fafc; padding: 2rem; max-width: 900px; margin: 0 auto; }
-    header { border-bottom: 2px solid #e2e8f0; padding-bottom: 1.5rem; margin-bottom: 2rem; }
-    h1 { font-size: 2.2rem; line-height: 1.25; color: #0f172a; margin-bottom: 0.5rem; }
-    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; background: #e0e7ff; color: #3730a3; margin-right: 0.5rem; }
-    .meta { font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; }
-    .summary-box { background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 1rem 1.25rem; font-size: 1.1rem; color: #334155; margin: 1.5rem 0; }
-    .article-figure { margin: 2rem 0; text-align: center; }
-    .article-figure img { border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    figcaption { font-size: 0.85rem; color: #64748b; margin-top: 0.5rem; font-style: italic; }
-    .sources-box, .credits-box { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin-top: 2rem; }
+    :root {
+      --bg-color: #0B0F19;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --text-main: #F1F5F9;
+      --text-muted: #94A3B8;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #22D3EE;
+      --accent-emerald: #10B981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.8; color: var(--text-main); background: var(--bg-color); }
+    .navbar { position: sticky; top: 0; z-index: 50; width: 100%; border-bottom: 1px solid var(--border-color); background: rgba(11, 15, 25, 0.75); backdrop-filter: blur(20px); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { font-size: 1.25rem; font-weight: bold; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-brand span { color: var(--accent-cyan); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; font-size: 0.9rem; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent-cyan); }
+    .container { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem; }
+    .article-header { border-bottom: 1px solid var(--border-color); padding-bottom: 2rem; margin-bottom: 2.5rem; text-align: center; }
+    .badge-bar { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); border: 1px solid rgba(34, 211, 238, 0.2); }
+    h1 { font-size: 2.25rem; line-height: 1.3; color: #FFFFFF; margin-bottom: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+    .meta-bar { font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .summary-card { background: var(--card-bg); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-cyan); border-radius: 8px; padding: 1.25rem 1.5rem; font-size: 1.1rem; color: #E2E8F0; margin-bottom: 2.5rem; line-height: 1.6; }
+    .article-body { font-size: 1.05rem; }
+    .article-body p { margin-bottom: 1.75rem; }
+    .article-body h2 { font-size: 1.6rem; color: #FFFFFF; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+    .article-body h3 { font-size: 1.3rem; color: #E2E8F0; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: 600; }
+    .article-figure { margin: 2.5rem 0; text-align: center; }
+    .article-figure img { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+    figcaption { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem; font-style: italic; }
+    blockquote { border-left: 3px solid var(--accent-emerald); padding-left: 1.25rem; margin: 1.5rem 0; color: #CBD5E1; font-style: italic; }
+    ul, ol { margin-left: 1.5rem; margin-bottom: 1.75rem; color: #CBD5E1; }
+    li { margin-bottom: 0.5rem; }
+    a { color: var(--accent-cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: 0; height: 1px; background: var(--border-color); margin: 3rem 0; }
+    .sources-panel, .credits-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; }
+    .sources-panel h4, .credits-panel h4 { font-size: 1rem; color: #FFFFFF; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .footer { border-top: 1px solid var(--border-color); padding: 3rem 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 4rem; }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <span class="badge">${category.toUpperCase()}</span>
-      <span class="badge">LANG: ${language.toUpperCase()}</span>
-      <span class="badge">${article.frontmatter.articleType || 'Article'}</span>
-    </div>
-    <h1>${title}</h1>
-    <div class="meta">
-      Published: <strong>${date}</strong> | Filename: <code>${article.filename}</code> | Group: <code>${fm.translation_group || 'none'}</code>
-    </div>
-  </header>
+  <nav class="navbar">
+    <a href="https://imanlogics.web.id" class="nav-brand">Iman <span>Logics</span></a>
+    <ul class="nav-links">
+      <li><a href="https://imanlogics.web.id/#beranda">Beranda</a></li>
+      <li><a href="https://imanlogics.web.id/portfolio/">Portofolio</a></li>
+      <li><a href="https://blog.imanlogics.web.id">Blog</a></li>
+      <li><a href="https://imanlogics.web.id/products/">Produk</a></li>
+    </ul>
+  </nav>
 
-  <div class="summary-box">
-    <strong>Executive Summary:</strong> ${summary}
+  <div class="container">
+    <header class="article-header">
+      <div class="badge-bar">
+        <span class="badge">${category}</span>
+        <span class="badge">Bahasa: ${language.toUpperCase()}</span>
+        <span class="badge">${article.frontmatter.articleType || 'Analysis'}</span>
+      </div>
+      <h1>${title}</h1>
+      <div class="meta-bar">
+        <span>🗓️ Terbit: ${date.split('T')[0]}</span>
+        <span>✍️ Redaksi: ${article.frontmatter.authors ? article.frontmatter.authors.join(', ') : 'Iman Logics'}</span>
+        <span>📁 File: <code>${article.filename}</code></span>
+      </div>
+    </header>
+
+    <div class="summary-card">
+      <strong>Intisari Editorial:</strong> ${summary}
+    </div>
+
+    <main class="article-body">
+      ${bodyHtml}
+    </main>
+
+    <section class="sources-panel">
+      <h4>Rantai Sumber Otoritatif (Dual-Tier Verification)</h4>
+      <ul>
+        ${sources.map((s) => `<li><strong><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name}</a></strong> — <em>Tier ${s.tier}${'type' in s && s.type ? ` (${s.type})` : ''}</em></li>`).join('\n')}
+      </ul>
+    </section>
+
+    <section class="credits-panel">
+      <h4>Atribusi Hak Cipta & Lisensi Aset Visual</h4>
+      <ul>
+        ${imageCredits.map((c) => `<li><code>${c.localPath}</code>: ${c.attributionText} — <em>Lisensi: ${c.license}</em></li>`).join('\n')}
+      </ul>
+    </section>
   </div>
 
-  <main class="article-body">
-    ${bodyHtml}
-  </main>
-
-  <section class="sources-box">
-    <h4>Verified Primary & Secondary Sources</h4>
-    <ul>
-      ${sources.map((s) => `<li><strong><a href="${s.url}">${s.name}</a></strong> (Tier ${s.tier}${'type' in s && s.type ? ` - ${s.type}` : ''})</li>`).join('\n')}
-    </ul>
-  </section>
-
-  <section class="credits-box">
-    <h4>Visual Assets & Provenance Records</h4>
-    <ul>
-      ${imageCredits.map((c) => `<li><strong>${c.localPath}</strong>: ${c.attributionText} (License: ${c.license}) - Source: ${c.url}</li>`).join('\n')}
-    </ul>
-  </section>
+  <footer class="footer">
+    <p>© 2026 Iman Logics. Hak Cipta Dilindungi Undang-Undang.</p>
+    <p style="margin-top: 0.5rem; font-size: 0.75rem;">ImanLogics Autonomous Editorial Proof Renderer • 15 Hard Gates Compliant</p>
+  </footer>
 </body>
 </html>`
   }
