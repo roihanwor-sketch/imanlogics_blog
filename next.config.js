@@ -42,10 +42,6 @@ module.exports = () => {
           protocol: 'https',
           hostname: 'commons.wikimedia.org',
         },
-        {
-          protocol: 'https',
-          hostname: 'picsum.photos',
-        },
       ],
       unoptimized: true,
     },

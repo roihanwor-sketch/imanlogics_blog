@@ -7,23 +7,23 @@
     "nav": [
       {
         "label": "Beranda",
-        "link": "/#beranda"
+        "link": "https://imanlogics.web.id/#beranda"
       },
       {
         "label": "Portofolio",
-        "link": "/portfolio"
+        "link": "https://imanlogics.web.id/portfolio/"
       },
       {
         "label": "Jelajahi Produk",
-        "link": "/products"
+        "link": "https://imanlogics.web.id/products/"
       },
       {
         "label": "Roadmap",
-        "link": "/#roadmap"
+        "link": "https://imanlogics.web.id/#roadmap"
       },
       {
         "label": "Tentang Kami",
-        "link": "/#tentang"
+        "link": "https://imanlogics.web.id/#tentang"
       }
     ],
     "socials": [

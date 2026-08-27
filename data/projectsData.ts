@@ -7,20 +7,16 @@ interface Project {
 
 const projectsData: Project[] = [
   {
-    title: 'A Search Engine',
-    description: `What if you could look up any information in the world? Webpages, images, videos
-    and more. Google has many features to help you find exactly what you're looking
-    for.`,
-    imgSrc: '/static/images/google.png',
-    href: 'https://www.google.com',
+    title: 'ImanLogics Autonomous Editorial Engine',
+    description: `Arsitektur agen otonom dan pipeline editorial AI cerdas dengan sistem verifikasi 15 Hard Gates, grounding semantik VLM, dan riset lintas-bahasa untuk jurnalisme teknologi serta logika epistemologis.`,
+    imgSrc: '/static/images/logo.png',
+    href: 'https://imanlogics.web.id/products/',
   },
   {
-    title: 'The Time Machine',
-    description: `Imagine being able to travel back in time or to the future. Simple turn the knob
-    to the desired date and press "Go". No more worrying about lost keys or
-    forgotten headphones with this simple yet affordable solution.`,
-    imgSrc: '/static/images/time-machine.jpg',
-    href: '/blog/the-time-machine',
+    title: 'Zaadul Khotib Ecosystem',
+    description: `Platform asisten persiapan khutbah dan kajian Islam terpadu yang memadukan khazanah kitab klasik dengan kecerdasan komputasi modern untuk membekali para dai dan pencari ilmu.`,
+    imgSrc: '/static/images/logo.png',
+    href: 'https://imanlogics.web.id/portfolio/',
   },
 ]
 
