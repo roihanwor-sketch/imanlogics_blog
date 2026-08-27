@@ -21,8 +21,8 @@ export function getNext3HourScheduleSlot(now = new Date()): {
   const slots = [0, 3, 6, 9, 12, 15, 18, 21]
 
   // Find the next target hour slot where the advance trigger (h - 15m) is in the future
-  let targetYear = currentYear
-  let targetMonth = currentMonth
+  const targetYear = currentYear
+  const targetMonth = currentMonth
   let targetDate = currentDate
   let targetHour = slots.find((h) => {
     const targetCandidate = new Date(currentYear, currentMonth, currentDate, h, 0, 0, 0)
@@ -158,7 +158,10 @@ export async function startSchedulerDaemon(runImmediately = true) {
         await WhatsAppService.sendNotification(payload)
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : String(err)
-        Logger.error('Scheduler', `WhatsApp scheduled trigger encountered an exception: ${errorMsg}`)
+        Logger.error(
+          'Scheduler',
+          `WhatsApp scheduled trigger encountered an exception: ${errorMsg}`
+        )
       } finally {
         scheduleDedicatedWhatsAppTimer()
       }

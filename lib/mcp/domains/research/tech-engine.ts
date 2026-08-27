@@ -332,16 +332,20 @@ export class TechResearchEngine {
   /**
    * Generates domain-accurate technical prose matching the specific field
    */
-    /**
+  /**
    * Generates domain-accurate technical prose strictly customized to the discovered story
    */
   private static generateDomainSpecificProse(title: string, domain: string, outlet: string) {
     const titleLower = title.toLowerCase()
     const isLinux = /linux|kernel/i.test(titleLower)
     const isPowerToys = /powertoys/i.test(titleLower)
-    const isExecutive = /exec|executive|departure|leaves|steps down|datacenter lead/i.test(titleLower)
+    const isExecutive = /exec|executive|departure|leaves|steps down|datacenter lead/i.test(
+      titleLower
+    )
     const isSmartphone = /phone|smartphone|xperia|galaxy|pixel|poco|oneplus/i.test(titleLower)
-    const isSilicon = /chip|die|semiconductor|blackwell|m5|m6|intel|crescent|wildcat|jalape/i.test(titleLower)
+    const isSilicon = /chip|die|semiconductor|blackwell|m5|m6|intel|crescent|wildcat|jalape/i.test(
+      titleLower
+    )
 
     if (isLinux) {
       return {

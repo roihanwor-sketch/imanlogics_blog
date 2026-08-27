@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import path from 'path'
 import { slug } from 'github-slugger'
 import { escape } from 'pliny/utils/htmlEscaper.js'
@@ -6,7 +6,15 @@ import siteMetadata from '../data/siteMetadata.js'
 import { allBlogs } from '../.contentlayer/generated/index.mjs'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
-const tagData = JSON.parse(readFileSync(path.join(process.cwd(), 'app', 'tag-data.json'), 'utf8'))
+let tagData = {}
+try {
+  const tagDataPath = path.join(process.cwd(), 'app', 'tag-data.json')
+  if (existsSync(tagDataPath)) {
+    tagData = JSON.parse(readFileSync(tagDataPath, 'utf8'))
+  }
+} catch {
+  tagData = {}
+}
 
 const outputFolder = process.env.EXPORT ? 'out' : 'public'
 
@@ -15,14 +23,20 @@ const generateRssItem = (config, post) => `
     <guid>${config.siteUrl}/blog/${post.slug}</guid>
     <title>${escape(post.title)}</title>
     <link>${config.siteUrl}/blog/${post.slug}</link>
-    ${post.summary && `<description>${escape(post.summary)}</description>`}
+    ${post.summary ? `<description>${escape(post.summary)}</description>` : ''}
     <pubDate>${new Date(post.date).toUTCString()}</pubDate>
     <author>${config.email} (${config.author})</author>
-    ${post.tags && post.tags.map((t) => `<category>${t}</category>`).join('')}
+    ${(post.tags || []).map((t) => `<category>${t}</category>`).join('')}
   </item>
 `
 
-const generateRss = (config, posts, page = 'feed.xml') => `
+const generateRss = (config, posts, page = 'feed.xml') => {
+  const lastBuildDate =
+    posts.length > 0 && posts[0]?.date
+      ? new Date(posts[0].date).toUTCString()
+      : new Date().toUTCString()
+
+  return `
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>${escape(config.title)}</title>
@@ -31,24 +45,32 @@ const generateRss = (config, posts, page = 'feed.xml') => `
       <language>${config.language}</language>
       <managingEditor>${config.email} (${config.author})</managingEditor>
       <webMaster>${config.email} (${config.author})</webMaster>
-      <lastBuildDate>${new Date(posts[0].date).toUTCString()}</lastBuildDate>
+      <lastBuildDate>${lastBuildDate}</lastBuildDate>
       <atom:link href="${config.siteUrl}/${page}" rel="self" type="application/rss+xml"/>
       ${posts.map((post) => generateRssItem(config, post)).join('')}
     </channel>
   </rss>
 `
+}
 
 async function generateRSS(config, allBlogs, page = 'feed.xml') {
+  mkdirSync(outputFolder, { recursive: true })
   const publishPosts = allBlogs.filter((post) => post.draft !== true)
-  // RSS for blog post
+
+  // RSS for all published posts
   if (publishPosts.length > 0) {
     const rss = generateRss(config, sortPosts(publishPosts))
-    writeFileSync(`./${outputFolder}/${page}`, rss)
+    writeFileSync(path.join(outputFolder, page), rss)
   }
 
+  // RSS for tags
   if (publishPosts.length > 0) {
     for (const tag of Object.keys(tagData)) {
-      const filteredPosts = allBlogs.filter((post) => post.tags.map((t) => slug(t)).includes(tag))
+      const filteredPosts = publishPosts.filter((post) =>
+        (post.tags || []).map((t) => slug(t)).includes(tag)
+      )
+      if (filteredPosts.length === 0) continue
+
       const rss = generateRss(config, filteredPosts, `tags/${tag}/${page}`)
       const rssPath = path.join(outputFolder, 'tags', tag)
       mkdirSync(rssPath, { recursive: true })

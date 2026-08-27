@@ -14,7 +14,8 @@ export class AISemanticImageValidator {
     category: 'tech-ai' | 'islamic-logic',
     keywords: string[] = []
   ): ImageValidationResult {
-    const textCorpus = `${candidate.title} ${candidate.description} ${candidate.sourceUrl} ${candidate.author}`.toLowerCase()
+    const textCorpus =
+      `${candidate.title} ${candidate.description} ${candidate.sourceUrl} ${candidate.author}`.toLowerCase()
     const topicLower = topicTitle.toLowerCase()
     const allKeywords = [...keywords.map((k) => k.toLowerCase()), ...topicLower.split(/\s+/)]
 
@@ -59,8 +60,14 @@ export class AISemanticImageValidator {
 
     // 2. HARD FILTER: Anachronism & Entity Mismatch
     if (category === 'tech-ai') {
-      const isModernSilicon = /wildcat|crescent|b200|blackwell|m5|m6|intel core|jalape|snapdragon|tsmc 2nm/i.test(topicLower)
-      const isAncientSilicon = /80186|8086|80286|80386|80486|pentium|vintage-pc|retro-computer|master 512/i.test(textCorpus)
+      const isModernSilicon =
+        /wildcat|crescent|b200|blackwell|m5|m6|intel core|jalape|snapdragon|tsmc 2nm/i.test(
+          topicLower
+        )
+      const isAncientSilicon =
+        /80186|8086|80286|80386|80486|pentium|vintage-pc|retro-computer|master 512/i.test(
+          textCorpus
+        )
       if (isModernSilicon && isAncientSilicon) {
         return {
           isValid: false,
@@ -79,7 +86,8 @@ export class AISemanticImageValidator {
         }
       }
     } else {
-      const hasOtherReligion = /nyaya|hindu|vedic|mandala|buddha|temple of|church of|cathedral|cross of/i.test(textCorpus)
+      const hasOtherReligion =
+        /nyaya|hindu|vedic|mandala|buddha|temple of|church of|cathedral|cross of/i.test(textCorpus)
       if (hasOtherReligion) {
         return {
           isValid: false,
@@ -97,12 +105,21 @@ export class AISemanticImageValidator {
     }
 
     if (category === 'tech-ai') {
-      const isSmartphone = /phone|smartphone|mobile|xperia|galaxy|iphone|pixel|poco|oneplus/i.test(topicLower)
-      const isProcessor = /chip|silicon|processor|die|ucie|semiconductor|wafer|intel|amd|nvidia|qualcomm|arm|snapdragon/i.test(topicLower)
-      const isAI = /ai|llm|neural|model|inference|gpt|deepseek|claude|gemini|transformer/i.test(topicLower)
+      const isSmartphone = /phone|smartphone|mobile|xperia|galaxy|iphone|pixel|poco|oneplus/i.test(
+        topicLower
+      )
+      const isProcessor =
+        /chip|silicon|processor|die|ucie|semiconductor|wafer|intel|amd|nvidia|qualcomm|arm|snapdragon/i.test(
+          topicLower
+        )
+      const isAI = /ai|llm|neural|model|inference|gpt|deepseek|claude|gemini|transformer/i.test(
+        topicLower
+      )
 
       if (isSmartphone) {
-        const hasMobileVisual = /smartphone|mobile device|phone screen|camera module|handset/i.test(textCorpus)
+        const hasMobileVisual = /smartphone|mobile device|phone screen|camera module|handset/i.test(
+          textCorpus
+        )
         if (hasMobileVisual && matchCount >= 1) {
           return {
             isValid: true,
@@ -113,7 +130,10 @@ export class AISemanticImageValidator {
       }
 
       if (isProcessor) {
-        const hasProcessorVisual = /processor|chip|die|silicon|wafer|cpu|gpu|integrated circuit|semiconductor/i.test(textCorpus)
+        const hasProcessorVisual =
+          /processor|chip|die|silicon|wafer|cpu|gpu|integrated circuit|semiconductor/i.test(
+            textCorpus
+          )
         if (hasProcessorVisual && matchCount >= 1) {
           return {
             isValid: true,
@@ -124,7 +144,10 @@ export class AISemanticImageValidator {
       }
 
       if (isAI) {
-        const hasAIVisual = /datacenter|server rack|supercomputer|neural network diagram|compute cluster/i.test(textCorpus)
+        const hasAIVisual =
+          /datacenter|server rack|supercomputer|neural network diagram|compute cluster/i.test(
+            textCorpus
+          )
         if (hasAIVisual || matchCount >= 1) {
           return {
             isValid: true,
@@ -136,7 +159,8 @@ export class AISemanticImageValidator {
     } else {
       const isManuscript = /manuscript|quran|folio|codex|parchment|ancient text/i.test(topicLower)
       if (isManuscript) {
-        const hasManuscriptVisual = /manuscript|folio|quranic text|arabic calligraphy|parchment/i.test(textCorpus)
+        const hasManuscriptVisual =
+          /manuscript|folio|quranic text|arabic calligraphy|parchment/i.test(textCorpus)
         if (hasManuscriptVisual || matchCount >= 1) {
           return {
             isValid: true,
@@ -181,7 +205,7 @@ export class AISemanticImageValidator {
 
     for (let i = 0; i < imagePaths.length; i++) {
       const imgPath = imagePaths[i]
-      const basename = imgPath.split(/[\/\\]/).pop() || ''
+      const basename = imgPath.split(/[/\\]/).pop() || ''
       const lowerBase = basename.toLowerCase()
 
       if (/placeholder|blank|default-cover|flag-of|government-seal/i.test(lowerBase)) {

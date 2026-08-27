@@ -38,16 +38,20 @@ export class CognitiveGatekeeper {
     const hasPowerToysContent = /powertoys|win32|dwm|desktop window manager|alt\+tab/i.test(content)
     if (isLinuxTitle && hasPowerToysContent) {
       gateAPassed = false
-      gateANote = 'CRITICAL TOPIC CONTAMINATION: Linux kernel title contains Microsoft PowerToys body.'
+      gateANote =
+        'CRITICAL TOPIC CONTAMINATION: Linux kernel title contains Microsoft PowerToys body.'
       hardFail = true
       failReason = gateANote
     }
 
     const isExecutiveDeparture = /exec|executive|departure|leaves|steps down/i.test(title)
-    const hasIncompatibleSiliconTeardown = /die topology|transistor density|wafer yield/i.test(content)
+    const hasIncompatibleSiliconTeardown = /die topology|transistor density|wafer yield/i.test(
+      content
+    )
     if (isExecutiveDeparture && hasIncompatibleSiliconTeardown && !hardFail) {
       gateAPassed = false
-      gateANote = 'TEMPLATE MISMATCH: Executive departure news forced into silicon hardware teardown structure.'
+      gateANote =
+        'TEMPLATE MISMATCH: Executive departure news forced into silicon hardware teardown structure.'
       hardFail = true
       failReason = gateANote
     }
@@ -57,7 +61,8 @@ export class CognitiveGatekeeper {
       const hasHinduContent = /nyaya|hindu|vedic|pratyaksha|anumana|upamana|sabda/i.test(content)
       if (hasHinduContent) {
         gateAPassed = false
-        gateANote = 'THEOLOGICAL CONTAMINATION: Islamic logic article contains Hindu Nyaya philosophy content.'
+        gateANote =
+          'THEOLOGICAL CONTAMINATION: Islamic logic article contains Hindu Nyaya philosophy content.'
         hardFail = true
         failReason = gateANote
       }
@@ -68,7 +73,8 @@ export class CognitiveGatekeeper {
         )
       if (hasRepetitiveBoilerplate && !hardFail) {
         gateAPassed = false
-        gateANote = 'TEMPLATE CONTAMINATION: Generic repetitive Islamic boilerplate phrase detected in article body.'
+        gateANote =
+          'TEMPLATE CONTAMINATION: Generic repetitive Islamic boilerplate phrase detected in article body.'
         hardFail = true
         failReason = gateANote
       }
@@ -81,7 +87,8 @@ export class CognitiveGatekeeper {
     const hasFabricated25Percent = /\+25% Throughput Gain/i.test(content)
     if (hasFabricated25Percent && !hardFail) {
       gateBPassed = false
-      gateBNote = 'FABRICATED METRIC DETECTED: Hardcoded generic "+25% Throughput Gain" found in article.'
+      gateBNote =
+        'FABRICATED METRIC DETECTED: Hardcoded generic "+25% Throughput Gain" found in article.'
       hardFail = true
       failReason = gateBNote
     }
@@ -96,8 +103,12 @@ export class CognitiveGatekeeper {
         const urlLower = cred.url.toLowerCase()
         const textCorpus = `${cred.attributionText} ${cred.url} ${cred.license}`.toLowerCase()
 
-        const isModernChip = /wildcat|crescent|b200|blackwell|m5|m6|intel core|snapdragon|tsmc 2nm/i.test(title)
-        if (isModernChip && /80186|8086|80286|pentium|486|retro-pc|vintage|master 512/i.test(textCorpus)) {
+        const isModernChip =
+          /wildcat|crescent|b200|blackwell|m5|m6|intel core|snapdragon|tsmc 2nm/i.test(title)
+        if (
+          isModernChip &&
+          /80186|8086|80286|pentium|486|retro-pc|vintage|master 512/i.test(textCorpus)
+        ) {
           gateCPassed = false
           gateCNote = `ANACHRONISTIC ASSET: Ancient processor visual (${cred.url}) used for modern 2026 silicon article.`
           hardFail = true
@@ -149,10 +160,13 @@ export class CognitiveGatekeeper {
         failReason = gateENote
       } else {
         const isHuawei = /huawei|pura|xmage|harmonyos/i.test(title)
-        const hasAppleSiliconSource = sources.some((s) => /apple.*silicon|apple.*platform/i.test(s.name.toLowerCase()))
+        const hasAppleSiliconSource = sources.some((s) =>
+          /apple.*silicon|apple.*platform/i.test(s.name.toLowerCase())
+        )
         if (isHuawei && hasAppleSiliconSource) {
           gateEPassed = false
-          gateENote = 'PROVENANCE FAILURE: Apple Silicon whitepaper cited as primary source for Huawei article.'
+          gateENote =
+            'PROVENANCE FAILURE: Apple Silicon whitepaper cited as primary source for Huawei article.'
           hardFail = true
           failReason = gateENote
         }

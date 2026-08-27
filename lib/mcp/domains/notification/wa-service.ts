@@ -15,8 +15,10 @@ export class WhatsAppService {
     const hours = now.getHours()
     const minutes = now.getMinutes()
     // Window toleransi persiapan & pengiriman: 04:30-06:00 WIB dan 16:30-18:00 WIB
-    const isMorningWindow = (hours === 4 && minutes >= 30) || hours === 5 || (hours === 6 && minutes === 0)
-    const isEveningWindow = (hours === 16 && minutes >= 30) || hours === 17 || (hours === 18 && minutes === 0)
+    const isMorningWindow =
+      (hours === 4 && minutes >= 30) || hours === 5 || (hours === 6 && minutes === 0)
+    const isEveningWindow =
+      (hours === 16 && minutes >= 30) || hours === 17 || (hours === 18 && minutes === 0)
     return isMorningWindow || isEveningWindow
   }
 
@@ -29,16 +31,22 @@ export class WhatsAppService {
     const allPublishedArticles = recentCycles.flatMap((c) => c.articlesPublished || [])
 
     // Deduplicate stories by slug
-    const uniqueStories = Array.from(
-      new Map(allPublishedStories.map((s) => [s.slug, s])).values()
-    )
+    const uniqueStories = Array.from(new Map(allPublishedStories.map((s) => [s.slug, s])).values())
 
     return {
       status: report?.status || 'SUCCESS',
-      articlesPublished: allPublishedArticles.length > 0 ? allPublishedArticles : report?.articlesPublished || [],
-      publishedStories: uniqueStories.length > 0 ? (uniqueStories as PublishedStoryMeta[]) : report?.publishedStoryDetails || [],
-      techArticlesCount: (uniqueStories as PublishedStoryMeta[]).filter((s) => s.category === 'tech-ai').length,
-      islamicArticlesCount: (uniqueStories as PublishedStoryMeta[]).filter((s) => s.category === 'islamic-logic').length,
+      articlesPublished:
+        allPublishedArticles.length > 0 ? allPublishedArticles : report?.articlesPublished || [],
+      publishedStories:
+        uniqueStories.length > 0
+          ? (uniqueStories as PublishedStoryMeta[])
+          : report?.publishedStoryDetails || [],
+      techArticlesCount: (uniqueStories as PublishedStoryMeta[]).filter(
+        (s) => s.category === 'tech-ai'
+      ).length,
+      islamicArticlesCount: (uniqueStories as PublishedStoryMeta[]).filter(
+        (s) => s.category === 'islamic-logic'
+      ).length,
       totalTrilingualArticles: allPublishedArticles.length || report?.articlesPublished.length || 0,
       qcAverageScore: 100,
       gitPushStatus: '✅ Ter-push ke origin/main',
