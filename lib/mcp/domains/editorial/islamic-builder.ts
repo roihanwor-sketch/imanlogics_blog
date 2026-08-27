@@ -24,10 +24,7 @@ export class IslamicArticleBuilder {
       story.extractedImageUrls || []
     )
     const images = imageResult.images
-    const coverImage =
-      images[0]?.localPath ||
-      images[0]?.url ||
-      '/static/images/editorial/birmingham-quran-radiocarbon-analysis/figure-1.jpg'
+    const coverImage = images[0]?.localPath || images[0]?.url || ''
 
     const imageCredits = CreditBuilder.buildImageCredits(images, slugBase, today)
 
@@ -37,9 +34,9 @@ export class IslamicArticleBuilder {
       if (points.length === 0) return ''
 
       const headers = {
-        id: '### V. Matriks Bukti & Batasan Epistemologis (Demarkasi Ilmiah)',
-        en: '### V. Evidence Matrix & Epistemological Demarcation',
-        ar: '### خامساً: مصفوفة الشواهد والحدود المعرفية (الفرز الإبستمولوجي)',
+        id: '## Matriks Bukti & Batasan Epistemologis (Demarkasi Ilmiah)',
+        en: '## Evidence Matrix & Epistemological Demarcation',
+        ar: '## مصفوفة الشواهد والحدود المعرفية (الفرز الإبستمولوجي)',
       }
 
       const srcLabels = {
@@ -66,9 +63,9 @@ export class IslamicArticleBuilder {
       if (!chain) return ''
 
       const headers = {
-        id: '### VI. Rantai Provenance & Verifikasi Silang Sumber Primer',
-        en: '### VI. Citation Chain & Primary Evidence Provenance',
-        ar: '### سادساً: سلسلة التوثيق والتحقق من المصادر الأولية',
+        id: '## Rantai Provenance & Verifikasi Silang Sumber Primer',
+        en: '## Citation Chain & Primary Evidence Provenance',
+        ar: '## سلسلة التوثيق والتحقق من المصادر الأولية',
       }
 
       const labels = {
@@ -116,15 +113,30 @@ export class IslamicArticleBuilder {
 ---`
     }
 
-    const narrativeHook = story.narrativeLead?.hook || story.narrativeHook || story.readerHook
-    const historicalContext = story.narrativeLead?.historicalContext || story.whyShouldICare
-    const scholarlyConsensus = story.narrativeLead?.scholarlyConsensus || story.whyShouldICare
-    const whatItProves = story.honestBoundaries?.whatItProves ||
-      story.whatThisDoesAndDoesntProve || {
-        id: 'APA YANG TERBUKTI: Keselarasan rasional antara wahyu dan bukti tekstual objektif.',
-        en: 'WHAT IT PROVES: Rational coherence between revelation and objective textual evidence.',
-        ar: 'ما يثبته البحث: التوافق العقلاني بين الوحي والشواهد النصية الموضوعية.',
+    const narrativeHook = story.narrativeHook ||
+      story.narrativeLead?.hook || {
+        id: 'Dialog keagamaan yang sehat tidak dibangun di atas prasangka, melainkan di atas kejujuran memeriksa teks dan fakta sejarah.',
+        en: 'Constructive theological dialogue cannot rest upon inherited assumptions, but demands honest examination of primary texts and historical context.',
+        ar: 'لا يُبنى الحوار الفكري البناء على التصورات المسبقة، بل يستند إلى التحقيق الموضوعي في النصوص التأسيسية والشواهد التاريخية.',
       }
+
+    const historicalContext = story.narrativeLead?.historicalContext || {
+      id: 'Tradisi keilmuan Islam secara konsisten menempatkan keselarasan antara akal sehat dan dalil wahyu yang sahih sebagai pilar peradaban ilmiah.',
+      en: 'Classical Islamic scholarship consistently established harmony between uncorrupted reason and authentic revelation as the cornerstone of scientific civilization.',
+      ar: 'أرست المدارس العلمية الكبرى مبدأ التوافق التام بين صريح المعقول وصحيح المنقول كركيزة أصيلة في بناء المعرفة.',
+    }
+
+    const scholarlyConsensus = story.narrativeLead?.scholarlyConsensus || {
+      id: 'Para peneliti dan akademisi kontemporer menegaskan pentingnya meneliti sumber orisinal secara objektif.',
+      en: 'Contemporary researchers and scholars emphasize evaluating theological doctrines through their foundational sources.',
+      ar: 'يؤكد الباحثون والمحققون على ضرورة تقييم المفاهيم التأسيسية من خلال مصادرها الأصلية.',
+    }
+
+    const whatItProves = story.honestBoundaries?.whatItProves || {
+      id: 'APA YANG TERBUKTI: Keselarasan rasional antara wahyu dan bukti tekstual objektif.',
+      en: 'WHAT IT PROVES: Rational coherence between revelation and objective textual evidence.',
+      ar: 'ما يثبته البحث: التوافق العقلاني بين نصوص الوحي والشواهد المنطقية الموضوعية.',
+    }
     const whatMustNotBeClaimed = story.honestBoundaries?.whatMustNotBeClaimed || {
       id: 'APA YANG TIDAK BOLEH DIKLAIM: Penafsiran manusia tidak boleh dipaksakan sebagai doktrin mutlak tanpa dalil yang kokoh.',
       en: 'WHAT MUST NOT BE CLAIMED: Human interpretations must not be overstated as absolute dogmas without firm evidence.',
@@ -157,10 +169,7 @@ ${story.readerHook.id}
 
 ${story.whyShouldICare.id}
 
-![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Sumber visual: ${images[0]?.source || 'Arsip Otentik'} / Foto oleh ${images[0]?.author || 'Kontributor'} (${images[0]?.license || 'CC BY-SA'})*
-
----
+${images[0] ? `![${images[0].altText.id || story.titles.id}](${images[0].localPath || images[0].url})\n*Sumber visual: ${images[0].source || 'Arsip Otentik'} / Foto oleh ${images[0].author || 'Kontributor'} (${images[0].license || 'CC BY-SA'})*\n\n---\n` : ''}
 
 ## Rekonstruksi Historis & Konteks Dalil Primer
 
@@ -223,11 +232,7 @@ ${story.readerHook.en}
 
 ${story.whyShouldICare.en}
 
-![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Visual Source: ${images[0]?.source || 'Authentic Archive'} / Photo by ${images[0]?.author || 'Contributor'} (${images[0]?.license || 'CC BY-SA'})*
-
----
-
+${images[0] ? `![${images[0].altText.en || story.titles.en}](${images[0].localPath || images[0].url})\n*Visual Source: ${images[0].source || 'Authentic Archive'} / Photo by ${images[0].author || 'Contributor'} (${images[0].license || 'CC BY-SA'})*\n\n---\n` : ''}
 ## Textual Reconstruction & Primary Context
 
 ${historicalContext.en}
@@ -289,11 +294,7 @@ ${story.readerHook.ar}
 
 ${story.whyShouldICare.ar}
 
-![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
-*مصدر الصورة: ${images[0]?.source || 'الأرشيف المعتمد'} / تصوير: ${images[0]?.author || 'المساهم'} (${images[0]?.license || 'CC BY-SA'})*
-
----
-
+${images[0] ? `![${images[0].altText.ar || story.titles.ar}](${images[0].localPath || images[0].url})\n*مصدر الصورة: ${images[0].source || 'الأرشيف المعتمد'} / تصوير: ${images[0].author || 'المساهم'} (${images[0].license || 'CC BY-SA'})*\n\n---\n` : ''}
 ## إعادة البناء التاريخي وسياق النصوص التأسيسية
 
 ${historicalContext.ar}

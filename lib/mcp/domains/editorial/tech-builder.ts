@@ -24,10 +24,7 @@ export class TechArticleBuilder {
       story.extractedImageUrls || []
     )
     const images = imageResult.images
-    const coverImage =
-      images[0]?.localPath ||
-      images[0]?.url ||
-      '/static/images/editorial/nvidia-blackwell-b200-datacenter-benchmarks/figure-2.jpg'
+    const coverImage = images[0]?.localPath || images[0]?.url || ''
 
     const imageCredits = CreditBuilder.buildImageCredits(images, slugBase, today)
 
@@ -37,9 +34,9 @@ export class TechArticleBuilder {
       if (!chain) return ''
 
       const headers = {
-        id: '### V. Rantai Provenance & Verifikasi Silang Sumber Primer',
-        en: '### V. Citation Chain & Primary Evidence Provenance',
-        ar: '### خامساً: سلسلة التوثيق والتحقق من المصادر الأولية',
+        id: '## Rantai Provenance & Verifikasi Silang Sumber Primer',
+        en: '## Citation Chain & Primary Evidence Provenance',
+        ar: '## سلسلة التوثيق والتحقق من المصادر الأولية',
       }
 
       const labels = {
@@ -137,11 +134,7 @@ ${story.readerHook.id}
 
 ${story.whyShouldICare.id}
 
-![${images[0]?.altText.id || story.titles.id}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Sumber visual: ${images[0]?.source || 'Dokumentasi Publik'} / Foto oleh ${images[0]?.author || 'Kontributor'} (${images[0]?.license || 'CC BY-SA'})*
-
----
-
+${images[0] ? `![${images[0].altText.id || story.titles.id}](${images[0].localPath || images[0].url})\n*Sumber visual: ${images[0].source || 'Dokumentasi Publik'} / Foto oleh ${images[0].author || 'Kontributor'} (${images[0].license || 'CC BY-SA'})*\n\n---\n` : ''}
 ## Analisis Arsitektur & Dinamika Sistem
 
 ${story.aiGeneratedDeepAnalysis?.id || story.readerHook.id}
@@ -189,11 +182,7 @@ ${story.readerHook.en}
 
 ${story.whyShouldICare.en}
 
-![${images[0]?.altText.en || story.titles.en}](${images[0]?.localPath || images[0]?.url || coverImage})
-*Visual Source: ${images[0]?.source || 'Public Archive'} / Photo by ${images[0]?.author || 'Contributor'} (${images[0]?.license || 'CC BY-SA'})*
-
----
-
+${images[0] ? `![${images[0].altText.en || story.titles.en}](${images[0].localPath || images[0].url})\n*Visual Source: ${images[0].source || 'Public Archive'} / Photo by ${images[0].author || 'Contributor'} (${images[0].license || 'CC BY-SA'})*\n\n---\n` : ''}
 ## Architectural Teardown & Systems Dynamics
 
 ${story.aiGeneratedDeepAnalysis?.en || story.readerHook.en}
@@ -241,11 +230,7 @@ ${story.readerHook.ar}
 
 ${story.whyShouldICare.ar}
 
-![${images[0]?.altText.ar || story.titles.ar}](${images[0]?.localPath || images[0]?.url || coverImage})
-*مصدر الصورة: ${images[0]?.source || 'الأرشيف المعتمد'} / تصوير: ${images[0]?.author || 'المساهم'} (${images[0]?.license || 'CC BY-SA'})*
-
----
-
+${images[0] ? `![${images[0].altText.ar || story.titles.ar}](${images[0].localPath || images[0].url})\n*مصدر الصورة: ${images[0].source || 'الأرشيف المعتمد'} / تصوير: ${images[0].author || 'المساهم'} (${images[0].license || 'CC BY-SA'})*\n\n---\n` : ''}
 ## التحليل المعماري وتفكيك المنظومة
 
 ${story.aiGeneratedDeepAnalysis?.ar || story.readerHook.ar}

@@ -150,7 +150,7 @@ export class EditorialQCEngine {
     // 12. HARD GATE: Citation Chain & Footnote Provenance Gate
     if (
       !hardFailTriggered &&
-      !/Rantai Provenance|Citation Chain|سلسلة التوثيق|Rujukan Primer|Primary Evidence|Media Sekunder|Verified Secondary/i.test(
+      !/Rantai Provenance|Citation Chain|سلسلة التوثيق|توثيق المصادر|Rujukan Primer|Primary Evidence|Media Sekunder|Verified Secondary/i.test(
         content
       )
     ) {
